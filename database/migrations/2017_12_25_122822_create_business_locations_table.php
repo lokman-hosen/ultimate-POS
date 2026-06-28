@@ -26,6 +26,10 @@ return new class extends Migration
             $table->string('mobile')->nullable();
             $table->string('alternate_number')->nullable();
             $table->string('email')->nullable();
+            // new
+            $table->json('zatca_details')->nullable();
+            $table->longText('zatca_response')->nullable();
+
             $table->softDeletes();
             $table->timestamps();
 

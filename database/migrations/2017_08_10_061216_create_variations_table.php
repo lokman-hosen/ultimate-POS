@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('sub_sku')->nullable();
             $table->integer('product_variation_id')->unsigned();
             $table->foreign('product_variation_id')->references('id')->on('product_variations')->onDelete('cascade');
+            //new
+            $table->integer('woocommerce_variation_id')->unsigned();
+
             $table->decimal('default_purchase_price', 22, 4)->nullable();
             $table->decimal('dpp_inc_tax', 22, 4)->default(0);
             $table->decimal('profit_percent', 22, 4)->default(0);
