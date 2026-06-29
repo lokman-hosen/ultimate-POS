@@ -13,3 +13,14 @@ If you discover a security vulnerability within ultimate POS, please send an e-m
 ## License
 
 The Ultimate POS software is licensed under the [Codecanyon license](https://codecanyon.net/licenses/standard).
+
+## Manual Installation
+
+1. 1st clone the project source code.
+2. Go to project directory and run `composer install`. or  `composer install ignore platform reqs`
+3. Copy `.env.example` to `.env` and update the database credentials.
+4. Run migrations `php artisan migrate`.
+5. Run seeders `php artisan db:seed`.
+6. Alternatively you can import the database dump file `ultimatepos.sql` from the `database/backup` folder.
+7. If want to login as superadmin update in `.env` file `ADMINISTRATOR_USERNAMES = username'`. Here username is the username of superadmin.
+8. Import the database dump file `ultimatepos_super_admin_pos.sql` from the `database/backup` folder for superadmin.
