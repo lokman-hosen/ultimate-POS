@@ -24,3 +24,7 @@ The Ultimate POS software is licensed under the [Codecanyon license](https://cod
 6. Alternatively you can import the database dump file `ultimatepos.sql` from the `database/backup` folder.
 7. If want to login as superadmin update in `.env` file `ADMINISTRATOR_USERNAMES = username'`. Here username is the username of superadmin.
 8. Import the database dump file `ultimatepos_super_admin_pos.sql` from the `database/backup` folder for superadmin.
+
+Businbess:
+Username: admin
+Pass: 12345678
