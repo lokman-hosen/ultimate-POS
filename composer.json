@@ -35,7 +35,7 @@
         "maatwebsite/excel": "^3.1.8",
         "milon/barcode": "^12.0",
         "mpdf/mpdf": "^8.1",
-        "myfatoorah/laravel-package": "^2.2",
+        "myfatoorah/laravel-package": "*",
         "nekhbet/laravel-collective-html": "^1.0",
         "nwidart/laravel-menus": "6.0.x-dev",
         "nwidart/laravel-modules": "^9.0",
