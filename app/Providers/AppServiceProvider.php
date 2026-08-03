@@ -206,17 +206,30 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        Blade::directive('format_datetime', function ($date) {
-            if (! empty($date)) {
-                $time_format = 'h:i A';
-                if (session('business.time_format') == 24) {
-                    $time_format = 'H:i';
-                }
+//        Blade::directive('format_datetime', function ($date) {
+//            if (! empty($date)) {
+//                $time_format = 'h:i A';
+//                if (session('business.time_format') == 24) {
+//                    $time_format = 'H:i';
+//                }
+//
+//                return "\Carbon::createFromTimestamp(strtotime($date))->format(session('business.date_format') . ' ' . '$time_format')";
+//            } else {
+//                return null;
+//            }
+//        });
 
-                return "\Carbon::createFromTimestamp(strtotime($date))->format(session('business.date_format') . ' ' . '$time_format')";
-            } else {
-                return null;
+        Blade::directive('format_datetime', function ($date) {
+            if (empty($date)) {
+                return 'null';
             }
+
+            $timeFormat = session('business.time_format', 12) == 24 ? 'H:i' : 'h:i A';
+            $dateFormat = session('business.date_format', 'Y-m-d');
+            $format = $dateFormat . ' ' . $timeFormat;
+
+            // Return raw PHP expression (no <?php tags)
+            return "\Carbon\Carbon::parse($date)->format('$format')";
         });
 
         //Blade directive to format currency.
