@@ -200,51 +200,118 @@ $(document).ready(function() {
     });
 
     //Add products
+    // if ($('#search_product').length > 0) {
+    //     $('#search_product')
+    //         .autocomplete({
+    //             source: function(request, response) {
+    //                 $.getJSON(
+    //                     '/purchases/get_products',
+    //                     { location_id: $('#location_id').val(), term: request.term },
+    //                     response
+    //                 );
+    //             },
+    //             minLength: 2,
+    //             response: function(event, ui) {
+    //                 if (ui.content.length == 1) {
+    //                     ui.item = ui.content[0];
+    //                     $(this)
+    //                         .data('ui-autocomplete')
+    //                         ._trigger('select', 'autocompleteselect', ui);
+    //                     $(this).autocomplete('close');
+    //                 } else if (ui.content.length == 0) {
+    //                     var term = $(this).data('ui-autocomplete').term;
+    //                     swal({
+    //                         title: LANG.no_products_found,
+    //                         text: __translate('add_name_as_new_product', { term: term }),
+    //                         buttons: [LANG.cancel, LANG.ok],
+    //                     }).then(value => {
+    //                         if (value) {
+    //                             var container = $('.quick_add_product_modal');
+    //                             $.ajax({
+    //                                 url: '/products/quick_add?product_name=' + term,
+    //                                 dataType: 'html',
+    //                                 success: function(result) {
+    //                                     $(container)
+    //                                         .html(result)
+    //                                         .modal('show');
+    //                                 },
+    //                             });
+    //                         }
+    //                     });
+    //                 }
+    //             },
+    //             select: function(event, ui) {
+    //                 $(this).val(null);
+    //                 get_purchase_entry_row(ui.item.product_id, ui.item.variation_id);
+    //             },
+    //         })
+    //         .autocomplete('instance')._renderItem = function(ul, item) {
+    //         return $('<li>')
+    //             .append('<div>' + escapeHtml(item.text) + '</div>')
+    //             .appendTo(ul);
+    //     };
+    // }
+
     if ($('#search_product').length > 0) {
-        $('#search_product')
-            .autocomplete({
-                source: function(request, response) {
+        let debounceTimer;
+
+        $('#search_product').autocomplete({
+            source: function(request, response) {
+                // Clear the previous timer
+                clearTimeout(debounceTimer);
+                // Set a new timer to wait 300ms after the user stops typing
+                debounceTimer = setTimeout(() => {
                     $.getJSON(
                         '/purchases/get_products',
-                        { location_id: $('#location_id').val(), term: request.term },
+                        {
+                            location_id: $('#location_id').val(),
+                            term: request.term
+                        },
                         response
                     );
-                },
-                minLength: 2,
-                response: function(event, ui) {
-                    if (ui.content.length == 1) {
-                        ui.item = ui.content[0];
-                        $(this)
-                            .data('ui-autocomplete')
-                            ._trigger('select', 'autocompleteselect', ui);
-                        $(this).autocomplete('close');
-                    } else if (ui.content.length == 0) {
-                        var term = $(this).data('ui-autocomplete').term;
-                        swal({
-                            title: LANG.no_products_found,
-                            text: __translate('add_name_as_new_product', { term: term }),
-                            buttons: [LANG.cancel, LANG.ok],
-                        }).then(value => {
-                            if (value) {
-                                var container = $('.quick_add_product_modal');
-                                $.ajax({
-                                    url: '/products/quick_add?product_name=' + term,
-                                    dataType: 'html',
-                                    success: function(result) {
-                                        $(container)
-                                            .html(result)
-                                            .modal('show');
-                                    },
-                                });
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    $(this).val(null);
-                    get_purchase_entry_row(ui.item.product_id, ui.item.variation_id);
-                },
-            })
+                }, 500);
+            },
+            minLength: 2,
+            response: function(event, ui) {
+                // If exactly one result, select it automatically
+                if (ui.content.length === 1) {
+                    ui.item = ui.content[0];
+                    $(this)
+                        .data('ui-autocomplete')
+                        ._trigger('select', 'autocompleteselect', ui);
+                    $(this).autocomplete('close');
+                }
+                // If no results, show the "add new product" modal
+                else if (ui.content.length === 0) {
+                    var term = $(this).data('ui-autocomplete').term;
+                    swal({
+                        title: LANG.no_products_found,
+                        text: __translate('add_name_as_new_product', { term: term }),
+                        buttons: [LANG.cancel, LANG.ok],
+                    }).then(value => {
+                        if (value) {
+                            var container = $('.quick_add_product_modal');
+                            $.ajax({
+                                url: '/products/quick_add?product_name=' + term,
+                                dataType: 'html',
+                                success: function(result) {
+                                    $(container)
+                                        .html(result)
+                                        .modal('show');
+                                },
+                            });
+                        }
+                    });
+                }
+            },
+            select: function(event, ui) {
+                // Clear the input field after selection
+                $(this).val(null);
+                // Call your function to add the selected product to the purchase entry
+                get_purchase_entry_row(ui.item.product_id, ui.item.variation_id);
+            },
+        })
+            // Custom rendering to escape HTML and display the product text
             .autocomplete('instance')._renderItem = function(ul, item) {
             return $('<li>')
                 .append('<div>' + escapeHtml(item.text) + '</div>')
