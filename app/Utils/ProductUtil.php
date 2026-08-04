@@ -1651,57 +1651,161 @@ class ProductUtil extends Util
         }
 
         //Include search
+//        if (! empty($search_term)) {
+//
+//            //Search with like condition
+//            if ($search_type == 'like') {
+//                $query->where(function ($query) use ($search_term, $search_fields) {
+//                    if (in_array('name', $search_fields)) {
+//                        $query->where('products.name', 'like', '%'.$search_term.'%');
+//                    }
+//
+//                    if (in_array('sku', $search_fields)) {
+//                        $query->orWhere('sku', 'like', '%'.$search_term.'%');
+//                    }
+//
+//                    if (in_array('sub_sku', $search_fields)) {
+//                        $query->orWhere('sub_sku', 'like', '%'.$search_term.'%');
+//                    }
+//
+//                    if (in_array('lot', $search_fields)) {
+//                        $query->orWhere('pl.lot_number', 'like', '%'.$search_term.'%');
+//                    }
+//
+//                    if (in_array('product_custom_field1', $search_fields)) {
+//                        $query->orWhere('product_custom_field1', 'like', '%'.$search_term.'%');
+//                    }
+//                    if (in_array('product_custom_field2', $search_fields)) {
+//                        $query->orWhere('product_custom_field2', 'like', '%'.$search_term.'%');
+//                    }
+//                    if (in_array('product_custom_field3', $search_fields)) {
+//                        $query->orWhere('product_custom_field3', 'like', '%'.$search_term.'%');
+//                    }
+//                    if (in_array('product_custom_field4', $search_fields)) {
+//                        $query->orWhere('product_custom_field4', 'like', '%'.$search_term.'%');
+//                    }
+//                });
+//            }
+//
+//            //Search with exact condition
+//            if ($search_type == 'exact') {
+//                $query->where(function ($query) use ($search_term, $search_fields) {
+//                    if (in_array('name', $search_fields)) {
+//                        $query->where('products.name', $search_term);
+//                    }
+//
+//                    if (in_array('sku', $search_fields)) {
+//                        $query->orWhere('sku', $search_term);
+//                    }
+//
+//                    if (in_array('sub_sku', $search_fields)) {
+//                        $query->orWhere('sub_sku', $search_term);
+//                    }
+//
+//                    if (in_array('lot', $search_fields)) {
+//                        $query->orWhere('pl.lot_number', $search_term);
+//                    }
+//                });
+//            }
+//        }
+
         if (! empty($search_term)) {
-
-            //Search with like condition
+            // Search with LIKE – tokenised (each word must appear in at least one field)
             if ($search_type == 'like') {
-                $query->where(function ($query) use ($search_term, $search_fields) {
-                    if (in_array('name', $search_fields)) {
-                        $query->where('products.name', 'like', '%'.$search_term.'%');
-                    }
+                // Split the search term into individual words
+                $words = preg_split('/\s+/', trim($search_term));
+                $words = array_filter($words); // remove empty
 
-                    if (in_array('sku', $search_fields)) {
-                        $query->orWhere('sku', 'like', '%'.$search_term.'%');
-                    }
-
-                    if (in_array('sub_sku', $search_fields)) {
-                        $query->orWhere('sub_sku', 'like', '%'.$search_term.'%');
-                    }
-
-                    if (in_array('lot', $search_fields)) {
-                        $query->orWhere('pl.lot_number', 'like', '%'.$search_term.'%');
-                    }
-
-                    if (in_array('product_custom_field1', $search_fields)) {
-                        $query->orWhere('product_custom_field1', 'like', '%'.$search_term.'%');
-                    }
-                    if (in_array('product_custom_field2', $search_fields)) {
-                        $query->orWhere('product_custom_field2', 'like', '%'.$search_term.'%');
-                    }
-                    if (in_array('product_custom_field3', $search_fields)) {
-                        $query->orWhere('product_custom_field3', 'like', '%'.$search_term.'%');
-                    }
-                    if (in_array('product_custom_field4', $search_fields)) {
-                        $query->orWhere('product_custom_field4', 'like', '%'.$search_term.'%');
+                $query->where(function ($query) use ($words, $search_fields) {
+                    foreach ($words as $word) {
+                        // For each word, we require it to be found in at least one of the selected fields
+                        $query->where(function ($subQuery) use ($word, $search_fields) {
+                            $first = true;
+                            if (in_array('name', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('products.name', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('products.name', 'like', '%' . $word . '%');
+                                }
+                            }
+                            if (in_array('sku', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('sku', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('sku', 'like', '%' . $word . '%');
+                                }
+                            }
+                            if (in_array('sub_sku', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('sub_sku', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('sub_sku', 'like', '%' . $word . '%');
+                                }
+                            }
+                            if (in_array('lot', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('pl.lot_number', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('pl.lot_number', 'like', '%' . $word . '%');
+                                }
+                            }
+                            if (in_array('product_custom_field1', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('product_custom_field1', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('product_custom_field1', 'like', '%' . $word . '%');
+                                }
+                            }
+                            if (in_array('product_custom_field2', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('product_custom_field2', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('product_custom_field2', 'like', '%' . $word . '%');
+                                }
+                            }
+                            if (in_array('product_custom_field3', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('product_custom_field3', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('product_custom_field3', 'like', '%' . $word . '%');
+                                }
+                            }
+                            if (in_array('product_custom_field4', $search_fields)) {
+                                if ($first) {
+                                    $subQuery->where('product_custom_field4', 'like', '%' . $word . '%');
+                                    $first = false;
+                                } else {
+                                    $subQuery->orWhere('product_custom_field4', 'like', '%' . $word . '%');
+                                }
+                            }
+                            // If no fields matched, we add a dummy false condition to avoid empty WHERE
+                            if ($first) {
+                                $subQuery->whereRaw('1 = 0');
+                            }
+                        });
                     }
                 });
             }
 
-            //Search with exact condition
+            // Search with exact – unchanged (whole phrase as a single string)
             if ($search_type == 'exact') {
                 $query->where(function ($query) use ($search_term, $search_fields) {
                     if (in_array('name', $search_fields)) {
                         $query->where('products.name', $search_term);
                     }
-
                     if (in_array('sku', $search_fields)) {
                         $query->orWhere('sku', $search_term);
                     }
-
                     if (in_array('sub_sku', $search_fields)) {
                         $query->orWhere('sub_sku', $search_term);
                     }
-
                     if (in_array('lot', $search_fields)) {
                         $query->orWhere('pl.lot_number', $search_term);
                     }
