@@ -93,8 +93,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 2.5rem;
-    width: 2.5rem;
+    width: 11rem;
     border-radius: .75rem;
     background: rgba(255, 255, 255, .1);
     border: 1px solid rgba(255, 255, 255, .15);
@@ -102,8 +101,8 @@
 }
 
 .pos-brand__logo-badge img {
-    height: 1.5rem;
-    width: 1.5rem;
+    /*height: 1.5rem;*/
+    width: 11rem;
     object-fit: contain;
 }
 
@@ -508,7 +507,7 @@
 
 .pos-eye-btn {
     position: absolute;
-    top: 1rem;
+    top: 2.35rem;
     right: .4rem;
     background: none;
     border: none;
@@ -586,4 +585,270 @@
     font-size: .75rem;
     margin-top: .35rem;
     display: block;
+}
+
+/* ==========================================================================
+   Register page — wrapper + scoped Bootstrap-form restyling.
+   Everything below is scoped under .pos-auth-page so the shared
+   business.partials.register_form Blade partial keeps its plain Bootstrap
+   look wherever else it's rendered (e.g. an admin "edit business" screen).
+   ========================================================================== */
+
+.pos-register-wrap {
+    width: 100%;
+    max-width: 60rem;
+    padding: 2rem 0;
+}
+
+.pos-card--wide {
+    padding: 1.75rem;
+}
+
+@media (min-width: 640px) {
+    .pos-card--wide {
+        padding: 2rem 2.5rem 2.5rem;
+    }
+}
+
+.pos-register-head {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.pos-register-head .pos-h1 {
+    font-size: 1.35rem;
+}
+
+/* -- fieldsets / section headings -- */
+
+.pos-auth-page fieldset {
+    border: none;
+    margin: 0 0 2rem;
+    padding: 0;
+    min-width: 0;
+}
+
+.pos-auth-page fieldset:last-of-type {
+    margin-bottom: 0;
+}
+
+.pos-auth-page legend {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink-800);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: .6rem;
+    margin-bottom: 1.25rem;
+    width: 100%;
+}
+
+.pos-auth-page h3 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink-800);
+    margin: 2rem 0 .75rem;
+}
+
+.pos-auth-page h3:first-child {
+    margin-top: 0;
+}
+
+/* -- form fields -- */
+
+.pos-auth-page .form-group {
+    margin-bottom: 1.15rem;
+}
+
+.pos-auth-page label {
+    font-size: .75rem;
+    font-weight: 500;
+    color: var(--ink-800);
+    margin-bottom: .4rem;
+    display: block;
+}
+
+.pos-auth-page .form-control {
+    width: 100%;
+    height: 3rem;
+    border: 1px solid #d1d5db;
+    border-radius: .6rem;
+    padding: 0 .75rem;
+    font-weight: 500;
+    font-size: .9rem;
+    color: var(--ink-800);
+    background: transparent;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.pos-auth-page .form-control::placeholder {
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.pos-auth-page .form-control:focus {
+    outline: none;
+    border-color: var(--teal-600);
+    box-shadow: 0 0 0 3px rgba(47, 111, 238, .15);
+}
+
+.pos-auth-page select.form-control {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.pos-auth-page .select2-container .select2-selection--single {
+    height: 3rem !important;
+    border-radius: .6rem !important;
+    border-color: #d1d5db !important;
+    display: flex;
+    align-items: center;
+}
+
+.pos-auth-page .select2-selection__rendered {
+    line-height: 3rem !important;
+    padding-left: .75rem !important;
+    color: var(--ink-800) !important;
+}
+
+.pos-auth-page .select2-selection__arrow {
+    height: 3rem !important;
+}
+
+.pos-auth-page input[type="file"] {
+    width: 100%;
+    border: 1px dashed #d1d5db;
+    border-radius: .6rem;
+    padding: .6rem .75rem;
+    font-size: .85rem;
+    color: #6b7280;
+    background: #fff;
+}
+
+.pos-auth-page .input-check-box {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--teal-600);
+    margin-right: .4rem;
+}
+
+.pos-auth-page .terms_condition {
+    color: var(--teal-600);
+    font-weight: 500;
+    text-decoration: none;
+    font-size: .85rem;
+}
+
+.pos-auth-page .terms_condition:hover {
+    text-decoration: underline;
+}
+
+.pos-auth-page .text-danger {
+    color: #dc2626;
+    font-size: .75rem;
+}
+
+/* -- jQuery Steps wizard: step nav + Previous/Next/Finish actions -- */
+
+.pos-auth-page .wizard > .steps {
+    margin-bottom: 2rem;
+}
+
+.pos-auth-page .wizard > .steps ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pos-auth-page .wizard > .steps a,
+.pos-auth-page .wizard > .steps a:active,
+.pos-auth-page .wizard > .steps a:hover {
+    display: block;
+    padding: .55rem 1rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 500;
+    text-decoration: none;
+    background: var(--paper-50);
+    color: var(--ink-800);
+    border: 1px solid var(--border);
+}
+
+.pos-auth-page .wizard > .steps .number {
+    font-family: 'IBM Plex Mono', monospace;
+    margin-right: .35rem;
+}
+
+.pos-auth-page .wizard > .steps .current a {
+    background: var(--teal-600);
+    border-color: var(--teal-600);
+    color: #fff;
+}
+
+.pos-auth-page .wizard > .steps .done a {
+    background: #fff;
+    border-color: var(--teal-500);
+    color: var(--teal-600);
+}
+
+.pos-auth-page .wizard > .steps .disabled a {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.pos-auth-page .wizard > .actions {
+    margin-top: 2rem;
+}
+
+.pos-auth-page .wizard > .actions ul {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pos-auth-page .wizard > .actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.85rem;
+    padding: 0 1.5rem;
+    border-radius: .75rem;
+    font-weight: 600;
+    font-size: .9rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity .15s ease;
+}
+
+.pos-auth-page .wizard > .actions li:first-child a {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--ink-800);
+}
+
+.pos-auth-page .wizard > .actions li:first-child a:hover {
+    border-color: var(--teal-600);
+    color: var(--teal-600);
+}
+
+.pos-auth-page .wizard > .actions li:not(:first-child) a {
+    background: linear-gradient(90deg, var(--teal-500), var(--teal-600));
+    border: none;
+    color: #fff;
+}
+
+.pos-auth-page .wizard > .actions li:not(:first-child) a:hover {
+    opacity: .92;
+}
+
+.pos-auth-page .wizard > .actions .disabled a {
+    opacity: .4;
+    pointer-events: none;
 }

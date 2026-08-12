@@ -50,73 +50,75 @@
 
 <div class="pos-auth-page">
 
-    {{-- ================= LEFT: brand / caption panel ================= --}}
-    <aside class="pos-brand">
-        <div class="pos-brand__dotgrid"></div>
+    @if(!route_is('business.getRegister'))
+        {{-- ================= LEFT: brand / caption panel ================= --}}
+        <aside class="pos-brand">
+            <div class="pos-brand__dotgrid"></div>
 
-        <div class="pos-brand__body">
-            <div class="pos-brand__top">
-                <a href="{{ url('/') }}" class="pos-brand__logo">
+            <div class="pos-brand__body">
+                <div class="pos-brand__top">
+                    <a href="{{ url('/') }}" class="pos-brand__logo">
                         <span class="pos-brand__logo-badge">
                             <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
                         </span>
-                    <span class="pos-brand__logo-text">{{ config('app.name', 'Ultimate POS') }}</span>
-                </a>
+{{--                        <span class="pos-brand__logo-text">{{ config('app.name', 'Ultimate POS') }}</span>--}}
+                    </a>
 
-                {{-- Utility links that used to live next to the logo --}}
-                <div class="pos-brand__utility">
-                    @if (config('constants.SHOW_REPAIR_STATUS_LOGIN_SCREEN') && Route::has('repair-status'))
-                        <a href="{{ action([\Modules\Repair\Http\Controllers\CustomerRepairStatusController::class, 'index']) }}">
-                            @lang('repair::lang.repair_status')
-                        </a>
-                    @endif
+                    {{-- Utility links that used to live next to the logo --}}
+                    <div class="pos-brand__utility">
+                        @if (config('constants.SHOW_REPAIR_STATUS_LOGIN_SCREEN') && Route::has('repair-status'))
+                            <a href="{{ action([\Modules\Repair\Http\Controllers\CustomerRepairStatusController::class, 'index']) }}">
+                                @lang('repair::lang.repair_status')
+                            </a>
+                        @endif
 
-                    @if (Route::has('member_scanner'))
-                        <a href="{{ action([\Modules\Gym\Http\Controllers\MemberController::class, 'member_scanner']) }}">
-                            @lang('gym::lang.gym_member_profile')
-                        </a>
-                    @endif
+                        @if (Route::has('member_scanner'))
+                            <a href="{{ action([\Modules\Gym\Http\Controllers\MemberController::class, 'member_scanner']) }}">
+                                @lang('gym::lang.gym_member_profile')
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="pos-barcode"></div>
+
+                <p class="pos-eyebrow">Access terminal</p>
+                <h1 class="pos-headline">Every sale, every shop,<br> one screen.</h1>
+                <p class="pos-subtext">
+                    From pharmacy counters to restaurant floors — manage inventory, staff and sales
+                    without leaving this screen.
+                </p>
+
+                <ul class="pos-receipt-list">
+                    @foreach ([
+        'Real-time inventory sync',
+        'Multi-outlet & multi-currency',
+        'Built-in HR & payroll',
+        'Works online or offline',
+    ] as $feature)
+                        <li class="pos-receipt-row">
+                            <span class="label">{{ $feature }}</span>
+                            <span class="leader"></span>
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                      d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z"
+                                      clip-rule="evenodd" />
+                            </svg>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <div class="pos-brand__footer">
+                <div class="pos-brand__total">
+                    <span class="pos-brand__total-label">Businesses served</span>
+                    <span class="pos-brand__total-value">10,000+</span>
                 </div>
             </div>
 
-            <div class="pos-barcode"></div>
-
-            <p class="pos-eyebrow">Access terminal</p>
-            <h1 class="pos-headline">Every sale, every shop,<br> one screen.</h1>
-            <p class="pos-subtext">
-                From pharmacy counters to restaurant floors — manage inventory, staff and sales
-                without leaving this screen.
-            </p>
-
-            <ul class="pos-receipt-list">
-                @foreach ([
-    'Real-time inventory sync',
-    'Multi-outlet & multi-currency',
-    'Built-in HR & payroll',
-    'Works online or offline',
-] as $feature)
-                    <li class="pos-receipt-row">
-                        <span class="label">{{ $feature }}</span>
-                        <span class="leader"></span>
-                        <svg viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                  d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z"
-                                  clip-rule="evenodd" />
-                        </svg>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-
-        <div class="pos-brand__footer">
-            <div class="pos-brand__total">
-                <span class="pos-brand__total-label">Businesses served</span>
-                <span class="pos-brand__total-value">10,000+</span>
-            </div>
-        </div>
-
-        <div class="pos-tear"></div>
-    </aside>
+            <div class="pos-tear"></div>
+        </aside>
+    @endif
 
     {{-- ================= RIGHT: utility nav + page content ================= --}}
     <div class="pos-content">
