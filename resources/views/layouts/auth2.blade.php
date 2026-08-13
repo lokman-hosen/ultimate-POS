@@ -11,7 +11,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title') - {{ config('app.name', 'POS') }}</title>
-    @if(!route_is('login'))
+    @if(!route_is('login') and !route_is('password.request'))
         @include('layouts.partials.css')
     @endif
 
@@ -50,7 +50,7 @@
 
 <div class="pos-auth-page">
 
-    @if(!route_is('business.getRegister'))
+    @if(!route_is('business.getRegister') and !route_is('password.request'))
         {{-- ================= LEFT: brand / caption panel ================= --}}
         <aside class="pos-brand">
             <div class="pos-brand__dotgrid"></div>
