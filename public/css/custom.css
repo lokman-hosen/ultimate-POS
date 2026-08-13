@@ -852,3 +852,35 @@
     opacity: .4;
     pointer-events: none;
 }
+
+.wizard > .steps > ul > li {
+    width: 32% !important;
+}
+
+.pos-auth-page .wizard > .steps .current a {
+    width: 100%;
+    height: 3rem;
+    border: none;
+    border-radius: .75rem;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 1.25rem;
+    cursor: pointer;
+    background: linear-gradient(90deg, var(--teal-500), var(--teal-600));
+    transition: opacity .15s ease;
+}
+
+.pos-auth-page .wizard > .steps a, .pos-auth-page .wizard > .steps a:active, .pos-auth-page .wizard > .steps a:hover {
+    width: 100%;
+    height: 3rem;
+    border: none;
+    border-radius: .75rem;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 1.25rem;
+    cursor: pointer;
+    background: linear-gradient(90deg, var(--teal-500), var(--teal-600));
+    transition: opacity .15s ease;
+}
