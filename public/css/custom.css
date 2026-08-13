@@ -884,3 +884,22 @@
     background: linear-gradient(90deg, var(--teal-500), var(--teal-600));
     transition: opacity .15s ease;
 }
+
+.file-input-new .btn-file{
+    padding-top: 13px !important;
+    padding-bottom: 13px !important;
+}
+
+.pos-auth-page .wizard > .steps .done a {
+    width: 100%;
+    height: 3rem;
+    border: none;
+    border-radius: .75rem;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 1.25rem;
+    cursor: pointer;
+    background: linear-gradient(90deg, var(--teal-500), var(--teal-600));
+    transition: opacity .15s ease;
+}

@@ -5,47 +5,47 @@
 
 <fieldset>
     <legend>@lang('business.business_details'):</legend>
-    <div class="col-md-12">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('name', __('business.business_name') . ':*' ) !!}
             {!! Form::text('name', null, ['class' => 'form-control','placeholder' => __('business.business_name'), 'required']); !!}
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('start_date', __('business.start_date') . ':') !!}
             {!! Form::text('start_date', null, ['class' => 'form-control start-date-picker','placeholder' => __('business.start_date'), 'readonly']); !!}
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="form-group">
             {!! Form::label('currency_id', __('business.currency') . ':*') !!}
             {!! Form::select('currency_id', $currencies, '', ['class' => 'form-control select2_register','placeholder' => __('business.currency_placeholder'), 'required']); !!}
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('business_logo', __('business.upload_logo') . ':') !!}
             {!! Form::file('business_logo', ['accept' => 'image/*']); !!}
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('website', __('lang_v1.website') . ':') !!}
             {!! Form::text('website', null, ['class' => 'form-control','placeholder' => __('lang_v1.website')]); !!}
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('mobile', __('lang_v1.business_telephone') . ':') !!}
             {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_telephone')]); !!}
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('alternate_number', __('business.alternate_number') . ':') !!}
             {!! Form::text('alternate_number', null, ['class' => 'form-control','placeholder' => __('business.alternate_number')]); !!}
@@ -54,40 +54,40 @@
 
     <div class="clearfix"></div>
 
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('country', __('business.country') . ':*') !!}
             {!! Form::text('country', null, ['class' => 'form-control','placeholder' => __('business.country'), 'required']); !!}
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('state',__('business.state') . ':*') !!}
             {!! Form::text('state', null, ['class' => 'form-control','placeholder' => __('business.state'), 'required']); !!}
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('city',__('business.city'). ':*') !!}
             {!! Form::text('city', null, ['class' => 'form-control','placeholder' => __('business.city'), 'required']); !!}
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('zip_code', __('business.zip_code') . ':*') !!}
             {!! Form::text('zip_code', null, ['class' => 'form-control','placeholder' => __('business.zip_code_placeholder'), 'required']); !!}
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('landmark', __('business.landmark') . ':*') !!}
             {!! Form::text('landmark', null, ['class' => 'form-control','placeholder' => __('business.landmark'), 'required']); !!}
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('time_zone', __('business.time_zone') . ':*') !!}
             {!! Form::select('time_zone', $timezone_list, config('app.timezone'), ['class' => 'form-control select2_register','placeholder' => __('business.time_zone'), 'required']); !!}
@@ -101,41 +101,41 @@
 
     <fieldset>
         <legend>@lang('business.business_settings'):</legend>
-        <div class="col-md-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('tax_label_1', __('business.tax_1_name') . ':') !!}
                 {!! Form::text('tax_label_1', null, ['class' => 'form-control','placeholder' => __('business.tax_1_placeholder')]); !!}
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('tax_number_1', __('business.tax_1_no') . ':') !!}
                 {!! Form::text('tax_number_1', null, ['class' => 'form-control']); !!}
             </div>
         </div>
         <div class="clearfix"></div>
-        <div class="col-md-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('tax_label_2',__('business.tax_2_name') . ':') !!}
                 {!! Form::text('tax_label_2', null, ['class' => 'form-control','placeholder' => __('business.tax_1_placeholder')]); !!}
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('tax_number_2',__('business.tax_2_no') . ':') !!}
                 {!! Form::text('tax_number_2', null, ['class' => 'form-control',]); !!}
             </div>
         </div>
         <div class="clearfix"></div>
-        <div class="col-md-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('fy_start_month', __('business.fy_start_month') . ':*') !!} @show_tooltip(__('tooltip.fy_start_month'))
                 {!! Form::select('fy_start_month', $months, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('accounting_method', __('business.accounting_method') . ':*') !!}
                 {!! Form::select('accounting_method', $accounting_methods, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
@@ -151,49 +151,49 @@
 
 <fieldset>
     <legend>@lang('business.owner_info')</legend>
-    <div class="col-md-4">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('surname', __('business.prefix') . ':') !!}
             {!! Form::text('surname', null, ['class' => 'form-control','placeholder' => __('business.prefix_placeholder')]); !!}
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('first_name', __('business.first_name') . ':*') !!}
             {!! Form::text('first_name', null, ['class' => 'form-control','placeholder' => __('business.first_name'), 'required']); !!}
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-12">
         <div class="form-group">
             {!! Form::label('last_name', __('business.last_name') . ':') !!}
             {!! Form::text('last_name', null, ['class' => 'form-control','placeholder' =>  __('business.last_name')]); !!}
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('username', __('business.username') . ':*') !!}
             {!! Form::text('username', null, ['class' => 'form-control','placeholder' => __('business.username'), 'required']); !!}
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('email', __('business.email') . ':*') !!}
             {!! Form::text('email', null, ['class' => 'form-control','placeholder' => __('business.email'), 'required']); !!}
         </div>
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('password', __('business.password') . ':*') !!}
             {!! Form::password('password', ['class' => 'form-control','placeholder' => __('business.password'), 'required']); !!}
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('confirm_password', __('business.confirm_password') . ':*') !!}
             {!! Form::password('confirm_password', ['class' => 'form-control','placeholder' => __('business.confirm_password'), 'required']); !!}
@@ -201,7 +201,7 @@
     </div>
     <div class="clearfix"></div>
     @if(!empty($system_settings['superadmin_enable_register_tc']) && !empty($is_register))
-        <div class="col-md-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div>
                 <label>
                     {!! Form::checkbox('accept_tc', 0, false, ['required', 'class' => 'input-check-box']); !!}
@@ -215,7 +215,7 @@
     @endif
 
     @if(config('constants.enable_recaptcha') && !empty($is_register))
-        <div class="col-md-6">
+        <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 <div id="recaptcha-container"></div>
                 @if ($errors->has('g-recaptcha-response'))
