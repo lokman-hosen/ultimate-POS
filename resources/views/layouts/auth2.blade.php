@@ -148,9 +148,9 @@
                         </a>
                     </div>
 
-                    @if (Route::has('pricing') && config('app.env') != 'demo' && $request->segment(1) != 'pricing')
-                        <a href="{{ action([\Modules\Superadmin\Http\Controllers\PricingController::class, 'index']) }}">@lang('superadmin::lang.pricing')</a>
-                    @endif
+{{--                    @if (Route::has('pricing') && config('app.env') != 'demo' && $request->segment(1) != 'pricing')--}}
+{{--                        <a href="{{ action([\Modules\Superadmin\Http\Controllers\PricingController::class, 'index']) }}">@lang('superadmin::lang.pricing')</a>--}}
+{{--                    @endif--}}
                 @endif
             @endif
 
