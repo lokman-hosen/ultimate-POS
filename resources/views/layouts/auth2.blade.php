@@ -93,7 +93,7 @@
                     @foreach ([
         'Real-time inventory sync',
         'Multi-outlet & multi-currency',
-        'Built-in HR & payroll',
+//        'Built-in HR & payroll',
         'Works online or offline',
     ] as $feature)
                         <li class="pos-receipt-row">
