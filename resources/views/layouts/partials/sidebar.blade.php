@@ -8,10 +8,13 @@
 	</a> --}}
 
     <a href="{{route('home')}}"
-        class="tw-flex tw-items-center tw-justify-center tw-w-full tw-border-r tw-h-15 theme-logo-bg tw-shrink-0 tw-border-primary-500/30">
-        <p class="tw-text-lg tw-font-medium tw-text-white side-bar-heading tw-text-center">
-            {{ Session::get('business.name') }} <span class="tw-inline-block tw-w-3 tw-h-3 tw-bg-green-400 tw-rounded-full" title="Online"></span>
-        </p>
+       class="tw-flex tw-items-center tw-justify-center tw-w-full tw-border-r tw-h-15 theme-logo-bg tw-shrink-0 tw-border-primary-500/30 tw-gap-2.5">
+        <span class="admin-sidebar-logo-badge">
+            <img src="{{ asset('img/logo-small.png') }}" alt="{{ Session::get('business.name') }}" class="admin-sidebar-logo-mark">
+        </span>
+{{--        <p class="tw-text-lg tw-font-medium tw-text-white side-bar-heading tw-text-center">--}}
+{{--            {{ Session::get('business.name') }} <span class="tw-inline-block tw-w-3 tw-h-3 tw-bg-green-400 tw-rounded-full" title="Online"></span>--}}
+{{--        </p>--}}
     </a>
 
     <!-- Sidebar Search -->
@@ -23,10 +26,10 @@
                 <path d="M21 21l-6 -6"/>
             </svg>
             <input type="text" id="sidebar-search" placeholder="Search menu..."
-                class="tw-grow tw-min-w-0 tw-bg-transparent tw-outline-none tw-border-none tw-text-sm tw-font-normal tw-text-gray-600 placeholder:tw-text-gray-400"
-                autocomplete="off" />
+                   class="tw-grow tw-min-w-0 tw-bg-transparent tw-outline-none tw-border-none tw-text-sm tw-font-normal tw-text-gray-600 placeholder:tw-text-gray-400"
+                   autocomplete="off" />
             <button id="sidebar-search-clear" type="button" aria-label="Clear search"
-                class="tw-hidden tw-shrink-0 tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors tw-duration-200">
+                    class="tw-hidden tw-shrink-0 tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors tw-duration-200">
                 <svg class="tw-size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M18 6l-12 12"/>
@@ -47,4 +50,3 @@
     <!-- /.sidebar-menu -->
     <!-- /.sidebar -->
 </aside>
-
