@@ -188,6 +188,8 @@ return [
     'manage_products' => 'Gestiona tus productos',
     'all_products' => 'Todos los productos',
     'login' => 'Iniciar sesión',
+    'login_to_your' => 'Inicia sesión en tu cuenta',
+    'welcome_back' => 'Bienvenido de nuevo',
     'register' => 'Registro',
     'username' => 'Nombre de usuario',
     'password' => 'Contraseña',
