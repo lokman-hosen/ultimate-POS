@@ -3,158 +3,173 @@
 
 @section('content')
 
-    <!--Quick Access Menus Start-->
-    <div class="launch-container" id="quick-access-menus">
-        <p class="launch-eyebrow">Quick access</p>
-        <h1 class="launch-heading">What would you like to do?</h1>
-        <p class="launch-subheading">Jump straight into a module — tap a tile to get started.</p>
+    @if(session('preferred_section') == 'quick-access')
+        <div class="launch-container" id="quick-access-menus">
+            <div class="row">
+                <div class="col-md-12 col-lg-6">
+                    <p class="launch-eyebrow">Quick access</p>
+                    <h1 class="launch-heading">What would you like to do?</h1>
+                    <p class="launch-subheading">Jump straight into a module — tap a tile to get started.</p>
+                </div>
 
-        <div class="launch-grid">
+                <div class="col-md-12 col-lg-6 text-right">
+                    <a href="{{route('dashboard.preference-section')}}" class="btn btn-info mb-10">
+                        <i id="toggle-icon" class="fas fa-exchange-alt"></i>
+                        <span id="toggle-text">
+                            Switch to "{{ session('preferred_section', 'dashboard') === 'dashboard' ? 'Quick Access Menu' : 'Dashboard' }}"
+                        </span>
+                    </a>
+                </div>
 
-            <a href="/pos/create" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 4h18v12H3z"/>
-                    <path d="M8 20h8"/>
-                    <path d="M12 16v4"/>
-                </svg>
-            </span>
-                <p class="launch-title">POS</p>
-                <p class="launch-desc">Take orders and get paid</p>
-            </a>
+            </div>
 
-            <a href="/products" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 8l-9-5-9 5 9 5 9-5z"/>
-                    <path d="M3 8v8l9 5 9-5V8"/>
-                    <path d="M12 13v8"/>
-                </svg>
-            </span>
-                <p class="launch-title">Products</p>
-                <p class="launch-desc">Catalog, pricing & stock</p>
-            </a>
 
-            <a href="/sells" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 6h15l-1.5 9h-12z"/>
-                    <path d="M6 6l-1-3H2"/>
-                    <circle cx="9" cy="20" r="1"/>
-                    <circle cx="18" cy="20" r="1"/>
-                </svg>
-            </span>
-                <p class="launch-title">Sales</p>
-                <p class="launch-desc">All orders & invoices</p>
-            </a>
+            <div class="launch-grid">
+                <a href="{{route('pos.index')}}" class="launch-card">
+                <span class="launch-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 4h18v12H3z"/>
+                        <path d="M8 20h8"/>
+                        <path d="M12 16v4"/>
+                    </svg>
+                </span>
+                    <p class="launch-title">POS</p>
+                    <p class="launch-desc">Take orders and get paid</p>
+                </a>
 
-            <a href="/purchases" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 7h11v8H3z"/>
-                    <path d="M14 10h4l3 3v2h-7"/>
-                    <circle cx="7" cy="18" r="1.6"/>
-                    <circle cx="17.5" cy="18" r="1.6"/>
-                </svg>
-            </span>
-                <p class="launch-title">Purchases</p>
-                <p class="launch-desc">Orders from suppliers</p>
-            </a>
+                <a href="{{route('products.index')}}" class="launch-card">
+                <span class="launch-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 8l-9-5-9 5 9 5 9-5z"/>
+                        <path d="M3 8v8l9 5 9-5V8"/>
+                        <path d="M12 13v8"/>
+                    </svg>
+                </span>
+                    <p class="launch-title">Products</p>
+                    <p class="launch-desc">Catalog, pricing & stock</p>
+                </a>
 
-            <a href="/contacts/customer" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="9" cy="7" r="3.2"/>
-                    <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>
-                    <path d="M16 4.2a3.2 3.2 0 0 1 0 6"/>
-                    <path d="M21 20v-1a4.5 4.5 0 0 0-3-4.25"/>
-                </svg>
-            </span>
-                <p class="launch-title">Customers</p>
-                <p class="launch-desc">Directory & balances</p>
-            </a>
+                <a href="{{route('sells.index')}}" class="launch-card">
+                    <span class="launch-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 6h15l-1.5 9h-12z"/>
+                            <path d="M6 6l-1-3H2"/>
+                            <circle cx="9" cy="20" r="1"/>
+                            <circle cx="18" cy="20" r="1"/>
+                        </svg>
+                    </span>
+                    <p class="launch-title">Sales</p>
+                    <p class="launch-desc">All orders & invoices</p>
+                </a>
 
-            <a href="/contacts/supplier" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 21V9l8-5 8 5v12"/>
-                    <path d="M9 21v-6h6v6"/>
-                    <path d="M9 12h.01M15 12h.01M12 9h.01"/>
-                </svg>
-            </span>
-                <p class="launch-title">Suppliers</p>
-                <p class="launch-desc">Vendor directory</p>
-            </a>
+                <a href="{{route('purchases.index')}}" class="launch-card">
+                    <span class="launch-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7h11v8H3z"/>
+                            <path d="M14 10h4l3 3v2h-7"/>
+                            <circle cx="7" cy="18" r="1.6"/>
+                            <circle cx="17.5" cy="18" r="1.6"/>
+                        </svg>
+                    </span>
+                    <p class="launch-title">Purchases</p>
+                    <p class="launch-desc">Orders from suppliers</p>
+                </a>
 
-            <a href="/stock-transfers" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 8h11l-3-3"/>
-                    <path d="M20 16H9l3 3"/>
-                </svg>
-            </span>
-                <p class="launch-title">Stock Transfer</p>
-                <p class="launch-desc">Move stock between locations</p>
-            </a>
+                <a href="{{route('contacts.index', ['type' => 'customer'])}}" class="launch-card">
+                    <span class="launch-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="7" r="3.2"/>
+                            <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>
+                            <path d="M16 4.2a3.2 3.2 0 0 1 0 6"/>
+                            <path d="M21 20v-1a4.5 4.5 0 0 0-3-4.25"/>
+                        </svg>
+                    </span>
+                    <p class="launch-title">Customers</p>
+                    <p class="launch-desc">Directory & balances</p>
+                </a>
 
-            <a href="/expenses" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 4h16v16H4z"/>
-                    <path d="M8 9h8M8 13h5"/>
-                </svg>
-            </span>
-                <p class="launch-title">Expenses</p>
-                <p class="launch-desc">Track & categorize spend</p>
-            </a>
+                <a href="{{route('contacts.index', ['type' => 'supplier'])}}" class="launch-card">
+                    <span class="launch-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 21V9l8-5 8 5v12"/>
+                            <path d="M9 21v-6h6v6"/>
+                            <path d="M9 12h.01M15 12h.01M12 9h.01"/>
+                        </svg>
+                    </span>
+                    <p class="launch-title">Suppliers</p>
+                    <p class="launch-desc">Vendor directory</p>
+                </a>
 
-            <a href="/reports/profit_loss_report" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 20V10M11 20V4M18 20v-7"/>
-                </svg>
-            </span>
-                <p class="launch-title">Reports</p>
-                <p class="launch-desc">Business performance</p>
-            </a>
+                <a href="{{route('stock-transfers.index')}}" class="launch-card">
+                    <span class="launch-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 8h11l-3-3"/>
+                            <path d="M20 16H9l3 3"/>
+                        </svg>
+                    </span>
+                    <p class="launch-title">Stock Transfer</p>
+                    <p class="launch-desc">Move stock between locations</p>
+                </a>
 
-            <a href="/users" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="9" cy="7" r="3.2"/>
-                    <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>
-                    <path d="M17 11l1.6 1.6L21.5 9.5"/>
-                </svg>
-            </span>
-                <p class="launch-title">Users</p>
-                <p class="launch-desc">Staff & permissions</p>
-            </a>
+                <a href="{{route('expenses.index')}}" class="launch-card">
+                    <span class="launch-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16v16H4z"/>
+                            <path d="M8 9h8M8 13h5"/>
+                        </svg>
+                    </span>
+                    <p class="launch-title">Expenses</p>
+                    <p class="launch-desc">Track & categorize spend</p>
+                </a>
 
-            <a href="/hrm" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 7h16v12H4z"/>
-                    <path d="M9 7V5a3 3 0 0 1 6 0v2"/>
-                </svg>
-            </span>
-                <p class="launch-title">HRM & Payroll</p>
-                <p class="launch-desc">Attendance & salaries</p>
-            </a>
+{{--                <a href="/reports/profit_loss_report" class="launch-card">--}}
+{{--                    <span class="launch-icon">--}}
+{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
+{{--                            <path d="M4 20V10M11 20V4M18 20v-7"/>--}}
+{{--                        </svg>--}}
+{{--                    </span>--}}
+{{--                    <p class="launch-title">Reports</p>--}}
+{{--                    <p class="launch-desc">Business performance</p>--}}
+{{--                </a>--}}
 
-            <a href="/business-settings" class="launch-card">
-            <span class="launch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
-            </span>
-                <p class="launch-title">Settings</p>
-                <p class="launch-desc">Business configuration</p>
-            </a>
+{{--                <a href="/users" class="launch-card">--}}
+{{--                    <span class="launch-icon">--}}
+{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
+{{--                            <circle cx="9" cy="7" r="3.2"/>--}}
+{{--                            <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>--}}
+{{--                            <path d="M17 11l1.6 1.6L21.5 9.5"/>--}}
+{{--                        </svg>--}}
+{{--                    </span>--}}
+{{--                    <p class="launch-title">Users</p>--}}
+{{--                    <p class="launch-desc">Staff & permissions</p>--}}
+{{--                </a>--}}
 
+{{--                <a href="/hrm" class="launch-card">--}}
+{{--                    <span class="launch-icon">--}}
+{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
+{{--                            <path d="M4 7h16v12H4z"/>--}}
+{{--                            <path d="M9 7V5a3 3 0 0 1 6 0v2"/>--}}
+{{--                        </svg>--}}
+{{--                    </span>--}}
+{{--                    <p class="launch-title">HRM & Payroll</p>--}}
+{{--                    <p class="launch-desc">Attendance & salaries</p>--}}
+{{--                </a>--}}
+
+{{--                <a href="/business-settings" class="launch-card">--}}
+{{--                    <span class="launch-icon">--}}
+{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
+{{--                            <circle cx="12" cy="12" r="3"/>--}}
+{{--                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>--}}
+{{--                        </svg>--}}
+{{--                    </span>--}}
+{{--                    <p class="launch-title">Settings</p>--}}
+{{--                    <p class="launch-desc">Business configuration</p>--}}
+{{--                </a>--}}
+
+            </div>
         </div>
-    </div>
-    <!--Quick Access Menus End-->
+        <!--Quick Access Menus End-->
+    @else
 
     <!--Dashboard Start-->
     <div id="dashboard">
@@ -170,7 +185,7 @@
 
                     @if (auth()->user()->can('dashboard.data'))
                         @if ($is_admin)
-                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 ">
+                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/2 ">
                                 @if (count($all_locations) > 1)
                                     {!! Form::select('dashboard_location', $all_locations, null, [
                                         'class' => 'form-control select2',
@@ -180,7 +195,13 @@
                                 @endif
                             </div>
 
-                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/4 tw-text-right">
+                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/2 tw-text-right">
+                                <a href="{{route('dashboard.preference-section')}}" class="btn btn-info mb-10">
+                                    <i id="toggle-icon" class="fas fa-exchange-alt"></i>
+                                    <span id="toggle-text">
+                                        Switch to "{{ session('preferred_section', 'dashboard') === 'dashboard' ? 'Quick Menu' : 'Dashboard' }}"
+                                    </span>
+                                </a>
                                 @if ($is_admin)
                                     <button type="button" id="dashboard_date_filter"
                                             class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
@@ -1161,6 +1182,7 @@
         @endif
     </div>
     <!--Dashboard End-->
+    @endif
 
 @endsection
 

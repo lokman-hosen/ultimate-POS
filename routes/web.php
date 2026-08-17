@@ -112,6 +112,14 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/sign-in-as-user/{id}', [ManageUserController::class, 'signInAsUser'])->name('sign-in-as-user');
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/dashboard-preference-section', function (){
+        $value = session('preferred_section') ?? 'dashboard';
+        session(['preferred_section' => $value == 'dashboard' ? 'quick-access' : 'dashboard']);
+        return to_route('home');
+    })->name('dashboard.preference-section');
+
+
     Route::get('/home/get-totals', [HomeController::class, 'getTotals']);
     Route::get('/home/product-stock-alert', [HomeController::class, 'getProductStockAlert']);
     Route::get('/home/purchase-payment-dues', [HomeController::class, 'getPurchasePaymentDues']);
