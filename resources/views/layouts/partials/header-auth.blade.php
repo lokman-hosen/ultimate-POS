@@ -8,8 +8,7 @@
         <div class="tw-absolute tw-top-2 md:tw-top-5 tw-left-4 md:tw-left-8 tw-flex tw-items-center tw-gap-4"
             style="text-align: left">
             <a href="{{ url('/') }}">
-                <div
-                    class="lg:tw-w-16 md:tw-h-16 tw-w-12 tw-h-12 tw-flex tw-items-center tw-justify-center tw-mx-auto tw-overflow-hidden tw-p-0.5 tw-mb-4">
+                <div class="width-50">
                     <img src="{{ asset('img/logo-small.png') }}" alt="lock" class="tw-object-fill opacity-50" />
                 </div>
             </a>

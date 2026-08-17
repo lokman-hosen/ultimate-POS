@@ -17,7 +17,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--paper-50);
+    /*background: var(--paper-50);*/
+    background: linear-gradient(150deg, #28D174 0%, #2A9FD6 55%, #1D70F4 100%);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--ink-800);
     box-sizing: border-box;
@@ -904,3 +905,4 @@
     background: linear-gradient(90deg, var(--teal-500), var(--teal-600));
     transition: opacity .15s ease;
 }
+

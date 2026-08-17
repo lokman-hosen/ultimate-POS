@@ -14,8 +14,16 @@
     <title>@yield('title') - {{ config('app.name', 'POS') }}</title>
 
     @include('layouts.partials.css')
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 
     @include('layouts.partials.extracss_auth')
+
+    <style>
+        body {
+            /*background: radial-gradient(120% 140% at 15% 0%, var(--brand-teal-700) 0%, var(--brand-ink-900) 45%, var(--brand-navy-2) 100%);*/
+            background: linear-gradient(150deg, #28D174 0%, #2A9FD6 55%, #1D70F4 100%);
+        }
+    </style>
 
 </head>
 

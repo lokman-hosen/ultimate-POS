@@ -2,34 +2,36 @@
 @section('title', __('superadmin::lang.pricing'))
 
 @section('content')
-    <div class="">
+    <link rel="stylesheet" href="{{ asset('css/pricing.css') }}">
+    <div class="container">
         @include('superadmin::layouts.partials.currency')
-        <div class="pricing">
+        <div class="pos-price-page">
             <div class="tw-mt-20">
                 <div class="tw-flex tw-flex-col tw-items-center">
 
                     <div class="tw-flex tw-flex-col tw-gap-2 tw-text-center">
-                        <h2 class="tw-font-bold tw-text-3xl tw-text-white">@lang('superadmin::lang.pricing')</h2>
+                        <p class="pos-price-eyebrow">Pricing</p>
+                        <h2 class="pos-price-heading tw-font-bold tw-text-3xl tw-text-white">@lang('superadmin::lang.pricing')</h2>
                         <h3 class="tw-text-sm tw-font-medium tw-text-white">
                             Choose your prefered {{ config('app.name', 'ultimatePOS') }} pricing plan
                         </h3>
                     </div>
                     <!-- Montly/annual-->
-                    <div class="tw-flex tw-gap-2 mt-5 md:tw-mt-5">
-                        <span class="tw-text-white">Montly</span>
+                    <div class="pos-price-toggle-row mt-5 md:tw-mt-5">
+                        <span>Montly</span>
                         <input type="checkbox" id="durationCheck" class="tw-dw-toggle tw-dw-toggle-secondary duration_check"
-                            style="margin: 0px" />
+                               style="margin: 0px" />
 
-                        <span class="tw-flex tw-flex-col tw-text-white"> Annual </span>
+                        <span> Annual </span>
                     </div>
                 </div>
 
                 {{-- <div class="box-body tw-mt-6"> --}}
                 <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-5 md:tw-gap-0 tw-mt-5 md:tw-mt-7 tw-mb-10 tw-h-auto"
-                    id="packages">
-                    {{-- @include('superadmin::subscription.partials.packages', [
-                            'action_type' => 'register',
-                        ]) --}}
+                     id="packages">
+                    @include('superadmin::subscription.partials.packages', [
+                           'action_type' => 'register',
+                       ])
                 </div>
                 {{-- </div> --}}
             </div>
@@ -71,8 +73,3 @@
         })
     </script>
 @endsection
-<style>
-    .pricing{
-        background: linear-gradient(to right, #6366f1, #3b82f6);
-    }
-</style>

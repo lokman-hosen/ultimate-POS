@@ -50,7 +50,7 @@
 
 <div class="pos-auth-page">
 
-    @if(!route_is('business.getRegister') and !route_is('password.request'))
+    @if(!route_is('business.getRegister') and !route_is('password.request') and !route_is('pricing'))
         {{-- ================= LEFT: brand / caption panel ================= --}}
         <aside class="pos-brand">
             <div class="pos-brand__dotgrid"></div>
@@ -148,9 +148,9 @@
                         </a>
                     </div>
 
-{{--                    @if (Route::has('pricing') && config('app.env') != 'demo' && $request->segment(1) != 'pricing')--}}
-{{--                        <a href="{{ action([\Modules\Superadmin\Http\Controllers\PricingController::class, 'index']) }}">@lang('superadmin::lang.pricing')</a>--}}
-{{--                    @endif--}}
+                    @if (Route::has('pricing') && config('app.env') != 'demo' && $request->segment(1) != 'pricing')
+                        <a href="{{ action([\Modules\Superadmin\Http\Controllers\PricingController::class, 'index']) }}">@lang('superadmin::lang.pricing')</a>
+                    @endif
                 @endif
             @endif
 
