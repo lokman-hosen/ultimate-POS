@@ -200,6 +200,7 @@
                                         {{ __('lang_v1.switch_to') }} "{{ session('preferred_section', 'dashboard') === 'dashboard' ? __('lang_v1.quick_menu') : __('lang_v1.dashboard') }}"
                                     </span>
                                 </a>
+
                                 @if ($is_admin)
                                     <button type="button" id="dashboard_date_filter"
                                             class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
