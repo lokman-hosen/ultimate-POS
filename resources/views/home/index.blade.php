@@ -2,8 +2,6 @@
 @section('title', __('home.home'))
 
 @section('content')
-    Language: {{$locale = App::currentLocale()}}
-
     @if(session('preferred_section') == 'quick-access')
         <div class="launch-container" id="quick-access-menus">
             <div class="row">
@@ -17,11 +15,10 @@
                     <a href="{{route('dashboard.preference-section')}}" class="btn btn-info mb-10">
                         <i id="toggle-icon" class="fas fa-exchange-alt"></i>
                         <span id="toggle-text">
-                            Switch to "{{ session('preferred_section', 'dashboard') === 'dashboard' ? 'Quick Access Menu' : 'Dashboard' }}"
+                            {{ __('lang_v1.switch_to') }} "{{ session('preferred_section', 'dashboard') === 'dashboard' ? __('lang_v1.quick_menu') : __('lang_v1.dashboard') }}"
                         </span>
                     </a>
                 </div>
-
             </div>
 
 
@@ -200,7 +197,7 @@
                                 <a href="{{route('dashboard.preference-section')}}" class="btn btn-info mb-10">
                                     <i id="toggle-icon" class="fas fa-exchange-alt"></i>
                                     <span id="toggle-text">
-                                        Switch to "{{ session('preferred_section', 'dashboard') === 'dashboard' ? 'Quick Menu' : 'Dashboard' }}"
+                                        {{ __('lang_v1.switch_to') }} "{{ session('preferred_section', 'dashboard') === 'dashboard' ? __('lang_v1.quick_menu') : __('lang_v1.dashboard') }}"
                                     </span>
                                 </a>
                                 @if ($is_admin)
