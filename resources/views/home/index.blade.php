@@ -2,6 +2,7 @@
 @section('title', __('home.home'))
 
 @section('content')
+    Language: {{$locale = App::currentLocale()}}
 
     @if(session('preferred_section') == 'quick-access')
         <div class="launch-container" id="quick-access-menus">
