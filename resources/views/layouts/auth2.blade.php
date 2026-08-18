@@ -53,7 +53,7 @@
     @if(!route_is('business.getRegister') and !route_is('password.request') and !route_is('pricing'))
         {{-- ================= LEFT: brand / caption panel ================= --}}
         <aside class="pos-brand">
-            <div class="pos-brand__dotgrid"></div>
+{{--            <div class="pos-brand__dotgrid"></div>--}}
 
             <div class="pos-brand__body">
                 <div class="pos-brand__top">
@@ -61,7 +61,7 @@
                         <span class="pos-brand__logo-badge">
                             <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
                         </span>
-{{--                        <span class="pos-brand__logo-text">{{ config('app.name', 'Ultimate POS') }}</span>--}}
+                        <span class="pos-badge-pill">POS</span>
                     </a>
 
                     {{-- Utility links that used to live next to the logo --}}
@@ -80,32 +80,55 @@
                     </div>
                 </div>
 
-                <div class="pos-barcode"></div>
+                <div class="pos-eyebrow-row">
+                    <p class="pos-eyebrow">Access terminal</p>
+                    <span class="pos-progress-line"></span>
+                </div>
 
-                <p class="pos-eyebrow">Access terminal</p>
-                <h1 class="pos-headline">Every sale, every shop,<br> one screen.</h1>
+                <h1 class="pos-headline">Every sale, every shop,<br><span class="pos-headline__accent">one screen.</span></h1>
                 <p class="pos-subtext">
                     From pharmacy counters to restaurant floors — manage inventory, staff and sales
                     without leaving this screen.
                 </p>
 
-                <ul class="pos-receipt-list">
-                    @foreach ([
-        'Real-time inventory sync',
-        'Multi-outlet & multi-currency',
-//        'Built-in HR & payroll',
-        'Works online or offline',
-    ] as $feature)
-                        <li class="pos-receipt-row">
-                            <span class="label">{{ $feature }}</span>
-                            <span class="leader"></span>
-                            <svg viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd"
-                                      d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z"
-                                      clip-rule="evenodd" />
+                <ul class="pos-feature-grid">
+                    <li class="pos-feature-chip">
+                        <span class="pos-feature-icon pos-feature-icon--a">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 8l-9-5-9 5 9 5 9-5z"/>
+                                <path d="M3 8v8l9 5 9-5V8"/>
+                                <path d="M12 13v8"/>
                             </svg>
-                        </li>
-                    @endforeach
+                        </span>
+                        <span class="pos-feature-label">Real-time inventory sync</span>
+                        <span class="pos-feature-check">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+                        </span>
+                    </li>
+                    <li class="pos-feature-chip">
+                        <span class="pos-feature-icon pos-feature-icon--b">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="8" cy="12" r="5"/>
+                                <path d="M14 8a5 5 0 0 1 0 8"/>
+                                <path d="M11 10.2c.5-.6 1.2-1 2-1"/>
+                            </svg>
+                        </span>
+                        <span class="pos-feature-label">Multi-outlet & multi-currency</span>
+                        <span class="pos-feature-check">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+                        </span>
+                    </li>
+                    <li class="pos-feature-chip">
+                        <span class="pos-feature-icon pos-feature-icon--c">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 18a4.5 4.5 0 0 1-.5-8.98A5.5 5.5 0 0 1 17.3 8.3 4 4 0 0 1 17 18H7z"/>
+                            </svg>
+                        </span>
+                        <span class="pos-feature-label">Works online or offline</span>
+                        <span class="pos-feature-check">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
+                        </span>
+                    </li>
                 </ul>
             </div>
 
@@ -114,9 +137,22 @@
                     <span class="pos-brand__total-label">Businesses served</span>
                     <span class="pos-brand__total-value">10,000+</span>
                 </div>
+                <div class="pos-trust-row">
+                    <span class="pos-trust-stars" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z"/></svg>
+                        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z"/></svg>
+                    </span>
+                    <span class="pos-trust-text">Trusted by businesses worldwide</span>
+                </div>
             </div>
 
-            <div class="pos-tear"></div>
+{{--            <div class="pos-tear"></div>--}}
+            <span class="pos-seam-toggle" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            </span>
         </aside>
     @endif
 

@@ -30,95 +30,99 @@
 
     <div class="pos-login-wrap">
 
-        @if (config('app.env') == 'demo')
-            <div class="pos-card">
-                <p class="pos-card__eyebrow">Demo shops</p>
-                <h3 class="pos-card__title">Click a business to log in instantly</h3>
-                <p class="pos-card__desc">
-                    Demos are for example purposes only — this application can be used for many other similar
-                    businesses.
-                </p>
+{{--        @if (config('app.env') == 'demo')--}}
+{{--            <div class="pos-card">--}}
+{{--                <p class="pos-card__eyebrow">Demo shops</p>--}}
+{{--                <h3 class="pos-card__title">Click a business to log in instantly</h3>--}}
+{{--                <p class="pos-card__desc">--}}
+{{--                    Demos are for example purposes only — this application can be used for many other similar--}}
+{{--                    businesses.--}}
+{{--                </p>--}}
 
-                <div class="pos-chip-row">
-                    <a href="?demo_type=all_in_one" data-toggle="tooltip"
-                       title="Showcases all feature available in the application." data-admin="{{ $demo_types['all_in_one'] }}"
-                       class="demo-login pos-chip">
-                        <i class="fas fa-star"></i> All In One
-                    </a>
-                    <a href="?demo_type=pharmacy" data-toggle="tooltip"
-                       title="Shops with products having expiry dates." data-admin="{{ $demo_types['pharmacy'] }}"
-                       class="demo-login pos-chip">
-                        <i class="fas fa-medkit"></i> Pharmacy
-                    </a>
-                    <a href="?demo_type=services" data-toggle="tooltip"
-                       title="For all service providers like Web Development, Restaurants, Repairing, Plumber, Salons, Beauty Parlors etc."
-                       data-admin="{{ $demo_types['services'] }}"
-                       class="demo-login pos-chip">
-                        <i class="fas fa-wrench"></i> Multi-Service Center
-                    </a>
-                    <a href="?demo_type=electronics" data-toggle="tooltip"
-                       title="Products having IMEI or Serial number code." data-admin="{{ $demo_types['electronics'] }}"
-                       class="demo-login pos-chip">
-                        <i class="fas fa-laptop"></i> Electronics & Mobile Shop
-                    </a>
-                    <a href="?demo_type=super_market" data-toggle="tooltip"
-                       title="Super market & Similar kind of shops." data-admin="{{ $demo_types['super_market'] }}"
-                       class="demo-login pos-chip">
-                        <i class="fas fa-shopping-cart"></i> Super Market
-                    </a>
-                    <a href="?demo_type=restaurant" data-toggle="tooltip"
-                       title="Restaurants, Salons and other similar kind of shops." data-admin="{{ $demo_types['restaurant'] }}"
-                       class="demo-login pos-chip">
-                        <i class="fas fa-utensils"></i> Restaurant
-                    </a>
-                </div>
+{{--                <div class="pos-chip-row">--}}
+{{--                    <a href="?demo_type=all_in_one" data-toggle="tooltip"--}}
+{{--                       title="Showcases all feature available in the application." data-admin="{{ $demo_types['all_in_one'] }}"--}}
+{{--                       class="demo-login pos-chip">--}}
+{{--                        <i class="fas fa-star"></i> All In One--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=pharmacy" data-toggle="tooltip"--}}
+{{--                       title="Shops with products having expiry dates." data-admin="{{ $demo_types['pharmacy'] }}"--}}
+{{--                       class="demo-login pos-chip">--}}
+{{--                        <i class="fas fa-medkit"></i> Pharmacy--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=services" data-toggle="tooltip"--}}
+{{--                       title="For all service providers like Web Development, Restaurants, Repairing, Plumber, Salons, Beauty Parlors etc."--}}
+{{--                       data-admin="{{ $demo_types['services'] }}"--}}
+{{--                       class="demo-login pos-chip">--}}
+{{--                        <i class="fas fa-wrench"></i> Multi-Service Center--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=electronics" data-toggle="tooltip"--}}
+{{--                       title="Products having IMEI or Serial number code." data-admin="{{ $demo_types['electronics'] }}"--}}
+{{--                       class="demo-login pos-chip">--}}
+{{--                        <i class="fas fa-laptop"></i> Electronics & Mobile Shop--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=super_market" data-toggle="tooltip"--}}
+{{--                       title="Super market & Similar kind of shops." data-admin="{{ $demo_types['super_market'] }}"--}}
+{{--                       class="demo-login pos-chip">--}}
+{{--                        <i class="fas fa-shopping-cart"></i> Super Market--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=restaurant" data-toggle="tooltip"--}}
+{{--                       title="Restaurants, Salons and other similar kind of shops." data-admin="{{ $demo_types['restaurant'] }}"--}}
+{{--                       class="demo-login pos-chip">--}}
+{{--                        <i class="fas fa-utensils"></i> Restaurant--}}
+{{--                    </a>--}}
+{{--                </div>--}}
 
-                <p class="pos-card__eyebrow" style="color:var(--amber-400);margin-top:1.25rem;">Premium optional
-                    modules</p>
+{{--                <p class="pos-card__eyebrow" style="color:var(--amber-400);margin-top:1.25rem;">Premium optional--}}
+{{--                    modules</p>--}}
 
-                <div class="pos-chip-row">
-                    <a href="?demo_type=superadmin" data-toggle="tooltip" title="SaaS & Superadmin extension Demo"
-                       data-admin="{{ $demo_types['superadmin'] }}"
-                       class="demo-login pos-chip pos-chip--premium">
-                        <i class="fas fa-university"></i> SaaS / Superadmin
-                    </a>
-                    <a href="?demo_type=woocommerce" data-toggle="tooltip"
-                       title="WooCommerce demo user - Open web shop in minutes!!" data-admin="{{ $demo_types['woocommerce'] }}"
-                       class="demo-login pos-chip pos-chip--premium">
-                        <i class="fab fa-wordpress"></i> WooCommerce
-                    </a>
-                    <a href="?demo_type=essentials" data-toggle="tooltip"
-                       title="Essentials & HRM (human resource management) Module Demo"
-                       data-admin="{{ $demo_types['essentials'] }}"
-                       class="demo-login pos-chip pos-chip--premium">
-                        <i class="fas fa-check-circle"></i> Essentials & HRM
-                    </a>
-                    <a href="?demo_type=manufacturing" data-toggle="tooltip" title="Manufacturing module demo"
-                       data-admin="{{ $demo_types['manufacturing'] }}"
-                       class="demo-login pos-chip pos-chip--premium">
-                        <i class="fas fa-industry"></i> Manufacturing Module
-                    </a>
-                    <a href="?demo_type=superadmin" data-toggle="tooltip" title="Project module demo"
-                       data-admin="{{ $demo_types['superadmin'] }}"
-                       class="demo-login pos-chip pos-chip--premium">
-                        <i class="fas fa-project-diagram"></i> Project Module
-                    </a>
-                    <a href="?demo_type=services" data-toggle="tooltip" title="Advance repair module demo"
-                       data-admin="{{ $demo_types['services'] }}"
-                       class="demo-login pos-chip pos-chip--premium">
-                        <i class="fas fa-wrench"></i> Advance Repair Module
-                    </a>
-                    <a href="{{ url('docs') }}" target="_blank" data-toggle="tooltip"
-                       title="Connector Module / API Documentation"
-                       class="pos-chip pos-chip--docs">
-                        <i class="fas fa-network-wired"></i> API Docs
-                    </a>
-                </div>
+{{--                <div class="pos-chip-row">--}}
+{{--                    <a href="?demo_type=superadmin" data-toggle="tooltip" title="SaaS & Superadmin extension Demo"--}}
+{{--                       data-admin="{{ $demo_types['superadmin'] }}"--}}
+{{--                       class="demo-login pos-chip pos-chip--premium">--}}
+{{--                        <i class="fas fa-university"></i> SaaS / Superadmin--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=woocommerce" data-toggle="tooltip"--}}
+{{--                       title="WooCommerce demo user - Open web shop in minutes!!" data-admin="{{ $demo_types['woocommerce'] }}"--}}
+{{--                       class="demo-login pos-chip pos-chip--premium">--}}
+{{--                        <i class="fab fa-wordpress"></i> WooCommerce--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=essentials" data-toggle="tooltip"--}}
+{{--                       title="Essentials & HRM (human resource management) Module Demo"--}}
+{{--                       data-admin="{{ $demo_types['essentials'] }}"--}}
+{{--                       class="demo-login pos-chip pos-chip--premium">--}}
+{{--                        <i class="fas fa-check-circle"></i> Essentials & HRM--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=manufacturing" data-toggle="tooltip" title="Manufacturing module demo"--}}
+{{--                       data-admin="{{ $demo_types['manufacturing'] }}"--}}
+{{--                       class="demo-login pos-chip pos-chip--premium">--}}
+{{--                        <i class="fas fa-industry"></i> Manufacturing Module--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=superadmin" data-toggle="tooltip" title="Project module demo"--}}
+{{--                       data-admin="{{ $demo_types['superadmin'] }}"--}}
+{{--                       class="demo-login pos-chip pos-chip--premium">--}}
+{{--                        <i class="fas fa-project-diagram"></i> Project Module--}}
+{{--                    </a>--}}
+{{--                    <a href="?demo_type=services" data-toggle="tooltip" title="Advance repair module demo"--}}
+{{--                       data-admin="{{ $demo_types['services'] }}"--}}
+{{--                       class="demo-login pos-chip pos-chip--premium">--}}
+{{--                        <i class="fas fa-wrench"></i> Advance Repair Module--}}
+{{--                    </a>--}}
+{{--                    <a href="{{ url('docs') }}" target="_blank" data-toggle="tooltip"--}}
+{{--                       title="Connector Module / API Documentation"--}}
+{{--                       class="pos-chip pos-chip--docs">--}}
+{{--                        <i class="fas fa-network-wired"></i> API Docs--}}
+{{--                    </a>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        @endif--}}
+
+        <div class="pos-card pos-card--login">
+            <div class="pos-login-badge">
+                <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
             </div>
-        @endif
 
-        <div class="pos-card">
-            <div style="margin-bottom:1.5rem;">
+            <div class="pos-login-head">
                 <h1 class="pos-h1">@lang('lang_v1.welcome_back')</h1>
                 <p class="pos-p">@lang('lang_v1.login_to_your') {{ config('app.name', 'ultimatePOS') }}</p>
             </div>
@@ -129,7 +133,13 @@
                 <div class="form-group has-feedback pos-form-group {{ $errors->has('username') ? ' has-error' : '' }}">
                     <label class="pos-label">@lang('lang_v1.username')</label>
                     <div class="pos-input-wrap">
-                        <input class="pos-input" name="username" required autofocus
+                        <span class="pos-input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="3.5"/>
+                                <path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>
+                            </svg>
+                        </span>
+                        <input class="pos-input pos-input--icon" name="username" required autofocus
                                placeholder="@lang('lang_v1.username')" data-last-active-input="" id="username"
                                type="text" value="{{ $username }}" />
                     </div>
@@ -147,7 +157,13 @@
                         @endif
                     </div>
                     <div class="pos-input-wrap">
-                        <input class="pos-input" id="password" type="password" name="password"
+                        <span class="pos-input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="5" y="10.5" width="14" height="9" rx="2"/>
+                                <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>
+                            </svg>
+                        </span>
+                        <input class="pos-input pos-input--icon" id="password" type="password" name="password"
                                value="{{ $password }}" required placeholder="@lang('lang_v1.password')" />
                         <button type="button" id="show_hide_icon" class="pos-eye-btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
@@ -179,8 +195,26 @@
                     </div>
                 @endif
 
-                <button type="submit" class="pos-submit">@lang('lang_v1.login')</button>
+                <button type="submit" class="pos-submit">
+                    @lang('lang_v1.login')
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                </button>
             </form>
+
+            {{-- Decorative only — not wired to any auth backend. Remove or hook up before shipping. --}}
+{{--            <div class="pos-divider"><span>OR</span></div>--}}
+{{--            <button type="button" class="pos-btn-outline">--}}
+{{--                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
+{{--                    <path d="M12 3a5 5 0 0 0-5 5v2a7 7 0 0 0 1.2 3.9"/>--}}
+{{--                    <path d="M12 3a5 5 0 0 1 5 5v2c0 1 -.1 2 -.4 2.9"/>--}}
+{{--                    <path d="M8 10v-2a4 4 0 0 1 8 0v2"/>--}}
+{{--                    <path d="M12 10v3.5"/>--}}
+{{--                    <path d="M9 21c1-1.5 1.4-3 1.4-5.5"/>--}}
+{{--                    <path d="M15 21c1-1.8 1.4-3.6 1.4-6.5"/>--}}
+{{--                    <path d="M5 13.5c0 3 .8 5.6 2.3 7.5"/>--}}
+{{--                </svg>--}}
+{{--                Login with Fingerprint--}}
+{{--            </button>--}}
 
             @if (!($request->segment(1) == 'business' && $request->segment(2) == 'register'))
                 @if (config('constants.allow_registration'))

@@ -119,51 +119,6 @@
                     <p class="launch-title">Expenses</p>
                     <p class="launch-desc">Track & categorize spend</p>
                 </a>
-
-{{--                <a href="/reports/profit_loss_report" class="launch-card">--}}
-{{--                    <span class="launch-icon">--}}
-{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
-{{--                            <path d="M4 20V10M11 20V4M18 20v-7"/>--}}
-{{--                        </svg>--}}
-{{--                    </span>--}}
-{{--                    <p class="launch-title">Reports</p>--}}
-{{--                    <p class="launch-desc">Business performance</p>--}}
-{{--                </a>--}}
-
-{{--                <a href="/users" class="launch-card">--}}
-{{--                    <span class="launch-icon">--}}
-{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
-{{--                            <circle cx="9" cy="7" r="3.2"/>--}}
-{{--                            <path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"/>--}}
-{{--                            <path d="M17 11l1.6 1.6L21.5 9.5"/>--}}
-{{--                        </svg>--}}
-{{--                    </span>--}}
-{{--                    <p class="launch-title">Users</p>--}}
-{{--                    <p class="launch-desc">Staff & permissions</p>--}}
-{{--                </a>--}}
-
-{{--                <a href="/hrm" class="launch-card">--}}
-{{--                    <span class="launch-icon">--}}
-{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
-{{--                            <path d="M4 7h16v12H4z"/>--}}
-{{--                            <path d="M9 7V5a3 3 0 0 1 6 0v2"/>--}}
-{{--                        </svg>--}}
-{{--                    </span>--}}
-{{--                    <p class="launch-title">HRM & Payroll</p>--}}
-{{--                    <p class="launch-desc">Attendance & salaries</p>--}}
-{{--                </a>--}}
-
-{{--                <a href="/business-settings" class="launch-card">--}}
-{{--                    <span class="launch-icon">--}}
-{{--                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">--}}
-{{--                            <circle cx="12" cy="12" r="3"/>--}}
-{{--                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>--}}
-{{--                        </svg>--}}
-{{--                    </span>--}}
-{{--                    <p class="launch-title">Settings</p>--}}
-{{--                    <p class="launch-desc">Business configuration</p>--}}
-{{--                </a>--}}
-
             </div>
         </div>
         <!--Quick Access Menus End-->
