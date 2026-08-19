@@ -185,13 +185,15 @@
                     </div>
 
                     @if (Route::has('pricing') && config('app.env') != 'demo' && $request->segment(1) != 'pricing')
-                        <a href="{{ action([\Modules\Superadmin\Http\Controllers\PricingController::class, 'index']) }}">@lang('superadmin::lang.pricing')</a>
+                        <a class="language-button" href="{{ action([\Modules\Superadmin\Http\Controllers\PricingController::class, 'index']) }}">@lang('superadmin::lang.pricing')</a>
                     @endif
                 @endif
             @endif
 
             @if ($request->segment(1) != 'login')
-                <a href="{{ action([\App\Http\Controllers\Auth\LoginController::class, 'login']) }}@if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif">{{ __('business.sign_in') }}</a>
+                <a class="language-button" href="{{ action([\App\Http\Controllers\Auth\LoginController::class, 'login']) }}
+                    @if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif">{{ __('business.sign_in') }}
+                </a>
             @endif
 
             @include('layouts.partials.language_btn')

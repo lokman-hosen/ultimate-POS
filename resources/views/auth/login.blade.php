@@ -119,7 +119,8 @@
 
         <div class="pos-card pos-card--login">
             <div class="pos-login-badge">
-                <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
+                <img src="{{ asset('img/logo-icon-arrow.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
+{{--                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>--}}
             </div>
 
             <div class="pos-login-head">
