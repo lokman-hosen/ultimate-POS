@@ -134,7 +134,7 @@ return [
     'same_as_legal_representative' => 'Same as legal representative',
     'whatsapp_number' => 'WhatsApp Number',
     'whatsapp_placeholder' => 'Enter WhatsApp number',
-    'fiscal_address' => 'Fiscal Address',
+    'physical_address' => 'Physical Address',
     'address_line1_placeholder' => 'Street, number, floor',
     'address_line_2' => 'Address line 2 (optional)',
     'address_line2_placeholder' => 'Additional address info',
