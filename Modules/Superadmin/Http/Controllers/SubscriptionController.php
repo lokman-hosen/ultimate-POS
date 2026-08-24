@@ -72,13 +72,14 @@ class SubscriptionController extends BaseController
         $packages = Package::active()->orderby('sort_order')->get();
 
         //Get all module permissions and convert them into name => label
-        $permissions = $this->moduleUtil->getModuleData('superadmin_package');
+        //$permissions = $this->moduleUtil->getModuleData('superadmin_package');
+        //dd($permissions);
         $permission_formatted = [];
-        foreach ($permissions as $permission) {
-            foreach ($permission as $details) {
-                $permission_formatted[$details['name']] = $details['label'];
-            }
-        }
+//        foreach ($permissions as $permission) {
+//            foreach ($permission as $details) {
+//                $permission_formatted[$details['name']] = $details['label'];
+//            }
+//        }
 
         $intervals = ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')];
 
