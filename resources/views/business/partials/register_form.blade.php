@@ -142,8 +142,6 @@
 
     <fieldset>
         <legend>@lang('business.business_settings'):</legend>
-
-
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('tax_label_1', __('business.nif_cif') . ':') !!}
@@ -159,14 +157,14 @@
             </div>
         </div>
         <div class="clearfix"></div>
-        <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="col-md-12 col-lg-6 col-xl-4 company-only">
             <div class="form-group">
                 {!! Form::label('tax_label_2',__('business.representative_dni_nie') . ':') !!}
                 {!! Form::select('tax_label_1', ['DNI' => 'DNI', 'NIE'=>'NIE'], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
             </div>
         </div>
 
-        <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="col-md-12 col-lg-6 col-xl-4 company-only company-only">
             <div class="form-group">
                 {!! Form::label('tax_number_2',__('business.representative_dni_nie') . ':') !!}
                 {!! Form::text('tax_number_2', null, ['class' => 'form-control', 'placeholder' => __('business.representative_dni_nie')]); !!}
@@ -194,24 +192,24 @@
             </div>
         </div>
 
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div class="form-group">
-                {!! Form::label('package_id', 'Package') !!}
-                {!! Form::select('business_sector', [
-                    '1'   => 'Monthly',
-                    '2'   =>  '6 month (Discount 10%)',
-                    '3'   =>  '12 month (Discount 200%)',
-                ], 2, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;', 'placeholder' => 'Select Package']) !!}
-            </div>
-        </div>
+{{--        <div class="col-md-12 col-lg-6 col-xl-4">--}}
+{{--            <div class="form-group">--}}
+{{--                {!! Form::label('package_id', 'Package') !!}--}}
+{{--                {!! Form::select('business_sector', [--}}
+{{--                    '1'   => 'Monthly',--}}
+{{--                    '2'   =>  '6 month (Discount 10%)',--}}
+{{--                    '3'   =>  '12 month (Discount 200%)',--}}
+{{--                ], 2, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;', 'placeholder' => 'Select Package']) !!}--}}
+{{--            </div>--}}
+{{--        </div>--}}
 
-        <div class="clearfix"></div>
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('fy_start_month', __('business.fy_start_month') . ':*') !!} @show_tooltip(__('tooltip.fy_start_month'))
                 {!! Form::select('fy_start_month', $months, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
             </div>
         </div>
+        <div class="clearfix"></div>
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('accounting_method', __('business.accounting_method') . ':*') !!}
@@ -227,7 +225,7 @@
 @endif
 
 <fieldset>
-    <legend>@lang('business.owner_info')</legend>
+    <legend>@lang('business.yaigo_account')</legend>
 {{--    <div class="col-md-12 col-lg-6 col-xl-4">--}}
 {{--        <div class="form-group">--}}
 {{--            {!! Form::label('surname', __('business.prefix') . ':') !!}--}}
@@ -271,6 +269,7 @@
             {!! Form::text('email', null, ['class' => 'form-control','placeholder' => __('business.email'), 'required']); !!}
         </div>
     </div>
+
     <div class="clearfix"></div>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">

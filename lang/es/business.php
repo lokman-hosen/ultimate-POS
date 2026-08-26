@@ -41,6 +41,7 @@
      'tax_details' => 'Detalles de impuestos',
      'owner' => 'Propietario',
      'owner_info' => 'Información del propietario',
+     'yaigo_account' => 'Cuenta de Yaigo',
      'sale' => 'Venta',
      'sell_price_tax' => 'Precio de venta',
      'product' => 'Producto',

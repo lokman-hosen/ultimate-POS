@@ -119,13 +119,13 @@
 
         <div class="pos-card pos-card--login">
             <div class="pos-login-badge">
-                <img src="{{ asset('img/logo-icon-arrow.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
+                <img src="{{ asset('img/logo-icon-arrow.png') }}" alt="{{ config('app.name', 'YaogoPos') }}">
 {{--                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>--}}
             </div>
 
             <div class="pos-login-head">
                 <h1 class="pos-h1">@lang('lang_v1.welcome_back')</h1>
-                <p class="pos-p">@lang('lang_v1.login_to_your') {{ config('app.name', 'ultimatePOS') }}</p>
+                <p class="pos-p">@lang('lang_v1.login_to_your') {{ config('app.name', 'YaogoPos') }}</p>
             </div>
 
             <form method="POST" action="{{ route('login') }}" id="login-form">

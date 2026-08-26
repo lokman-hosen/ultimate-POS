@@ -50,6 +50,7 @@ return [
     'tax_details' => 'Tax details',
     'owner' => 'Owner',
     'owner_info' => 'Owner information',
+    'yaigo_account' => 'Yaigo Account',
     'sale' => 'Sale',
     'sell_price_tax' => 'Selling price',
     'product' => 'Product',

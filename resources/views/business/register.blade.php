@@ -7,7 +7,7 @@
             <div class="tw-flex tw-flex-col tw-gap-4 tw-dw-rounded-box tw-dw-p-6 tw-dw-max-w-md">
                 <div class="tw-flex tw-flex-col rounded-2xl tw-dw-p-6 tw-dw-max-w-md text-center">
                     <h1 class="tw-text-lg md:tw-text-xl tw-font-semibold tw-text-[#1e1e1e]">
-                        {{ config('app.name', 'ultimatePOS') }}
+                        {{ config('app.name', 'YaogoPos') }}
                     </h1>
                     <h2 class="tw-text-sm tw-font-medium tw-text-gray-500">
                         @lang('business.register_and_get_started_in_minutes')

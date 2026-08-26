@@ -13,7 +13,7 @@
                         <p class="pos-price-eyebrow">Pricing</p>
                         <h2 class="pos-price-heading tw-font-bold tw-text-3xl tw-text-white">@lang('superadmin::lang.pricing')</h2>
                         <h3 class="tw-text-sm tw-font-medium tw-text-white">
-                            Choose your prefered {{ config('app.name', 'ultimatePOS') }} pricing plan
+                            Choose your prefered {{ config('app.name', 'YaogoPos') }} pricing plan
                         </h3>
                     </div>
                     <!-- Montly/annual-->
