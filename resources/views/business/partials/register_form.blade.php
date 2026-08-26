@@ -1,9 +1,30 @@
 @if(empty($is_admin))
     <h3>@lang('business.business')</h3>
 @endif
-{!! Form::hidden('language', request()->lang); !!}
 
-<fieldset>
+{!! Form::hidden('language', request()->lang); !!}
+<div>
+    <legend>@lang('business.select_business_type')</legend>
+    <div class="form-group">
+        <div class="radio">
+            <label>
+                {!! Form::radio('business_type', 'self_employed', old('business_type') == 'self_employed', ['class' => 'business-type-radio', 'required']) !!}
+                @lang('business.self_employed') (Autónomo)
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                {!! Form::radio('business_type', 'company', old('business_type') == 'company', ['class' => 'business-type-radio', 'required']) !!}
+                @lang('business.company_legal_entity') (Empresa)
+            </label>
+        </div>
+        @if ($errors->has('business_type'))
+            <span class="text-danger">{{ $errors->first('business_type') }}</span>
+        @endif
+    </div>
+</div>
+
+<fieldset class="reg-form">
     <legend>@lang('business.business_details'):</legend>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
@@ -140,7 +161,7 @@
 @if(empty($is_admin))
     <h3>@lang('business.business_settings')</h3>
 
-    <fieldset>
+    <fieldset class="reg-form">
         <legend>@lang('business.business_settings'):</legend>
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
@@ -311,8 +332,37 @@
     @endif
     <div class="clearfix"></div>
 </fieldset>
+
 @if(config('constants.enable_recaptcha') && !empty($is_register))
     <script>
         window.RECAPTCHA_SITE_KEY = "{{ config('constants.google_recaptcha_key') }}";
     </script>
 @endif
+
+@section('javascript')
+    @parent
+<script>
+    $(document).ready(function() {
+        $('.reg-form').hide();
+        // ---------- Business type toggle ----------
+        function toggleBusinessType() {
+            var type = $('input[name="business_type"]:checked').val();
+            if (type === 'company') {
+                $('.company-only').show();
+                // Make company-only fields required
+                $('#legal_name').prop('required', true);
+                $('#rep_dni').prop('required', true);
+            } else {
+                $('.company-only').hide();
+                $('#legal_name').prop('required', false);
+                $('#rep_dni').prop('required', false);
+            }
+        }
+
+        // Run on load and on change
+        toggleBusinessType();
+        $('input[name="business_type"]').change(toggleBusinessType);
+    })
+</script>
+
+@endsection
