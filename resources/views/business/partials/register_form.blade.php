@@ -3,28 +3,41 @@
 @endif
 
 {!! Form::hidden('language', request()->lang); !!}
-<div>
-    <legend>@lang('business.select_business_type')</legend>
-    <div class="form-group">
-        <div class="radio">
-            <label>
-                {!! Form::radio('business_type', 'self_employed', old('business_type') == 'self_employed', ['class' => 'business-type-radio', 'required']) !!}
-                @lang('business.self_employed') (Autónomo)
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                {!! Form::radio('business_type', 'company', old('business_type') == 'company', ['class' => 'business-type-radio', 'required']) !!}
-                @lang('business.company_legal_entity') (Empresa)
-            </label>
-        </div>
-        @if ($errors->has('business_type'))
-            <span class="text-danger">{{ $errors->first('business_type') }}</span>
+
+<fieldset>
+    <div>
+        ALl ERRORS:
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
     </div>
-</div>
+    <div>
+        <legend>@lang('business.select_business_type')</legend>
+        <div class="form-group">
+            <div class="radio">
+                <label>
+                    {!! Form::radio('business_type', 'self_employed', old('business_type') == 'self_employed', ['class' => 'business-type-radio', 'required']) !!}
+                    @lang('business.self_employed') (Autónomo)
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    {!! Form::radio('business_type', 'company', old('business_type') == 'company', ['class' => 'business-type-radio', 'required']) !!}
+                    @lang('business.company_legal_entity') (Empresa)
+                </label>
+            </div>
+            @if ($errors->has('business_type'))
+                <span class="text-danger">{{ $errors->first('business_type') }}</span>
+            @endif
+        </div>
+    </div>
 
-<fieldset class="reg-form">
     <legend>@lang('business.business_details'):</legend>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
@@ -36,8 +49,8 @@
     <!--individual -->
     <div class="col-md-12 col-lg-6 col-xl-4 company-only">
         <div class="form-group">
-            {!! Form::label('legal_name', __('business.legal_company_name') . ':*' ) !!}
-            {!! Form::text('legal_name', null, ['class' => 'form-control','placeholder' => __('business.legal_company_name'), 'required']); !!}
+            {!! Form::label('legal_name', __('business.legal_company_name')) !!}
+            {!! Form::text('legal_name', null, ['class' => 'form-control','placeholder' => __('business.legal_company_name')]); !!}
         </div>
     </div>
 
@@ -84,13 +97,13 @@
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('mobile', __('lang_v1.business_phone') . ':') !!}
-            {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_phone')]); !!}
+            {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_phone'), 'required']); !!}
         </div>
     </div>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
-            {!! Form::label('email', __('business.business_email') . ':*') !!}
-            {!! Form::email('email', null, ['class' => 'form-control', 'placeholder' => __('business.email'), 'required']) !!}
+            {!! Form::label('contact_email', __('business.business_email') . ':*') !!}
+            {!! Form::email('contact_email', null, ['class' => 'form-control', 'placeholder' => __('business.email'), 'required']) !!}
         </div>
     </div>
 
@@ -161,8 +174,9 @@
 @if(empty($is_admin))
     <h3>@lang('business.business_settings')</h3>
 
-    <fieldset class="reg-form">
+    <fieldset>
         <legend>@lang('business.business_settings'):</legend>
+        <!-- when business_type is self_employed:start -->
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('tax_label_1', __('business.nif_cif') . ':') !!}
@@ -177,11 +191,14 @@
                 <small class="help-block">@lang('business.nif_cif_help')</small>
             </div>
         </div>
+        <!-- when business_type is self_employed:end -->
+
         <div class="clearfix"></div>
+        <!-- when business_type is company:start -->
         <div class="col-md-12 col-lg-6 col-xl-4 company-only">
             <div class="form-group">
                 {!! Form::label('tax_label_2',__('business.representative_dni_nie') . ':') !!}
-                {!! Form::select('tax_label_1', ['DNI' => 'DNI', 'NIE'=>'NIE'], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
+                {!! Form::select('tax_label_2', ['DNI' => 'DNI', 'NIE'=>'NIE'], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
             </div>
         </div>
 
@@ -191,6 +208,7 @@
                 {!! Form::text('tax_number_2', null, ['class' => 'form-control', 'placeholder' => __('business.representative_dni_nie')]); !!}
             </div>
         </div>
+        <!-- when business_type is company:end -->
         <div class="clearfix"></div>
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
@@ -307,18 +325,28 @@
     </div>
     <div class="clearfix"></div>
     @if(!empty($system_settings['superadmin_enable_register_tc']) && !empty($is_register))
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div>
+        <div class="col-md-12">
+            @if(!empty($system_settings['superadmin_enable_register_tc']) && !empty($is_register))
+                <div class="form-group">
+                    <label>
+                        {!! Form::checkbox('accept_tc', 0, false, ['required', 'class' => 'input-check-box']) !!}
+                        <a class="terms_condition cursor-pointer" data-toggle="modal" data-target="#tc_modal">
+                            @lang('lang_v1.accept_terms_and_conditions') <i></i>
+                        </a>
+                    </label>
+                </div>
+                @include('business.partials.terms_conditions')
+            @endif
+            <div class="form-group">
                 <label>
-                    {!! Form::checkbox('accept_tc', 0, false, ['required', 'class' => 'input-check-box']); !!}
-                    <a class="terms_condition cursor-pointer" data-toggle="modal" data-target="#tc_modal">
-                        @lang('lang_v1.accept_terms_and_conditions') <i></i>
-                    </a>
+                    {!! Form::checkbox('accept_marketing', 1, false) !!}
+                    @lang('business.accept_marketing_communications')
                 </label>
             </div>
-            @include('business.partials.terms_conditions')
         </div>
+        <div class="clearfix"></div>
     @endif
+
 
     @if(config('constants.enable_recaptcha') && !empty($is_register))
         <div class="col-md-12 col-lg-6 col-xl-4">
@@ -343,25 +371,47 @@
     @parent
 <script>
     $(document).ready(function() {
-        $('.reg-form').hide();
+        //$('.reg-form').hide();
         // ---------- Business type toggle ----------
         function toggleBusinessType() {
             var type = $('input[name="business_type"]:checked').val();
+
             if (type === 'company') {
                 $('.company-only').show();
                 // Make company-only fields required
                 $('#legal_name').prop('required', true);
-                $('#rep_dni').prop('required', true);
+                $('#tax_label_2').prop('required', true);
+                $('#tax_number_2').prop('required', true);
             } else {
                 $('.company-only').hide();
                 $('#legal_name').prop('required', false);
-                $('#rep_dni').prop('required', false);
+                $('#tax_label_1').prop('required', true);
+                $('#tax_number_1').prop('required', true);
+
+                $('#tax_label_2').prop('required', false);
+                $('#tax_number_2').prop('required', false);
             }
         }
 
         // Run on load and on change
         toggleBusinessType();
         $('input[name="business_type"]').change(toggleBusinessType);
+
+        // ---------- Same as representative auto-fill ----------
+        $('#same_as_rep').change(function() {
+            if ($(this).is(':checked')) {
+                var contactPersonFullName = $('input[name="contact_person"]').val();
+                var contactEmail = $('input[name="contact_email"]').val();
+                const nameParts = contactPersonFullName.trim().split(/\s+/);
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(" ");
+
+                $('#first_name').val(firstName)
+                $('#last_name').val(lastName)
+                $('#email').val(contactEmail)
+
+            }
+        });
     })
 </script>
 

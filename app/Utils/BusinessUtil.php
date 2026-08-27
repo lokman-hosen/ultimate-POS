@@ -329,6 +329,8 @@ class BusinessUtil extends Util
             'alternate_number' => ! empty($location_details['alternate_number']) ? $location_details['alternate_number'] : '',
             'website' => ! empty($location_details['website']) ? $location_details['website'] : '',
             'email' => '',
+            'contact_email' => $location_details['contact_email'] ?? null,
+            'whatsapp_number' => $location_details['whatsapp_number'] ?? null,
             'location_id' => $location_id,
             'default_payment_accounts' => json_encode($location_payment_types),
         ]);
