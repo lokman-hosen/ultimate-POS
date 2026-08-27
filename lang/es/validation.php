@@ -153,4 +153,40 @@ return [
         'message' => 'mensaje',
     ],
 
+
+    'custom' => [
+        'tax_number_1' => [
+            'required' => 'El campo NIF/CIF es obligatorio.',
+            'regex' => 'El formato del NIF/CIF no es válido. Use DNI (8 dígitos + 1 letra), NIE (X/Y/Z + 7 dígitos + 1 letra) o CIF (1 letra + 7 dígitos + 1 carácter de control).',
+        ],
+        'tax_number_2' => [
+            'required' => 'El campo DNI/NIE del representante legal es obligatorio.',
+            'regex' => 'El formato del DNI/NIE del representante legal no es válido. Use DNI (8 dígitos + 1 letra) o NIE (X/Y/Z + 7 dígitos + 1 letra).',
+        ],
+        'legal_name' => [
+            'required' => 'El campo nombre legal de la empresa es obligatorio.',
+        ],
+        'business_type' => [
+            'required' => 'El campo tipo de negocio es obligatorio.',
+            'in' => 'El tipo de negocio seleccionado no es válido.',
+        ],
+        'business_sector' => [
+            'required' => 'El campo sector del negocio es obligatorio.',
+        ],
+        'contact_person' => [
+            'required' => 'El campo nombre de la persona de contacto es obligatorio.',
+        ],
+        'mobile' => [
+            'required' => 'El campo teléfono del negocio es obligatorio.',
+        ],
+        'contact_email' => [
+            'required' => 'El campo correo electrónico del negocio es obligatorio.',
+            'email' => 'El correo electrónico del negocio debe ser una dirección de correo válida.',
+        ],
+        'confirm_password' => [
+            'required' => 'El campo confirmar contraseña es obligatorio.',
+            'same' => 'La confirmación de la contraseña no coincide.',
+        ],
+    ]
+
 ];

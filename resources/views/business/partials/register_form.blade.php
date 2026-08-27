@@ -2,21 +2,19 @@
     <h3>@lang('business.business')</h3>
 @endif
 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 {!! Form::hidden('language', request()->lang); !!}
 
 <fieldset>
-    <div>
-        ALl ERRORS:
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-    </div>
     <div>
         <legend>@lang('business.select_business_type')</legend>
         <div class="form-group">
@@ -206,6 +204,7 @@
             <div class="form-group">
                 {!! Form::label('tax_number_2',__('business.representative_dni_nie') . ':') !!}
                 {!! Form::text('tax_number_2', null, ['class' => 'form-control', 'placeholder' => __('business.representative_dni_nie')]); !!}
+                <small class="help-block">12345678Z,X1234567L,12345678Z</small>
             </div>
         </div>
         <!-- when business_type is company:end -->
@@ -377,6 +376,7 @@
             var type = $('input[name="business_type"]:checked').val();
 
             if (type === 'company') {
+
                 $('.company-only').show();
                 // Make company-only fields required
                 $('#legal_name').prop('required', true);
@@ -416,3 +416,4 @@
 </script>
 
 @endsection
+
