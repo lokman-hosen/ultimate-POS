@@ -898,7 +898,7 @@
     color: var(--ink-800);
     border-bottom: 1px solid var(--border);
     padding-bottom: .6rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0;
     width: 100%;
 }
 
@@ -1011,7 +1011,7 @@
 /* -- jQuery Steps wizard: step nav + Previous/Next/Finish actions -- */
 
 .pos-auth-page .wizard > .steps {
-    margin-bottom: 2rem;
+    margin-bottom: 0rem;
 }
 
 .pos-auth-page .wizard > .steps ul {
