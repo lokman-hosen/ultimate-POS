@@ -15,21 +15,23 @@
 {!! Form::hidden('language', request()->lang); !!}
 
 <fieldset>
-    <div>
-        <legend>@lang('business.select_business_type')</legend>
+    <div class="col-md-12">
         <div class="form-group">
-            <div class="radio">
-                <label>
-                    {!! Form::radio('business_type', 'self_employed', old('business_type') == 'self_employed', ['class' => 'business-type-radio', 'required']) !!}
-                    @lang('business.self_employed') (Autónomo)
-                </label>
-            </div>
-            <div class="radio">
-                <label>
-                    {!! Form::radio('business_type', 'company', old('business_type') == 'company', ['class' => 'business-type-radio', 'required']) !!}
-                    @lang('business.company_legal_entity') (Empresa)
-                </label>
-            </div>
+            {!! Form::label('business_type', __('business.business_type') . ':*') !!}
+            {!! Form::select('business_type',
+                [
+                    '' => __('business.select_business_type'),
+                    'self_employed' => __('business.self_employed') . ' (Autónomo)',
+                    'company' => __('business.company_legal_entity') . ' (Empresa)'
+                ],
+                old('business_type'),
+                [
+                    'class' => 'form-control select2_register business-type-select',
+                    'required',
+                    'style' => 'width:100%;',
+                    'id' => 'business_type'
+                ]
+            ) !!}
             @if ($errors->has('business_type'))
                 <span class="text-danger">{{ $errors->first('business_type') }}</span>
             @endif
@@ -45,7 +47,7 @@
     </div>
 
     <!--individual -->
-    <div class="col-md-12 col-lg-6 col-xl-4 company-only">
+    <div class="col-md-12 col-lg-6 col-xl-4 company-only" style="display: none;">
         <div class="form-group">
             {!! Form::label('legal_name', __('business.legal_company_name')) !!}
             {!! Form::text('legal_name', null, ['class' => 'form-control','placeholder' => __('business.legal_company_name')]); !!}
@@ -105,12 +107,6 @@
         </div>
     </div>
 
-{{--    <div class="col-md-12 col-lg-6 col-xl-4">--}}
-{{--        <div class="form-group">--}}
-{{--            {!! Form::label('alternate_number', __('business.alternate_number') . ':') !!}--}}
-{{--            {!! Form::text('alternate_number', null, ['class' => 'form-control','placeholder' => __('business.alternate_number')]); !!}--}}
-{{--        </div>--}}
-{{--    </div>--}}
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('whatsapp_number', __('business.whatsapp_number') . ':') !!}
@@ -160,6 +156,7 @@
             {!! Form::text('address_line_2', null, ['class' => 'form-control', 'placeholder' => __('business.address_line2_placeholder')]) !!}
         </div>
     </div>
+    <div class="clearfix"></div>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('time_zone', __('business.time_zone') . ':*') !!}
@@ -193,14 +190,14 @@
 
         <div class="clearfix"></div>
         <!-- when business_type is company:start -->
-        <div class="col-md-12 col-lg-6 col-xl-4 company-only">
+        <div class="col-md-12 col-lg-6 col-xl-4 company-only" style="display: none;">
             <div class="form-group">
                 {!! Form::label('tax_label_2',__('business.representative_dni_nie') . ':') !!}
                 {!! Form::select('tax_label_2', ['DNI' => 'DNI', 'NIE'=>'NIE'], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
             </div>
         </div>
 
-        <div class="col-md-12 col-lg-6 col-xl-4 company-only company-only">
+        <div class="col-md-12 col-lg-6 col-xl-4 company-only" style="display: none;">
             <div class="form-group">
                 {!! Form::label('tax_number_2',__('business.representative_dni_nie') . ':') !!}
                 {!! Form::text('tax_number_2', null, ['class' => 'form-control', 'placeholder' => __('business.representative_dni_nie')]); !!}
@@ -213,6 +210,7 @@
             <div class="form-group">
                 {!! Form::label('business_sector', 'Business Category') !!}
                 {!! Form::select('business_sector', [
+                    '' => __('business.select_sector'),
                     'restaurant'   => __('business.restaurant'),
                     'cafe'         => __('business.cafe'),
                     'fast_food'    => __('business.fast_food'),
@@ -226,20 +224,9 @@
                     'hotel'        => __('business.hotel'),
                     'pharmacy'     => __('business.pharmacy'),
                     'other'        => __('business.other'),
-                ], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;', 'placeholder' => __('business.select_sector')]) !!}
+                ], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']) !!}
             </div>
         </div>
-
-{{--        <div class="col-md-12 col-lg-6 col-xl-4">--}}
-{{--            <div class="form-group">--}}
-{{--                {!! Form::label('package_id', 'Package') !!}--}}
-{{--                {!! Form::select('business_sector', [--}}
-{{--                    '1'   => 'Monthly',--}}
-{{--                    '2'   =>  '6 month (Discount 10%)',--}}
-{{--                    '3'   =>  '12 month (Discount 200%)',--}}
-{{--                ], 2, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;', 'placeholder' => 'Select Package']) !!}--}}
-{{--            </div>--}}
-{{--        </div>--}}
 
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
@@ -264,18 +251,12 @@
 
 <fieldset>
     <legend>@lang('business.yaigo_account')</legend>
-{{--    <div class="col-md-12 col-lg-6 col-xl-4">--}}
-{{--        <div class="form-group">--}}
-{{--            {!! Form::label('surname', __('business.prefix') . ':') !!}--}}
-{{--            {!! Form::text('surname', null, ['class' => 'form-control','placeholder' => __('business.prefix_placeholder')]); !!}--}}
-{{--        </div>--}}
-{{--    </div>--}}
 
-    <div class="col-md-12 company-only">
+    <div class="col-md-12 company-only" style="display: none;">
         <div class="checkbox">
             <label>
                 {!! Form::checkbox('same_as_rep', 1, false, ['id' => 'same_as_rep']) !!}
-               Same as contact Person
+                Same as contact Person
             </label>
         </div>
     </div>
@@ -368,52 +349,69 @@
 
 @section('javascript')
     @parent
-<script>
-    $(document).ready(function() {
-        //$('.reg-form').hide();
-        // ---------- Business type toggle ----------
-        function toggleBusinessType() {
-            var type = $('input[name="business_type"]:checked').val();
+    <script>
+        $(document).ready(function() {
+            // ---------- Business type toggle ----------
+            function toggleBusinessType() {
+                var type = $('#business_type').val();
 
-            if (type === 'company') {
+                if (type === 'company') {
+                    $('.company-only').show();
+                    // Make company-only fields required
+                    $('#legal_name').prop('required', true);
+                    $('#tax_label_2').prop('required', true);
+                    $('#tax_number_2').prop('required', true);
 
-                $('.company-only').show();
-                // Make company-only fields required
-                $('#legal_name').prop('required', true);
-                $('#tax_label_2').prop('required', true);
-                $('#tax_number_2').prop('required', true);
-            } else {
-                $('.company-only').hide();
-                $('#legal_name').prop('required', false);
-                $('#tax_label_1').prop('required', true);
-                $('#tax_number_1').prop('required', true);
+                    // Update tax_label_1 to show CIF option
+                    $('#tax_label_1').val('CIF').trigger('change');
+                } else {
+                    $('.company-only').hide();
+                    $('#legal_name').prop('required', false);
+                    $('#tax_label_1').prop('required', true);
+                    $('#tax_number_1').prop('required', true);
+                    $('#tax_label_2').prop('required', false);
+                    $('#tax_number_2').prop('required', false);
 
-                $('#tax_label_2').prop('required', false);
-                $('#tax_number_2').prop('required', false);
+                    // Update tax_label_1 to show NIF option
+                    $('#tax_label_1').val('NIF').trigger('change');
+                }
             }
-        }
 
-        // Run on load and on change
-        toggleBusinessType();
-        $('input[name="business_type"]').change(toggleBusinessType);
+            // Run on load and on change
+            toggleBusinessType();
+            $('#business_type').change(toggleBusinessType);
 
-        // ---------- Same as representative auto-fill ----------
-        $('#same_as_rep').change(function() {
-            if ($(this).is(':checked')) {
-                var contactPersonFullName = $('input[name="contact_person"]').val();
-                var contactEmail = $('input[name="contact_email"]').val();
-                const nameParts = contactPersonFullName.trim().split(/\s+/);
-                const firstName = nameParts[0];
-                const lastName = nameParts.slice(1).join(" ");
+            // ---------- Same as representative auto-fill ----------
+            $('#same_as_rep').change(function() {
+                if ($(this).is(':checked')) {
+                    var contactPersonFullName = $('input[name="contact_person"]').val();
+                    var contactEmail = $('input[name="contact_email"]').val();
 
-                $('#first_name').val(firstName)
-                $('#last_name').val(lastName)
-                $('#email').val(contactEmail)
+                    if (contactPersonFullName) {
+                        const nameParts = contactPersonFullName.trim().split(/\s+/);
+                        const firstName = nameParts[0] || '';
+                        const lastName = nameParts.slice(1).join(" ") || '';
 
-            }
-        });
-    })
-</script>
+                        $('#first_name').val(firstName);
+                        $('#last_name').val(lastName);
+                    }
 
+                    if (contactEmail) {
+                        $('#email').val(contactEmail);
+                    }
+                }
+            });
+
+            // ---------- Date picker ----------
+            // $('.start-date-picker').datepicker({
+            //     format: 'dd-mm-yyyy',
+            //     autoclose: true,
+            //     todayHighlight: true,
+            //     endDate: '0d'
+            // });
+
+            // ---------- Select2 ----------
+           // $('.select2_register').select2();
+        })
+    </script>
 @endsection
-
