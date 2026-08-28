@@ -96,8 +96,8 @@
     </div>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
-            {!! Form::label('mobile', __('lang_v1.business_phone') . ':') !!}
-            {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_phone'), 'required']); !!}
+            {!! Form::label('mobile', __('lang_v1.business_telephone') . ':') !!}
+            {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_telephone'), 'required']); !!}
         </div>
     </div>
     <div class="col-md-12 col-lg-6 col-xl-4">
@@ -239,6 +239,29 @@
             <div class="form-group">
                 {!! Form::label('accounting_method', __('business.accounting_method') . ':*') !!}
                 {!! Form::select('accounting_method', $accounting_methods, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
+            </div>
+        </div>
+
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group">
+                {!! Form::label('referred_by', 'Referred By') !!}
+
+                {!! Form::select('referred_by', [
+                    '' => 'Select Referred By',
+                    'Lokman Hosen'   => 'Lokman Hosen',
+                    'Abdul Karim'    => 'Abdul Karim',
+                    'Rahim Uddin'    => 'Rahim Uddin',
+                    'Karim Ahmed'    => 'Karim Ahmed',
+                    'Sohel Rana'     => 'Sohel Rana',
+                    'Tanvir Hasan'   => 'Tanvir Hasan',
+                    'Rasel Mia'      => 'Rasel Mia',
+                    'Imran Hossain'  => 'Imran Hossain',
+                    'Sakib Khan'     => 'Sakib Khan',
+                    'Jahid Hasan'    => 'Jahid Hasan',
+                ], null, [
+                    'class' => 'form-control select2_register',
+                    'style' => 'width:100%;'
+                ]) !!}
             </div>
         </div>
     </fieldset>

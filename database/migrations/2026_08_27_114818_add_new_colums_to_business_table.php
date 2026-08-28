@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('business_sector')->after('legal_name')->nullable();
             $table->string('business_activity')->after('business_sector');
             $table->enum('business_type', ['self_employed', 'company'])->after('business_activity');
+            $table->string('referred_by')->after('business_type')->nullable()->comment('Who referred the business');
             $table->tinyInteger('accept_tc')->default(0);
             $table->tinyInteger('accept_marketing')->default(0);
         });
@@ -27,7 +28,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('business', function (Blueprint $table) {
-            $table->dropColumn(['legal_name', 'business_sector', 'business_activity', 'business_type', 'accept_tc', 'accept_marketing']);
+            $table->dropColumn(['legal_name', 'business_sector', 'business_activity', 'business_type', 'referred_by', 'accept_tc', 'accept_marketing']);
         });
     }
 };

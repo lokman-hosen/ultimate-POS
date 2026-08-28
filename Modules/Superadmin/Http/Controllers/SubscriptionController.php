@@ -411,10 +411,9 @@ class SubscriptionController extends BaseController
         //Send notification
         $email = System::getProperty('email');
         $business = Business::find($business_id);
-
-        if (! $this->moduleUtil->IsMailConfigured()) {
-            return null;
-        }
+//        if (! $this->moduleUtil->IsMailConfigured()) {
+//            return null;
+//        }
         $system_currency = System::getCurrency();
         $package->price = $system_currency->symbol.number_format($package->price, 2, $system_currency->decimal_separator, $system_currency->thousand_separator);
 
