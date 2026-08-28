@@ -260,7 +260,7 @@ class BusinessController extends Controller
 
             $user = User::create_user($owner_details);
 
-            $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity', 'accept_tc', 'accept_marketing', 'name', 'start_date', 'currency_id', 'time_zone',
+            $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity', 'referred_by', 'accept_tc', 'accept_marketing', 'name', 'start_date', 'currency_id', 'time_zone',
                 'fy_start_month', 'accounting_method', 'tax_label_1', 'tax_number_1',
                 'tax_label_2', 'tax_number_2']);
 
