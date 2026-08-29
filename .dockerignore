@@ -1,0 +1,39 @@
+# Version control & editor state
+.git
+.gitignore
+.gitattributes
+.idea
+.vscode
+.DS_Store
+**/.DS_Store
+
+# Secrets and host-local state — never bake these into an image.
+# .env is bind-mounted at runtime; storage/ holds the Passport keys, logs and
+# backups and lives in a named volume.
+.env
+.env.*
+!.env.example
+!.env.docker.example
+storage/
+public/uploads/
+public/hot
+public/storage
+
+# Rebuilt inside the image
+vendor/
+node_modules/
+
+# Dev-only / not needed at runtime
+tests/
+phpunit.xml
+.php_cs
+.prettierrc
+.shift
+.scribe
+readme.pdf
+backup-composer.json
+
+# Docker's own files (config is COPYed explicitly where it is needed)
+docker-compose.yml
+docker-compose.*.yml
+DOCKER.md
