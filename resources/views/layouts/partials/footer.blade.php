@@ -4,7 +4,7 @@
   <div class="tw-mb-4 tw-ms-8 -tw-mt-1 no-print">
     <p class="tw-text-xs tw-font-normal tw-text-gray-500">
 {{--      {{ config('app.name', 'YaogoPos') }} - <span class="tw-font-mono tw-font-medium"> V{{config('author.app_version')}}</span> | Copyright &copy; {{ date('Y') }} All rights reserved.--}}
-      {{ config('app.name', 'YaogoPos') }} | Copyright &copy; {{ date('Y') }} All rights reserved.
+      {{ config('app.name', 'Yaigo Pos') }} | Copyright &copy; {{ date('Y') }} All rights reserved.
     </p>
   </div>
 </div>
