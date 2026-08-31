@@ -101,6 +101,26 @@ if [ ! -f "$APP_HOME/.env" ]; then
     log "FATAL: $APP_HOME/.env is missing."
     log "       Copy .env.docker.example to .env on the host and edit it;"
     log "       compose mounts it into this container read-only."
+    log "       (If the host file did not exist when the stack first started,"
+    log "        Docker will have created a *directory* named .env instead —"
+    log "        delete it, create the file, and start again.)"
+    exit 1
+fi
+
+# This script runs as root, which ignores file permissions; php-fpm's workers
+# run as www-data and do not. If www-data cannot read .env, Laravel's
+# safeLoad() swallows the error without a word and every env() call falls back
+# to its hardcoded default — you get "Database: forge", "Host: 127.0.0.1" and a
+# connection refused, with nothing in any log to say why. Catch it here instead.
+if ! gosu www-data test -r "$APP_HOME/.env"; then
+    log "FATAL: .env is not readable by www-data (uid 33), which is the user"
+    log "       php-fpm runs as. Laravel would ignore it silently and fall back"
+    log "       to config defaults (Database: forge, Host: 127.0.0.1)."
+    log "       Current: $(ls -l "$APP_HOME/.env" 2>/dev/null)"
+    log "       Fix it on the host, in the directory holding docker-compose.yml:"
+    log "         chmod 644 .env"
+    log "       Host file modes carry into the container as-is, and the uid that"
+    log "       owns the file there is almost never uid 33."
     exit 1
 fi
 

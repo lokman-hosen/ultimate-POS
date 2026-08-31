@@ -44,8 +44,15 @@ git clone <your-repo> /opt/ultimate-pos && cd /opt/ultimate-pos
 **1. Configuration.** One `.env` serves both Laravel and compose:
 
 ```bash
-cp .env.docker.example .env && chmod 600 .env
+cp .env.docker.example .env && chmod 644 .env
 ```
+
+644, not 600. The file is bind-mounted into the container with its host mode
+intact, and php-fpm runs as `www-data` (uid 33) — which will not be the uid that
+owns it on the host. A 600 `.env` is unreadable to the app, and Laravel ignores
+an unreadable `.env` *silently*, falling back to config defaults. If the host
+has other untrusted users, keep the secrets private by tightening the directory
+instead (`chmod 750 .` ), not the file.
 
 Edit it. At minimum set `DB_DATABASE`, `DB_USERNAME` (not `root`),
 `DB_PASSWORD`, `DB_ROOT_PASSWORD`, `REDIS_PASSWORD`, and the `APP_URL` /
