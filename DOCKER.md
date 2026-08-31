@@ -213,6 +213,42 @@ docker compose exec app php artisan migrate --force
 
 Uploads, storage and the database are untouched by that — they live in volumes.
 
+## When the build fails downloading dependencies
+
+`composer install` inside a build can die with `file could not be downloaded
+(HTTP/2 400)`. It is not your VPS: `codeload.github.com`'s HTTP/2 edge servers
+intermittently reject a burst of parallel requests coming from a short-lived
+container. Three things in the Dockerfile blunt it:
+
+- **A persistent Composer cache.** `RUN --mount=type=cache,target=/composer-cache`
+  keeps downloaded archives on the build host between builds. It never lands in
+  an image layer, so it costs nothing in image size, and a repeat build fetches
+  almost nothing.
+- **Lower concurrency.** `COMPOSER_MAX_PARALLEL_HTTP=6`, down from Composer's
+  default of 12 — this is what actually stops provoking the 400.
+- **Three attempts.** A failed download is retried after 15s, and the retry
+  starts from the warm cache rather than from nothing.
+
+The cache mount needs BuildKit. `docker compose build` uses it by default on
+Docker 23+; if the build errors on the `--mount` flag, something has set
+`DOCKER_BUILDKIT=0` in the environment.
+
+**The bigger win: commit a `composer.lock`.** This project ships without one, so
+every build runs a full dependency *resolution* rather than a plain install —
+far more requests to GitHub and Packagist, and a build that can resolve to
+different versions than the one you tested. Generate it once and commit it:
+
+```bash
+composer update --no-install    # locally, then commit composer.lock
+```
+
+The Dockerfile already picks it up (`COPY composer.json composer.lock* ./`), and
+builds become both reproducible and much lighter on the network.
+
+If a build keeps failing on the same package rather than a random one, that is a
+different problem — check that the custom repository in `composer.json`
+(`github.com/lokman-hosen/nWidart-laravel-menus`) is reachable from the VPS.
+
 ## When you get a 502
 
 nginx is up but PHP is not answering. Two causes cover almost every case.

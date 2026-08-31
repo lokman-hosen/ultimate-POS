@@ -58,14 +58,35 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip \
     && rm -rf /var/lib/apt/lists/*
 
+# codeload.github.com's HTTP/2 edge servers intermittently answer a burst of
+# parallel requests from an ephemeral container with "HTTP/2 400". Composer
+# fetches 12 archives at once by default; halving that stops provoking it.
+ENV COMPOSER_CACHE_DIR=/composer-cache \
+    COMPOSER_MAX_PARALLEL_HTTP=6
+
 # Dependencies first, so editing app code does not re-resolve the whole tree.
 COPY composer.json composer.lock* ./
-RUN composer install \
-        --no-dev \
-        --no-scripts \
-        --no-autoloader \
-        --prefer-dist \
-        --no-interaction
+
+# The cache mount persists between builds and never enters an image layer, so
+# a retry — and every later build — reuses archives already on disk instead of
+# asking GitHub for them again. Combined with the retry loop, one flaky
+# download no longer costs the whole build.
+RUN --mount=type=cache,target=/composer-cache,sharing=locked \
+    set -e; \
+    for attempt in 1 2 3; do \
+        if composer install \
+                --no-dev \
+                --no-scripts \
+                --no-autoloader \
+                --prefer-dist \
+                --no-interaction; then \
+            exit 0; \
+        fi; \
+        echo ">>> composer install failed (attempt ${attempt}/3); retrying in 15s"; \
+        sleep 15; \
+    done; \
+    echo ">>> composer install failed three times, giving up"; \
+    exit 1
 
 # Then the source, then the production autoloader.
 COPY . ./
