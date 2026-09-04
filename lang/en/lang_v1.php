@@ -1675,4 +1675,15 @@ return [
     'dashboard' => 'Dashboard',
     'quick_menu' => 'Quick Menu',
     'switch_to' => 'Switch to',
+
+    'pos' => 'POS',
+    'terminal_access' => 'Access Terminal',
+    'every_sale_every_shop' => 'Every sale, every shop',
+    'one_screen' => 'one screen',
+    'home_caption' => 'From pharmacy counters to restaurant floors — manage inventory, staff and sales without leaving this screen.',
+    'inventory_sync' => 'Real-time inventory sync',
+    'multi_outlet' => 'Multi-outlet & multi-currency',
+    'works_online_offline' => 'Works online or offline',
+    'businesses_serve' => 'Businesses served',
+    'trusted_businesses_worldwide' => 'Trusted by businesses worldwide',
 ];
