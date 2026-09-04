@@ -59,7 +59,7 @@
                 <div class="pos-brand__top">
                     <a href="{{ url('/') }}" class="pos-brand__logo">
                         <span class="pos-brand__logo-badge">
-                            <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'YaogoPos') }}">
+                            <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'YaigoPos') }}">
                         </span>
                         <span class="pos-badge-pill">POS</span>
                     </a>
