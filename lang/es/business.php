@@ -165,4 +165,7 @@
      'business_settings' => 'Configuración del negocio',
      'fy_start_month' => 'Mes de inicio del año fiscal',
      'accounting_method' => 'Método contable',
+
+     'manufacturing' => 'Manufacturing',
+     'electronics' => 'Electronics',
  ];

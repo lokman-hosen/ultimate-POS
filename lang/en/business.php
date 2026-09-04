@@ -171,6 +171,8 @@ return [
     'register' => 'Register',
     'business_phone' => 'Business Phone',
     'phone_placeholder' => 'Enter phone number',
+    'manufacturing' => 'Manufacturing',
+    'electronics' => 'Electronics',
 
 
     'dni_nie' => 'DNI / NIE',
