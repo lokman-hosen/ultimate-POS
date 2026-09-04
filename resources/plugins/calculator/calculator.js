@@ -147,15 +147,15 @@ $(document).ready(function () {
     });
 
     // ── Create floating history popup (once, appended to body) ───────────
-    if ($('#calc-hist-popup').length === 0) {
-        $('body').append(
-            '<div id="calc-hist-popup">' +
-                '<div class="calc-hist-head">' + _calcT('calc_recent_calculations', 'Recent calculations') + '</div>' +
-                '<div id="calc-hist-list"></div>' +
-                '<button type="button" id="calc-hist-clear">' + _calcT('calc_clear_history', 'Clear history') + '</button>' +
-            '</div>'
-        );
-    }
+    // if ($('#calc-hist-popup').length === 0) {
+    //     $('body').append(
+    //         '<div id="calc-hist-popup">' +
+    //             '<div class="calc-hist-head">' + _calcT('calc_recent_calculations', 'Recent calculations') + '</div>' +
+    //             '<div id="calc-hist-list"></div>' +
+    //             '<button type="button" id="calc-hist-clear">' + _calcT('calc_clear_history', 'Clear history') + '</button>' +
+    //         '</div>'
+    //     );
+    // }
 
     // Clear-history button (delegation — popup lives in body)
     $(document).on('click', '#calc-hist-clear', function () {
