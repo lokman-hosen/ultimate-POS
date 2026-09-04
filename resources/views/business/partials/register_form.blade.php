@@ -210,20 +210,22 @@
             <div class="form-group">
                 {!! Form::label('business_sector', 'Business Category') !!}
                 {!! Form::select('business_sector', [
-                    '' => __('business.select_sector'),
-                    'restaurant'   => __('business.restaurant'),
-                    'cafe'         => __('business.cafe'),
-                    'fast_food'    => __('business.fast_food'),
-                    'bakery'       => __('business.bakery'),
-                    'supermarket'  => __('business.supermarket'),
-                    'grocery'      => __('business.grocery_store'),
-                    'butcher'      => __('business.butcher_shop'),
-                    'clothing'     => __('business.clothing_store'),
-                    'hairdresser'  => __('business.hairdresser_beauty'),
-                    'retail'       => __('business.retail_store'),
-                    'hotel'        => __('business.hotel'),
-                    'pharmacy'     => __('business.pharmacy'),
-                    'other'        => __('business.other'),
+                    ''              => __('business.select_sector'),
+                    'bakery'        => __('business.bakery'),
+                    'butcher'       => __('business.butcher_shop'),
+                    'cafe'          => __('business.cafe'),
+                    'clothing'      => __('business.clothing_store'),
+                    'electronics'   => 'Electronics',
+                    'fast_food'     => __('business.fast_food'),
+                    'grocery'       => __('business.grocery_store'),
+                    'hairdresser'   => __('business.hairdresser_beauty'),
+                    'hotel'         => __('business.hotel'),
+                    'manufacturing' => 'Manufacturing',
+                    'pharmacy'      => __('business.pharmacy'),
+                    'restaurant'    => __('business.restaurant'),
+                    'retail'        => __('business.retail_store'),
+                    'super_market'  => __('business.supermarket'),
+                    'other'         => __('business.other'),
                 ], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']) !!}
             </div>
         </div>

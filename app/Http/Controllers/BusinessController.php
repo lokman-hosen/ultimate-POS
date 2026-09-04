@@ -128,6 +128,8 @@ class BusinessController extends Controller
             return redirect('/');
         }
 
+        $businessSector = $request->business_sector ?? null;
+
         try {
             $rules = [
                 'business_type' => 'required|in:self_employed,company',
@@ -278,9 +280,50 @@ class BusinessController extends Controller
             if (! empty($logo_name)) {
                 $business_details['logo'] = $logo_name;
             }
+            if ($request->filled('business_sector')){
+                if($businessSector == 'super_market'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'pharmacy'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'electronics'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account', 'subscription'];
+                }elseif ($businessSector == 'services'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'expenses', 'account', 'service_staff'];
+                }elseif ($businessSector == 'restaurant'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service', 'booking'];
+                }elseif ($businessSector == 'essentials'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'manufacturing'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }elseif ($businessSector == 'cafe'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service'];
+                }elseif ($businessSector == 'fast_food'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service'];
+                }elseif ($businessSector == 'bakery'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'grocery'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'butcher'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }elseif ($businessSector == 'clothing'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'hairdresser'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'expenses', 'account', 'service_staff'];
+                }elseif ($businessSector == 'retail'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'hotel'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service', 'booking'];
+                }elseif ($businessSector == 'other'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }else{
+                    //default enabled modules
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }
+            }else{
+                //default enabled modules
+                $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+            }
 
-            //default enabled modules
-            $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
 
             $business = $this->businessUtil->createNewBusiness($business_details);
 
