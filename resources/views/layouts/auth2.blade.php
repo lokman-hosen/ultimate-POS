@@ -230,6 +230,9 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('.select2_register').select2();
+        $('.change_lang').click(function() {
+            window.location = "{{ route('login') }}?lang=" + $(this).attr('value');
+        });
     });
 </script>
 </body>
