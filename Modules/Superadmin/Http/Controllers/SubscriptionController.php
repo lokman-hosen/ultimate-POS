@@ -1136,6 +1136,7 @@ class SubscriptionController extends BaseController
              */
             $checkout_session = \Stripe\Checkout\Session::retrieve($session_id);
 
+
             /*
              * Make sure the payment was actually successful.
              */
