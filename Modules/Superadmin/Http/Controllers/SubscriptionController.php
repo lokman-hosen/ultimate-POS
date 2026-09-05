@@ -890,4 +890,359 @@ class SubscriptionController extends BaseController
 
         return $end_date;
     }
+
+
+    /**
+     * Create Stripe Checkout Session
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function stripeCheckout($package_id, Request $request)
+    {
+        if (! auth()->user()->can('superadmin.access_package_subscriptions')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $business_id = request()->session()->get('user.business_id');
+            $business_name = request()->session()->get('business.name');
+            $user_id = request()->session()->get('user.id');
+
+            $package = Package::active()->findOrFail($package_id);
+
+            /*
+             * Check one-time package restriction
+             */
+            if ($package->is_one_time) {
+                $count_subscriptions = Subscription::where('business_id', $business_id)
+                    ->where('package_id', $package_id)
+                    ->count();
+
+                if ($count_subscriptions > 0) {
+                    return redirect()
+                        ->back()
+                        ->with('status', [
+                            'success' => 0,
+                            'msg' => __('superadmin::lang.maximum_subscription_limit_exceed'),
+                        ]);
+                }
+            }
+
+            /*
+             * Calculate coupon/discount
+             */
+            $coupon_code = $request->input('coupon_code');
+            $coupon = null;
+            $price = (float) $package->price;
+
+            if (! empty($coupon_code)) {
+                $coupon = SuperadminCoupon::where('coupon_code', $coupon_code)->first();
+
+                if ($coupon) {
+                    $package_ids = json_decode($coupon->applied_on_packages);
+                    $business_ids = json_decode($coupon->applied_on_business);
+
+                    $current_date = Carbon::now()->toDateString();
+
+                    $valid_coupon =
+                        $coupon->is_active == 1
+                        && (
+                            (is_array($package_ids) && in_array($package_id, $package_ids))
+                            || is_null($coupon->applied_on_packages)
+                        )
+                        && (
+                            (is_array($business_ids) && in_array($business_id, $business_ids))
+                            || is_null($coupon->applied_on_business)
+                        )
+                        && (
+                            is_null($coupon->expiry_date)
+                            || Carbon::parse($coupon->expiry_date)->greaterThanOrEqualTo($current_date)
+                        );
+
+                    if ($valid_coupon) {
+                        if ($coupon->discount_type == 'fixed') {
+                            $price = (float) $package->price - (float) $coupon->discount;
+                        } elseif ($coupon->discount_type == 'percentage') {
+                            $discount_amount = (float) $package->price * ((float) $coupon->discount / 100);
+                            $price = (float) $package->price - $discount_amount;
+                        }
+
+                        $price = max(0, $price);
+                    }
+                }
+            }
+
+            /*
+             * If coupon makes the package free,
+             * don't send it to Stripe.
+             */
+            if ($price <= 0) {
+                $this->_add_subscription(
+                    $coupon_code,
+                    0,
+                    $business_id,
+                    $package_id,
+                    null,
+                    'FREE',
+                    $user_id
+                );
+
+                return redirect()
+                    ->action([
+                        \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
+                        'index'
+                    ])
+                    ->with('status', [
+                        'success' => 1,
+                        'msg' => __('lang_v1.success'),
+                    ]);
+            }
+
+            $system_currency = System::getCurrency();
+            $currency = strtolower($system_currency->code);
+
+            /*
+             * Stripe amount must be supplied in the
+             * smallest currency unit.
+             */
+            $zero_decimal_currencies = [
+                'bif',
+                'clp',
+                'djf',
+                'gnf',
+                'jpy',
+                'kmf',
+                'krw',
+                'mga',
+                'pyg',
+                'rwf',
+                'ugx',
+                'vnd',
+                'vuv',
+                'xaf',
+                'xof',
+                'xpf',
+            ];
+
+            if (in_array($currency, $zero_decimal_currencies)) {
+                $stripe_amount = (int) round($price);
+            } else {
+                $stripe_amount = (int) round($price * 100);
+            }
+
+            /*
+             * Stripe Checkout Session
+             */
+            \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
+
+            $checkout_session = \Stripe\Checkout\Session::create([
+                'mode' => 'payment',
+
+                'line_items' => [
+                    [
+                        'price_data' => [
+                            'currency' => $currency,
+
+                            'product_data' => [
+                                'name' => $package->name,
+                                'description' => config('app.name') . ' Subscription',
+                            ],
+
+                            'unit_amount' => $stripe_amount,
+                        ],
+
+                        'quantity' => 1,
+                    ],
+                ],
+
+                'customer_email' => auth()->user()->email ?? null,
+
+                'metadata' => [
+                    'business_id' => $business_id,
+                    'business_name' => $business_name,
+                    'user_id' => $user_id,
+                    'package_id' => $package_id,
+                    'package_name' => $package->name,
+                    'coupon_code' => $coupon_code ?? '',
+                    'price' => $price,
+                ],
+
+                'success_url' => action([
+                        \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
+                        'stripeSuccess'
+                    ]) . '?session_id={CHECKOUT_SESSION_ID}',
+
+                'cancel_url' => action([
+                        \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
+                        'stripeCancel'
+                    ]) . '?package_id=' . $package_id,
+            ]);
+
+            /*
+             * Store the important information in session as an
+             * additional server-side reference.
+             */
+            Session::put('stripe_checkout', [
+                'session_id' => $checkout_session->id,
+                'package_id' => $package_id,
+                'business_id' => $business_id,
+                'user_id' => $user_id,
+            ]);
+
+            return redirect()->away($checkout_session->url);
+
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'Stripe Checkout Error: ' .
+                $e->getMessage(),
+                [
+                    'package_id' => $package_id,
+                    'user_id' => auth()->id(),
+                ]
+            );
+
+            return redirect()
+                ->back()
+                ->with('status', [
+                    'success' => 0,
+                    'msg' => $e->getMessage(),
+                ]);
+        }
+    }
+
+    /**
+     * Stripe Checkout success callback
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function stripeSuccess(Request $request)
+    {
+        if (! auth()->user()->can('superadmin.access_package_subscriptions')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            $session_id = $request->get('session_id');
+
+            if (empty($session_id)) {
+                throw new \Exception('Stripe session ID is missing.');
+            }
+
+            \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
+
+            /*
+             * Retrieve the Checkout Session from Stripe.
+             */
+            $checkout_session = \Stripe\Checkout\Session::retrieve($session_id);
+
+            /*
+             * Make sure the payment was actually successful.
+             */
+            if ($checkout_session->payment_status !== 'paid') {
+                throw new \Exception('Stripe payment was not completed.');
+            }
+
+            $metadata = $checkout_session->metadata;
+
+            $business_id = $metadata->business_id ?? null;
+            $package_id = $metadata->package_id ?? null;
+            $user_id = $metadata->user_id ?? null;
+            $coupon_code = $metadata->coupon_code ?? null;
+            $price = isset($metadata->price)
+                ? (float) $metadata->price
+                : null;
+
+            if (empty($business_id) || empty($package_id) || empty($user_id)) {
+                throw new \Exception('Invalid Stripe payment metadata.');
+            }
+
+            /*
+             * Prevent duplicate subscription creation.
+             */
+            $existing_subscription = Subscription::where(
+                'payment_transaction_id',
+                $checkout_session->payment_intent
+            )->first();
+
+            if ($existing_subscription) {
+                return redirect()
+                    ->action([
+                        \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
+                        'index'
+                    ])
+                    ->with('status', [
+                        'success' => 1,
+                        'msg' => __('lang_v1.success'),
+                    ]);
+            }
+
+            /*
+             * Add subscription only after Stripe confirms
+             * payment as paid.
+             */
+            $this->_add_subscription(
+                $coupon_code,
+                $price,
+                $business_id,
+                $package_id,
+                'stripe',
+                $checkout_session->payment_intent,
+                $user_id
+            );
+
+            Session::forget('stripe_checkout');
+
+            return redirect()
+                ->action([
+                    \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
+                    'index'
+                ])
+                ->with('status', [
+                    'success' => 1,
+                    'msg' => __('lang_v1.success'),
+                ]);
+
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'Stripe Success Error: ' .
+                $e->getMessage(),
+                [
+                    'session_id' => $request->get('session_id'),
+                    'user_id' => auth()->id(),
+                ]
+            );
+
+            return redirect()
+                ->action([
+                    \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
+                    'index'
+                ])
+                ->with('status', [
+                    'success' => 0,
+                    'msg' => $e->getMessage(),
+                ]);
+        }
+    }
+
+    /**
+     * Stripe Checkout cancellation
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function stripeCancel(Request $request)
+    {
+        Session::forget('stripe_checkout');
+
+        return redirect()
+            ->action([
+                \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
+                'pay'
+            ], [$request->get('package_id')])
+            ->with('status', [
+                'success' => 0,
+                'msg' => 'Payment was cancelled.',
+            ]);
+    }
 }

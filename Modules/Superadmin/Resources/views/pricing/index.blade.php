@@ -10,10 +10,10 @@
                 <div class="tw-flex tw-flex-col tw-items-center">
 
                     <div class="tw-flex tw-flex-col tw-gap-2 tw-text-center">
-                        <p class="pos-price-eyebrow">Pricing</p>
+{{--                        <p class="pos-price-eyebrow">Pricing</p>--}}
                         <h2 class="pos-price-heading tw-font-bold tw-text-3xl tw-text-white">@lang('superadmin::lang.pricing')</h2>
                         <h3 class="tw-text-sm tw-font-medium tw-text-white">
-                            Choose your prefered {{ config('app.name', 'ultimatePOS') }} pricing plan
+                            Choose your prefered {{ config('app.name', 'YaigoPos') }} pricing plan
                         </h3>
                     </div>
                     <!-- Montly/annual-->
@@ -26,14 +26,14 @@
                     </div>
                 </div>
 
-                {{-- <div class="box-body tw-mt-6"> --}}
+                 <div class="box-body tw-mt-6">
                 <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-5 md:tw-gap-0 tw-mt-5 md:tw-mt-7 tw-mb-10 tw-h-auto"
                      id="packages">
                     @include('superadmin::subscription.partials.packages', [
                            'action_type' => 'register',
                        ])
                 </div>
-                {{-- </div> --}}
+                </div>
             </div>
         </div>
     </div>

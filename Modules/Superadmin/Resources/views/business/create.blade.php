@@ -38,7 +38,7 @@
                 <div class="col-md-12 text-center">
                     {!! Form::submit(__('messages.submit'), ['class' => 'btn btn-success btn-big']) !!}
                 </div>
-                    
+
                 {!! Form::close() !!}
         </div> --}}
 
@@ -78,7 +78,7 @@
                 <div class="col-md-12 text-center">
                     {!! Form::submit(__('messages.submit'), ['class' => 'tw-dw-btn tw-dw-btn-success tw-text-white tw-dw-btn-lg']) !!}
                 </div>
-                    
+
                 {!! Form::close() !!}
 				</div>
 			</div>
@@ -86,7 +86,7 @@
 	</div>
     </div>
 
-    <div class="modal fade brands_modal" tabindex="-1" role="dialog" 
+    <div class="modal fade brands_modal" tabindex="-1" role="dialog"
     	aria-labelledby="gridSystemModalLabel">
     </div>
 

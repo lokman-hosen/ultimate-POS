@@ -23,5 +23,5 @@
 		@endphp
 		@include('superadmin::subscription.partials.package_card')
 	@endif
-	
+
 @endforeach

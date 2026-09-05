@@ -616,4 +616,22 @@ class ModuleUtil extends Util
 
         return $module_data;
     }
+
+    public function IsMailConfigured()
+    {
+        $is_mail_configured = false;
+
+        if (
+            ! empty(env('MAIL_MAILER')) &&
+            ! empty(env('MAIL_HOST')) &&
+            ! empty(env('MAIL_PORT')) &&
+            ! empty(env('MAIL_USERNAME')) &&
+            ! empty(env('MAIL_PASSWORD')) &&
+            ! empty(env('MAIL_FROM_ADDRESS'))
+        ) {
+            $is_mail_configured = true;
+        }
+
+        return $is_mail_configured;
+    }
 }

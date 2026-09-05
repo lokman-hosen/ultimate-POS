@@ -59,9 +59,9 @@
                 <div class="pos-brand__top">
                     <a href="{{ url('/') }}" class="pos-brand__logo">
                         <span class="pos-brand__logo-badge">
-                            <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
+                            <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'YaigoPos') }}">
                         </span>
-                        <span class="pos-badge-pill">POS</span>
+                        <span class="pos-badge-pill">@lang('lang_v1.pos')</span>
                     </a>
 
                     {{-- Utility links that used to live next to the logo --}}
@@ -81,15 +81,12 @@
                 </div>
 
                 <div class="pos-eyebrow-row">
-                    <p class="pos-eyebrow">Access terminal</p>
+                    <p class="pos-eyebrow">@lang('lang_v1.terminal_access')</p>
                     <span class="pos-progress-line"></span>
                 </div>
 
-                <h1 class="pos-headline">Every sale, every shop,<br><span class="pos-headline__accent">one screen.</span></h1>
-                <p class="pos-subtext">
-                    From pharmacy counters to restaurant floors — manage inventory, staff and sales
-                    without leaving this screen.
-                </p>
+                <h1 class="pos-headline">@lang('lang_v1.every_sale_every_shop'),<br><span class="pos-headline__accent">@lang('lang_v1.one_screen')</span></h1>
+                <p class="pos-subtext">@lang('lang_v1.home_caption')</p>
 
                 <ul class="pos-feature-grid">
                     <li class="pos-feature-chip">
@@ -100,7 +97,7 @@
                                 <path d="M12 13v8"/>
                             </svg>
                         </span>
-                        <span class="pos-feature-label">Real-time inventory sync</span>
+                        <span class="pos-feature-label">@lang('lang_v1.inventory_sync')</span>
                         <span class="pos-feature-check">
                             <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
                         </span>
@@ -113,7 +110,7 @@
                                 <path d="M11 10.2c.5-.6 1.2-1 2-1"/>
                             </svg>
                         </span>
-                        <span class="pos-feature-label">Multi-outlet & multi-currency</span>
+                        <span class="pos-feature-label">@lang('lang_v1.multi_outlet')</span>
                         <span class="pos-feature-check">
                             <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
                         </span>
@@ -124,7 +121,7 @@
                                 <path d="M7 18a4.5 4.5 0 0 1-.5-8.98A5.5 5.5 0 0 1 17.3 8.3 4 4 0 0 1 17 18H7z"/>
                             </svg>
                         </span>
-                        <span class="pos-feature-label">Works online or offline</span>
+                        <span class="pos-feature-label">@lang('lang_v1.works_online_offline')</span>
                         <span class="pos-feature-check">
                             <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.4 7.4a1 1 0 01-1.4 0L3.3 9.5a1 1 0 111.4-1.4l3.6 3.6 6.7-6.7a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
                         </span>
@@ -134,7 +131,7 @@
 
             <div class="pos-brand__footer">
                 <div class="pos-brand__total">
-                    <span class="pos-brand__total-label">Businesses served</span>
+                    <span class="pos-brand__total-label">@lang('lang_v1.businesses_serve')</span>
                     <span class="pos-brand__total-value">10,000+</span>
                 </div>
                 <div class="pos-trust-row">
@@ -145,7 +142,7 @@
                         <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z"/></svg>
                         <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.5 5.6 6 .6-4.5 4 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.5-4 6-.6z"/></svg>
                     </span>
-                    <span class="pos-trust-text">Trusted by businesses worldwide</span>
+                    <span class="pos-trust-text">@lang('lang_v1.trusted_businesses_worldwide')</span>
                 </div>
             </div>
 
@@ -179,7 +176,7 @@
             @if (!($request->segment(1) == 'business' && $request->segment(2) == 'register'))
                 @if (config('constants.allow_registration'))
                     <div class="pos-register-pill">
-                        <a href="{{ route('business.getRegister') }}@if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif" style="display: inline-flex; align-items: center;">
+                        <a href="{{ route('business.getRegister', !empty(request()->lang) ? ['lang' => request()->lang] : []) }}" style="display: inline-flex; align-items: center;">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
                                  style="width: 1.5em; height: 1.5em; fill: currentColor; margin-right: 5px;"
                             >
@@ -203,8 +200,8 @@
             @endif
 
             @if ($request->segment(1) != 'login')
-                <a class="language-button" href="{{action([\App\Http\Controllers\Auth\LoginController::class,'login'])}}
-                    @if (!empty(request()->lang)) {{ '?lang='.request()->lang}} @endif"
+                <a class="language-button"
+                   href="{{ action([\App\Http\Controllers\Auth\LoginController::class, 'login'], !empty(request()->lang) ? ['lang' => request()->lang] : []) }}"
                    style="display: inline-flex; align-items: center;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
                          style="width: 1.5em; height: 1.5em; fill: currentColor;">
@@ -213,7 +210,6 @@
                     {{ __('business.sign_in') }}
                 </a>
             @endif
-
             @include('layouts.partials.language_btn')
         </div>
 
@@ -233,6 +229,9 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('.select2_register').select2();
+        $('.change_lang').click(function() {
+            window.location = "{{ route('login') }}?lang=" + $(this).attr('value');
+        });
     });
 </script>
 </body>

@@ -70,6 +70,16 @@ Route::middleware('web', 'SetSessionData', 'auth', 'language', 'timezone', 'Admi
     Route::get('/subscription/{subcription_id}/force-active', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'forceActive'])->name('force-active');
     Route::get('/myfatoorah-callback', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'myfatoorahcallback'])->name('myfatoorah_callback');
 
+    // Stripe
+    Route::post('/subscriptions/stripe/checkout/{package_id}', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'stripeCheckout'
+    ])->name('superadmin.subscription.stripe.checkout');
+
+    Route::get('/subscriptions/stripe/success', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'stripeSuccess'
+    ])->name('superadmin.subscription.stripe.success');
+
+    Route::get('/subscriptions/stripe/cancel', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'stripeCancel'
+    ])->name('superadmin.subscription.stripe.cancel');
+
 });
 
 Route::get('/page/{slug}', [Modules\Superadmin\Http\Controllers\PageController::class, 'showPage'])->name('frontend-pages');

@@ -101,6 +101,14 @@ class Business extends Model
      */
     public static function create_business($details)
     {
+        if ($details['business_type'] == 'self_employed'){
+            $details['tax_number_2'] = null;
+            $details['tax_label_2'] = null;
+        }
+        if ($details['business_type'] == 'company'){
+            $details['tax_number_1'] = null;
+            $details['tax_label_1'] = null;
+        }
         $business = Business::create($details);
 
         return $business;

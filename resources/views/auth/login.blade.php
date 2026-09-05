@@ -119,13 +119,13 @@
 
         <div class="pos-card pos-card--login">
             <div class="pos-login-badge">
-                <img src="{{ asset('img/logo-icon-arrow.png') }}" alt="{{ config('app.name', 'UltimatePOS') }}">
+                <img src="{{ asset('img/logo-icon-arrow.png') }}" alt="{{ config('app.name', 'YaigoPos') }}">
 {{--                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>--}}
             </div>
 
             <div class="pos-login-head">
                 <h1 class="pos-h1">@lang('lang_v1.welcome_back')</h1>
-                <p class="pos-p">@lang('lang_v1.login_to_your') {{ config('app.name', 'ultimatePOS') }}</p>
+                <p class="pos-p">@lang('lang_v1.login_to_your') {{ config('app.name', 'YaigoPos') }}</p>
             </div>
 
             <form method="POST" action="{{ route('login') }}" id="login-form">
@@ -220,13 +220,14 @@
             @if (!($request->segment(1) == 'business' && $request->segment(2) == 'register'))
                 @if (config('constants.allow_registration'))
                     <div class="pos-register-cta">
-                        <a href="{{ route('business.getRegister') }}@if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif">
+                        <a href="{{ route('business.getRegister', !empty(request()->lang) ? ['lang' => request()->lang] : []) }}">
                             {{ __('business.not_yet_registered') }}
                             <strong>{{ __('business.register_now') }}</strong>
                         </a>
                     </div>
                 @endif
             @endif
+
         </div>
     </div>
 @stop

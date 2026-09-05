@@ -872,8 +872,6 @@ class SubscriptionController extends BaseController
 
             return $output;
         }
-
-
     }
 
     public function calculate_end_date($package) {

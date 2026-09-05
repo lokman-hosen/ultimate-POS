@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use App\Rules\ReCaptcha;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Validation\Rule;
 class BusinessController extends Controller
 {
     /*
@@ -128,45 +128,119 @@ class BusinessController extends Controller
             return redirect('/');
         }
 
+        $businessSector = $request->business_sector ?? null;
+
         try {
-            $validator = $request->validate(
-                [
-                    'name' => 'required|max:255',
-                    'currency_id' => 'required|numeric',
-                    'country' => 'required|max:255',
-                    'state' => 'required|max:255',
-                    'city' => 'required|max:255',
-                    'zip_code' => 'required|max:255',
-                    'landmark' => 'required|max:255',
-                    'time_zone' => 'required|max:255',
-                    'surname' => 'max:10',
-                    'email' => 'sometimes|nullable|email|unique:users|max:255',
-                    'first_name' => 'required|max:255',
-                    'username' => 'required|min:4|max:255|unique:users',
-                    'password' => 'required|min:4|max:255',
-                    'fy_start_month' => 'required',
-                    'accounting_method' => 'required',
-                ],
-                [
-                    'name.required' => __('validation.required', ['attribute' => __('business.business_name')]),
-                    'name.currency_id' => __('validation.required', ['attribute' => __('business.currency')]),
-                    'country.required' => __('validation.required', ['attribute' => __('business.country')]),
-                    'state.required' => __('validation.required', ['attribute' => __('business.state')]),
-                    'city.required' => __('validation.required', ['attribute' => __('business.city')]),
-                    'zip_code.required' => __('validation.required', ['attribute' => __('business.zip_code')]),
-                    'landmark.required' => __('validation.required', ['attribute' => __('business.landmark')]),
-                    'time_zone.required' => __('validation.required', ['attribute' => __('business.time_zone')]),
-                    'email.email' => __('validation.email', ['attribute' => __('business.email')]),
-                    'email.email' => __('validation.unique', ['attribute' => __('business.email')]),
-                    'first_name.required' => __('validation.required', ['attribute' => __('business.first_name')]),
-                    'username.required' => __('validation.required', ['attribute' => __('business.username')]),
-                    'username.min' => __('validation.min', ['attribute' => __('business.username')]),
-                    'password.required' => __('validation.required', ['attribute' => __('business.username')]),
-                    'password.min' => __('validation.min', ['attribute' => __('business.username')]),
-                    'fy_start_month.required' => __('validation.required', ['attribute' => __('business.fy_start_month')]),
-                    'accounting_method.required' => __('validation.required', ['attribute' => __('business.accounting_method')]),
-                ]
-            );
+            $rules = [
+                'business_type' => 'required|in:self_employed,company',
+                'name' => 'required|max:255',
+                'business_activity' => 'required|max:255',
+                'currency_id' => 'required|numeric',
+                'country' => 'required|max:255',
+                'state' => 'required|max:255',
+                'city' => 'required|max:255',
+                'zip_code' => 'required|max:255',
+                'landmark' => 'required|max:255',
+                'time_zone' => 'required|max:255',
+                'contact_person' => 'required|max:255',
+                'mobile' => 'required|max:255',
+                'contact_email' => 'required|email|max:255',
+                'first_name' => 'required|max:255',
+                'username' => 'required|min:4|max:255|unique:users',
+                'email' => 'required|email|unique:users|max:255',
+                'password' => 'required|min:4|max:255',
+                'confirm_password' => 'required|same:password',
+                'fy_start_month' => 'required',
+                'accounting_method' => 'required',
+                'business_sector' => 'required',
+            ];
+
+            // Business type specific fields
+//            if ($request->business_type == 'company') {
+//                $rules['legal_name'] = 'required|max:255';
+//                // Representative DNI/NIE: 8 digits + 1 letter OR X/Y/Z + 7 digits + 1 letter
+//                $rules['tax_label_2'] = 'required|in:DNI,NIE';
+//                $rules['tax_number_2'] = [
+//                    'required',
+//                    Rule::regex('/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'),
+//                ];
+//            } else {
+//                // Self-Employed: DNI (8 digits + 1 letter) or NIE (X/Y/Z + 7 digits + 1 letter)
+//                $rules['tax_label_1'] = 'required|in:CIF,NIF';
+//                $rules['tax_number_1'] = [
+//                    'required',
+//                    Rule::regex('/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'),
+//                ];
+//
+//            }
+
+            if ($request->business_type == 'company') {
+                $rules['legal_name'] = 'required|max:255';
+                $rules['tax_label_1'] = 'required|in:NIF,CIF';
+                // Company CIF/NIF: 1 letter + 7 digits + 1 control character
+                $rules['tax_number_1'] = [
+                    'required',
+                    'regex:/^[A-Z]{1}[0-9]{7}[A-Z0-9]{1}$/'
+                ];
+                // Representative DNI/NIE: 8 digits + 1 letter OR X/Y/Z + 7 digits + 1 letter
+                $rules['tax_label_2'] = 'required|in:DNI,NIE';
+                $rules['tax_number_2'] = [
+                    'required',
+                    'regex:/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'
+                ];
+            } else {
+                $rules['tax_label_1'] = 'required|in:NIF,CIF';
+                // Self-Employed: DNI (8 digits + 1 letter) or NIE (X/Y/Z + 7 digits + 1 letter)
+                $rules['tax_number_1'] = [
+                    'required',
+                    'regex:/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'
+                ];
+                $rules['tax_label_2'] = 'nullable';
+                $rules['tax_number_2'] = 'nullable';
+            }
+
+
+
+
+            $customMessages = [
+                'name.required' => __('validation.required', ['attribute' => __('business.business_name')]),
+                'currency_id.required' => __('validation.required', ['attribute' => __('business.currency')]),
+                'country.required' => __('validation.required', ['attribute' => __('business.country')]),
+                'state.required' => __('validation.required', ['attribute' => __('business.state')]),
+                'city.required' => __('validation.required', ['attribute' => __('business.city')]),
+                'zip_code.required' => __('validation.required', ['attribute' => __('business.zip_code')]),
+                'landmark.required' => __('validation.required', ['attribute' => __('business.landmark')]),
+                'time_zone.required' => __('validation.required', ['attribute' => __('business.time_zone')]),
+                'contact_person.required' => __('validation.required', ['attribute' => __('business.contact_person_name')]),
+                'mobile.required' => __('validation.required', ['attribute' => __('business.business_phone')]),
+                'contact_email.required' => __('validation.required', ['attribute' => __('business.business_email')]),
+                'contact_email.email' => __('validation.email', ['attribute' => __('business.business_email')]),
+                'first_name.required' => __('validation.required', ['attribute' => __('business.first_name')]),
+                'username.required' => __('validation.required', ['attribute' => __('business.username')]),
+                'username.min' => __('validation.min', ['attribute' => __('business.username')]),
+                'password.required' => __('validation.required', ['attribute' => __('business.password')]),
+                'password.min' => __('validation.min', ['attribute' => __('business.password')]),
+                'confirm_password.required' => __('validation.required', ['attribute' => __('business.confirm_password')]),
+                'confirm_password.same' => __('validation.same', ['attribute' => __('business.confirm_password')]),
+                'fy_start_month.required' => __('validation.required', ['attribute' => __('business.fy_start_month')]),
+                'accounting_method.required' => __('validation.required', ['attribute' => __('business.accounting_method')]),
+                'business_sector.required' => __('validation.required', ['attribute' => __('business.business_sector')]),
+                'business_type.required' => __('validation.required', ['attribute' => __('business.business_type')]),
+                'business_type.in' => __('validation.in', ['attribute' => __('business.business_type')]),
+                'tax_number_1.required' => __('validation.required', ['attribute' => __('business.nif_cif')]),
+                'tax_number_1.regex' => __('validation.regex', ['attribute' => __('business.nif_cif')]),
+                'tax_number_2.required' => __('validation.required', ['attribute' => __('business.representative_dni_nie')]),
+                'tax_number_2.regex' => __('validation.regex', ['attribute' => __('business.representative_dni_nie')]),
+                'legal_name.required' => __('validation.required', ['attribute' => __('business.legal_company_name')]),
+                'tax_label_1.required' => __('validation.required', ['attribute' => __('business.tax_type')]),
+                'tax_label_2.required' => __('validation.required', ['attribute' => __('business.tax_type')]),
+            ];
+
+            $validator = Validator::make($request->all(), $rules, $customMessages);
+
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
 
             if (config('constants.enable_recaptcha')) {
                 $recaptcha_validator = Validator::make($request->all(), [
@@ -178,6 +252,7 @@ class BusinessController extends Controller
             }
 
 
+
             DB::beginTransaction();
 
             //Create owner.
@@ -187,12 +262,12 @@ class BusinessController extends Controller
 
             $user = User::create_user($owner_details);
 
-            $business_details = $request->only(['name', 'start_date', 'currency_id', 'time_zone',
+            $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity', 'referred_by', 'accept_tc', 'accept_marketing', 'name', 'start_date', 'currency_id', 'time_zone',
                 'fy_start_month', 'accounting_method', 'tax_label_1', 'tax_number_1',
-                'tax_label_2', 'tax_number_2', ]);
+                'tax_label_2', 'tax_number_2']);
 
             $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark',
-                'website', 'mobile', 'alternate_number', ]);
+                'website', 'mobile', 'contact_email', 'whatsapp_number', 'address_line_2', 'alternate_number', ]);
 
             //Create the business
             $business_details['owner_id'] = $user->id;
@@ -205,9 +280,50 @@ class BusinessController extends Controller
             if (! empty($logo_name)) {
                 $business_details['logo'] = $logo_name;
             }
+            if ($request->filled('business_sector')){
+                if($businessSector == 'super_market'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'pharmacy'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'electronics'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account', 'subscription'];
+                }elseif ($businessSector == 'services'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'expenses', 'account', 'service_staff'];
+                }elseif ($businessSector == 'restaurant'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service', 'booking'];
+                }elseif ($businessSector == 'essentials'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'manufacturing'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }elseif ($businessSector == 'cafe'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service'];
+                }elseif ($businessSector == 'fast_food'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service'];
+                }elseif ($businessSector == 'bakery'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'grocery'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'butcher'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }elseif ($businessSector == 'clothing'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'hairdresser'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'expenses', 'account', 'service_staff'];
+                }elseif ($businessSector == 'retail'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'account'];
+                }elseif ($businessSector == 'hotel'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses', 'tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service', 'booking'];
+                }elseif ($businessSector == 'other'){
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }else{
+                    //default enabled modules
+                    $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+                }
+            }else{
+                //default enabled modules
+                $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+            }
 
-            //default enabled modules
-            $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
 
             $business = $this->businessUtil->createNewBusiness($business_details);
 

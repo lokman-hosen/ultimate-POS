@@ -274,9 +274,9 @@ class BusinessController extends BaseController
 
             $user = User::create_user($owner_details);
 
-            $business_details = $request->only(['name', 'start_date', 'currency_id', 'tax_label_1', 'tax_number_1', 'tax_label_2', 'tax_number_2', 'time_zone', 'accounting_method', 'fy_start_month']);
+            $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity','name', 'start_date', 'currency_id', 'tax_label_1', 'tax_number_1', 'tax_label_2', 'tax_number_2', 'time_zone', 'accounting_method', 'fy_start_month']);
 
-            $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark', 'website', 'mobile', 'alternate_number']);
+            $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark', 'website', 'mobile','contact_email', 'whatsapp_number', 'address_line_2','alternate_number']);
 
             //Create the business
             $business_details['owner_id'] = $user->id;
