@@ -176,7 +176,7 @@
             @if (!($request->segment(1) == 'business' && $request->segment(2) == 'register'))
                 @if (config('constants.allow_registration'))
                     <div class="pos-register-pill">
-                        <a href="{{ route('business.getRegister') }}@if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif" style="display: inline-flex; align-items: center;">
+                        <a href="{{ route('business.getRegister', !empty(request()->lang) ? ['lang' => request()->lang] : []) }}" style="display: inline-flex; align-items: center;">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
                                  style="width: 1.5em; height: 1.5em; fill: currentColor; margin-right: 5px;"
                             >
@@ -200,8 +200,8 @@
             @endif
 
             @if ($request->segment(1) != 'login')
-                <a class="language-button" href="{{action([\App\Http\Controllers\Auth\LoginController::class,'login'])}}
-                    @if (!empty(request()->lang)) {{ '?lang='.request()->lang}} @endif"
+                <a class="language-button"
+                   href="{{ action([\App\Http\Controllers\Auth\LoginController::class, 'login'], !empty(request()->lang) ? ['lang' => request()->lang] : []) }}"
                    style="display: inline-flex; align-items: center;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
                          style="width: 1.5em; height: 1.5em; fill: currentColor;">
@@ -210,7 +210,6 @@
                     {{ __('business.sign_in') }}
                 </a>
             @endif
-
             @include('layouts.partials.language_btn')
         </div>
 

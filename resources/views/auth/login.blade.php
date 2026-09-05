@@ -220,13 +220,14 @@
             @if (!($request->segment(1) == 'business' && $request->segment(2) == 'register'))
                 @if (config('constants.allow_registration'))
                     <div class="pos-register-cta">
-                        <a href="{{ route('business.getRegister') }}@if (!empty(request()->lang)) {{ '?lang=' . request()->lang }} @endif">
+                        <a href="{{ route('business.getRegister', !empty(request()->lang) ? ['lang' => request()->lang] : []) }}">
                             {{ __('business.not_yet_registered') }}
                             <strong>{{ __('business.register_now') }}</strong>
                         </a>
                     </div>
                 @endif
             @endif
+
         </div>
     </div>
 @stop
