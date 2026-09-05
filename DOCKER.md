@@ -76,22 +76,14 @@ database — encrypted columns and sessions depend on it.
 docker compose up -d --build
 ```
 
-**4. Create the schema.** Import the dumps that ship with the app — this is the
-route the project's own readme recommends, and the one that works on a clean
-database. They are mounted inside the db container at `/backup`:
+**4. Create the schema.** See [Migrations and seeding](#migrations-and-seeding).
+Until the migration conflict described there is fixed, import the dumps that
+ship with the app — they are mounted inside the db container at `/backup`:
 
 ```bash
 docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" < /backup/ultimatepos.sql'
 docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" < /backup/ultimatepos_super_admin_pos.sql'
 ```
-
-Running `php artisan migrate` from scratch instead does not currently work on
-this codebase: `packages` (and other tables) are created by two migrations at
-once — `database/migrations/2026_06_28_113441_create_packages_table.php` and
-`Modules/Superadmin/Database/Migrations/2018_06_27_185405_create_packages_table.php`
-— and the second one to run fails with "table already exists". That is a
-pre-existing conflict in the application, not something Docker introduces. Use
-`migrate --force` for *incremental* upgrades after the dump is loaded.
 
 **5. Check.**
 
@@ -102,6 +94,115 @@ curl -sf http://localhost:8080/healthz  # nginx alone, stays up while PHP restar
 ```
 
 Default login is `admin` / `12345678` — change it immediately.
+
+## Migrations and seeding
+
+Artisan runs inside the `app` container — the only place that has `vendor/`, the
+`.env` mount, and a route to the database.
+
+```bash
+docker compose exec app php artisan migrate --force
+```
+
+Use `exec` while the stack is up. If it isn't, `run` starts the database first
+and removes the throwaway container afterwards:
+
+```bash
+docker compose run --rm app php artisan migrate --force
+```
+
+**Always pass `--force`.** There is no TTY behind `exec -T` or in a deploy
+script, so a confirmation prompt would abort the command. (As it happens this
+stack sets `APP_ENV=live`, and Laravel only prompts when the environment is
+exactly `production` — but `--force` keeps the command correct if that ever
+changes.)
+
+`migrate` covers module migrations too. `Modules/Superadmin/Database/Migrations`
+is registered by nwidart's service provider, so it runs in the same pass; you do
+not need `module:migrate` separately.
+
+### Not working yet — use the SQL dumps for now
+
+`migrate` on an empty database currently fails part-way:
+
+```
+SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'packages' already exists
+```
+
+Two migrations create the same table:
+
+- `database/migrations/2026_06_28_113441_create_packages_table.php`
+- `Modules/Superadmin/Database/Migrations/2018_06_27_185405_create_packages_table.php`
+
+Both are registered, the 2018 one sorts first and creates `packages`, and the
+2026 one then fails. It is a conflict in the application itself, not something
+Docker introduces, and it affects `migrate` anywhere — the containers just make
+it reproducible. Until it is resolved, build the schema from
+`database/backup/*.sql` as in step 4 above.
+
+Incremental migrations *do* work once the schema exists — after a `git pull`,
+`migrate --force` applies only what is new, so the commands below are already
+the right ones for day-to-day upgrades.
+
+### Seeding
+
+Plain `db:seed` runs `Database\Seeders\DatabaseSeeder`, which calls
+`BarcodesTableSeeder`, `PermissionsTableSeeder`, `CurrenciesTableSeeder` **and
+`DummyBusinessSeeder`**. That last one fabricates an entire demo business —
+products, contacts, sales, and users whose password is `123456`. Do not run it
+against an installation anyone real will use.
+
+On a live install, seed only the reference data:
+
+```bash
+docker compose exec app php artisan db:seed --force --class=PermissionsTableSeeder
+docker compose exec app php artisan db:seed --force --class=CurrenciesTableSeeder
+docker compose exec app php artisan db:seed --force --class=BarcodesTableSeeder
+```
+
+Re-run `PermissionsTableSeeder` after any upgrade that adds permissions.
+
+For a demo or a local sandbox, the full set is what you want:
+
+```bash
+docker compose exec app php artisan db:seed --force
+```
+
+`UserSeeder` is not part of `DatabaseSeeder`. Run it explicitly if you want the
+canned `admin` / `cashier` / `superadmin` accounts (password `123456`):
+
+```bash
+docker compose exec app php artisan db:seed --force --class=UserSeeder
+```
+
+### Other commands
+
+```bash
+docker compose exec app php artisan migrate:status              # what has run
+docker compose exec app php artisan migrate --force --pretend   # print the SQL, change nothing
+docker compose exec app php artisan migrate:rollback --force    # undo the last batch
+```
+
+`migrate:fresh` and `migrate:refresh` **drop every table**, including all sales
+and stock. The `uploads` volume survives, so you are left with orphaned files
+referenced by rows that no longer exist. Take a dump first — see
+[Backups](#backups).
+
+### Running migrations automatically on start
+
+Once `migrate` is dependable, `AUTO_MIGRATE` lets the app container migrate
+itself as it boots, before php-fpm accepts traffic:
+
+```bash
+# in .env
+AUTO_MIGRATE=true
+```
+
+The entrypoint runs it in the `app` container only, so `queue` and `scheduler`
+never race it. It stays `false` by default deliberately: an automatic migration
+against a live database gives you no chance to take a dump first, and a failure
+puts the container into a restart loop. Prefer running it yourself as a
+deliberate deploy step.
 
 ## TLS
 
