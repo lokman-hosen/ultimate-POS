@@ -34,9 +34,14 @@ x-app-image: &app-image
     redis:
       condition: service_healthy
   volumes:
-    # The application's configuration and secrets. Read-only: nothing in the
-    # container has any business rewriting it.
-    - ./.env:/var/www/html/.env:ro
+    # The application's configuration and secrets.
+    #
+    # Read-write, not :ro — the superadmin settings screen saves mail, payment
+    # gateway and backup settings by rewriting this file in place. The
+    # entrypoint gives www-data write access to it. Add :ro back if you would
+    # rather manage .env only from the host; the settings screen will then
+    # report that it could not save.
+    - ./.env:/var/www/html/.env
     # Everything the app writes. Both are named volumes, so they outlive
     # container restarts, recreates and image rebuilds.
     - uploads:/var/www/html/public/uploads

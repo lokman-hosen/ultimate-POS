@@ -300,6 +300,63 @@ serves both. On the live side, terminate TLS in front of the stack (next
 section); nginx already forwards the scheme so PHP sees the request as secure,
 and `APP_URL` makes the app emit https links.
 
+## Settings that write to .env
+
+The superadmin settings screen does not only write to the database — mail,
+payment gateway, backup, pusher and app-name settings are saved by rewriting
+`.env` itself. Three things have to line up for that to work in a container.
+
+**The mount is read-write.** `docker-compose.yml` mounts `./.env` without `:ro`.
+Add `:ro` back if you would rather manage configuration only from the host —
+the settings screen will then fail to save, which is the honest outcome.
+
+**www-data can write it.** php-fpm runs as `www-data` (uid 33) and the app
+checks `is_writable()` before saving; when that fails you get *"make sure .env
+file has 644 permission & owned by www-data user"*. The entrypoint now grants
+access on every start, by group rather than by owner:
+
+```
+chgrp 33 .env && chmod 664 .env
+```
+
+Because `.env` is a bind mount, that lands on the host file too — deliberately
+by group, so your own user keeps ownership and can still edit it without
+`sudo`. If it cannot be made writable (a `:ro` mount, a read-only host
+filesystem) the entrypoint logs a warning and carries on; the app still reads
+its configuration normally.
+
+**Nothing caches the old values.** Config caching is off (see [Notes](#notes-on-how-this-is-put-together)),
+so the next web request re-reads `.env` and picks the change up immediately.
+The `queue` and `scheduler` containers are the exception: they are long-lived
+PHP processes that read configuration once at boot. After changing settings
+that affect them — mail credentials above all — restart them:
+
+```bash
+docker compose restart queue scheduler
+```
+
+### Do not put a managed key's name in a comment
+
+The save routine replaces *every line containing the key name as a plain
+substring*, with no check for whether that line is a comment or a different
+setting. Given a comment like
+
+```
+# copy them off the server, or point BACKUP_DISK at s3/dropbox
+```
+
+saving the settings form turns that comment into `BACKUP_DISK="local"` and
+leaves a duplicate behind. The same applies to referring to one key from
+another, `MAIL_FROM_NAME="${APP_NAME}"` style — that line is destroyed the
+first time the app name is saved.
+
+`.env.docker.example` is written to respect this, and carries the rule at the
+top. Keep it in mind when adding your own comments to `.env`: the keys to avoid
+naming are the ones that screen manages — the mail block, the payment gateway
+keys, the backup disk, the pusher block, app name/title/locale, and
+registration. `DB_*`, `REDIS_*`, `APP_KEY`, `APP_URL` and `HTTP_PORT` are never
+touched by it, so comment on those freely.
+
 ## Day-to-day
 
 ```bash

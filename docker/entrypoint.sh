@@ -124,6 +124,28 @@ if ! gosu www-data test -r "$APP_HOME/.env"; then
     exit 1
 fi
 
+# The superadmin settings screen saves mail, payment gateway and backup
+# settings by rewriting .env in place (file_put_contents, no temp-file rename,
+# so a single-file bind mount is fine). That needs www-data to have write
+# access. Granting it by group rather than owner leaves the host user's own
+# ownership and write access untouched — .env is a bind mount, so whatever we
+# do here lands on the host file too.
+if ! gosu www-data test -w "$APP_HOME/.env"; then
+    chgrp 33 "$APP_HOME/.env" 2>/dev/null || true
+    chmod 664 "$APP_HOME/.env" 2>/dev/null || true
+
+    if gosu www-data test -w "$APP_HOME/.env"; then
+        log ".env made writable by www-data (group 33, mode 664)"
+    else
+        log "WARN: .env is not writable by www-data, and could not be made so."
+        log "      The app starts fine and reads its configuration normally, but"
+        log "      saving on the superadmin settings screen will fail with"
+        log "      \"make sure .env file has 644 permission & owned by www-data\"."
+        log "      If that is deliberate (:ro mount, hardened host), ignore this."
+        log "      Otherwise, on the host: sudo chgrp www-data .env && chmod 664 .env"
+    fi
+fi
+
 if [ -z "$(env_get APP_KEY)" ]; then
     log "FATAL: APP_KEY is empty in .env."
     log "       Generate one and paste it in, then start again:"
