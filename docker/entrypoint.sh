@@ -19,6 +19,11 @@ CONTAINER_ROLE="${CONTAINER_ROLE:-app}"
 AUTO_MIGRATE="${AUTO_MIGRATE:-false}"
 DB_WAIT_TIMEOUT="${DB_WAIT_TIMEOUT:-90}"
 
+# The host's .env, mounted read-only, and the live copy the app actually uses.
+ENV_SEED="${ENV_SEED:-/config/.env}"
+ENV_LIVE="${ENV_LIVE:-$APP_HOME/storage/env/.env}"
+ENV_RESEED="${ENV_RESEED:-false}"
+
 log() { echo "[entrypoint] $*"; }
 
 case "$1" in
@@ -88,6 +93,73 @@ ensure_owned "$APP_HOME/bootstrap/cache"
 ensure_owned "$APP_HOME/public/uploads"
 
 ###############################################################################
+# The configuration file — both modes.
+#
+# The live .env lives in the storage volume, not on the host. The superadmin
+# settings screen saves mail, payment gateway and backup settings by rewriting
+# .env, and writing through a single-file bind mount is refused outright on
+# some Linux hosts (AppArmor, snap-confined Docker) even when the ownership and
+# mode are correct. A Docker-managed volume has none of those constraints, and
+# persists across restarts, recreates and image rebuilds like uploads do.
+#
+# ./.env on the host is the seed. It is still what docker compose itself reads
+# for DB_*, REDIS_PASSWORD and HTTP_*.
+###############################################################################
+ENV_DIR="$(dirname "$ENV_LIVE")"
+mkdir -p "$ENV_DIR"
+chown www-data:www-data "$ENV_DIR"
+chmod 750 "$ENV_DIR"
+
+seed_env() {
+    # Copy then rename: the rename is atomic within the volume, so a container
+    # starting alongside this one can never read a half-written file.
+    cp "$ENV_SEED" "$ENV_LIVE.tmp.$$"
+    chown www-data:www-data "$ENV_LIVE.tmp.$$"
+    chmod 664 "$ENV_LIVE.tmp.$$"
+    mv -f "$ENV_LIVE.tmp.$$" "$ENV_LIVE"
+}
+
+if [ ! -f "$ENV_LIVE" ]; then
+    if [ ! -f "$ENV_SEED" ]; then
+        log "FATAL: no configuration found at $ENV_SEED."
+        log "       Copy .env.docker.example to .env next to docker-compose.yml;"
+        log "       compose mounts it here read-only."
+        exit 1
+    fi
+    log "seeding $ENV_LIVE from the host's .env (first start)"
+    seed_env
+elif [ "$ENV_RESEED" = "true" ]; then
+    log "ENV_RESEED=true — replacing the live .env from the host's copy."
+    log "                 Anything saved from the settings screen is discarded."
+    seed_env
+fi
+
+chown www-data:www-data "$ENV_LIVE"
+chmod 664 "$ENV_LIVE"
+
+# Laravel reads base_path('.env'); point that at the volume copy. Both
+# is_writable() and file_put_contents() follow symlinks, so the app is unaware.
+if [ -L "$APP_HOME/.env" ] && [ "$(readlink "$APP_HOME/.env")" = "$ENV_LIVE" ]; then
+    :
+elif ln -sfn "$ENV_LIVE" "$APP_HOME/.env" 2>/dev/null; then
+    log "linked $APP_HOME/.env -> $ENV_LIVE"
+    # The link must be owned by the user that follows it. /var/www/html is
+    # world-writable and sticky in the upstream php-fpm image, and Linux's
+    # fs.protected_symlinks refuses to follow a symlink in such a directory
+    # unless the follower owns it — a root-owned link here would give www-data
+    # "Permission denied" on a file it can otherwise read perfectly well.
+    chown -h www-data:www-data "$APP_HOME/.env"
+else
+    log "FATAL: could not replace $APP_HOME/.env with a symlink."
+    log "       Something is still bind-mounting it. Remove the"
+    log "         ./.env:/var/www/html/.env"
+    log "       volume line from docker-compose.yml — the host file now mounts"
+    log "       at $ENV_SEED instead — then recreate the containers:"
+    log "         docker compose up -d --force-recreate"
+    exit 1
+fi
+
+###############################################################################
 # One-off command: run it and stop here.
 ###############################################################################
 if [ "$MODE" = "oneoff" ]; then
@@ -97,53 +169,26 @@ fi
 ###############################################################################
 # 1. Configuration sanity
 ###############################################################################
-if [ ! -f "$APP_HOME/.env" ]; then
-    log "FATAL: $APP_HOME/.env is missing."
-    log "       Copy .env.docker.example to .env on the host and edit it;"
-    log "       compose mounts it into this container read-only."
-    log "       (If the host file did not exist when the stack first started,"
-    log "        Docker will have created a *directory* named .env instead —"
-    log "        delete it, create the file, and start again.)"
-    exit 1
-fi
-
-# This script runs as root, which ignores file permissions; php-fpm's workers
-# run as www-data and do not. If www-data cannot read .env, Laravel's
-# safeLoad() swallows the error without a word and every env() call falls back
-# to its hardcoded default — you get "Database: forge", "Host: 127.0.0.1" and a
-# connection refused, with nothing in any log to say why. Catch it here instead.
-if ! gosu www-data test -r "$APP_HOME/.env"; then
-    log "FATAL: .env is not readable by www-data (uid 33), which is the user"
+# The live .env was seeded and chowned above, so these should always pass.
+# They stay as a tripwire: Laravel's safeLoad() ignores an unreadable .env
+# without a word, and every env() call then falls back to its hardcoded default
+# — "Database: forge", "Host: 127.0.0.1", connection refused, and nothing in
+# any log to explain it. Better to refuse to start.
+if ! gosu www-data test -r "$ENV_LIVE"; then
+    log "FATAL: $ENV_LIVE is not readable by www-data (uid 33), the user"
     log "       php-fpm runs as. Laravel would ignore it silently and fall back"
     log "       to config defaults (Database: forge, Host: 127.0.0.1)."
-    log "       Current: $(ls -l "$APP_HOME/.env" 2>/dev/null)"
-    log "       Fix it on the host, in the directory holding docker-compose.yml:"
-    log "         chmod 644 .env"
-    log "       Host file modes carry into the container as-is, and the uid that"
-    log "       owns the file there is almost never uid 33."
+    log "       Current: $(ls -l "$ENV_LIVE" 2>/dev/null)"
     exit 1
 fi
 
-# The superadmin settings screen saves mail, payment gateway and backup
-# settings by rewriting .env in place (file_put_contents, no temp-file rename,
-# so a single-file bind mount is fine). That needs www-data to have write
-# access. Granting it by group rather than owner leaves the host user's own
-# ownership and write access untouched — .env is a bind mount, so whatever we
-# do here lands on the host file too.
-if ! gosu www-data test -w "$APP_HOME/.env"; then
-    chgrp 33 "$APP_HOME/.env" 2>/dev/null || true
-    chmod 664 "$APP_HOME/.env" 2>/dev/null || true
-
-    if gosu www-data test -w "$APP_HOME/.env"; then
-        log ".env made writable by www-data (group 33, mode 664)"
-    else
-        log "WARN: .env is not writable by www-data, and could not be made so."
-        log "      The app starts fine and reads its configuration normally, but"
-        log "      saving on the superadmin settings screen will fail with"
-        log "      \"make sure .env file has 644 permission & owned by www-data\"."
-        log "      If that is deliberate (:ro mount, hardened host), ignore this."
-        log "      Otherwise, on the host: sudo chgrp www-data .env && chmod 664 .env"
-    fi
+# The superadmin settings screen rewrites this file. Not fatal if it cannot —
+# the app runs fine, that one screen just refuses to save.
+if ! gosu www-data test -w "$ENV_LIVE"; then
+    log "WARN: $ENV_LIVE is not writable by www-data. The app reads its"
+    log "      configuration normally, but saving on the superadmin settings"
+    log "      screen will fail with \"make sure .env file has 644 permission"
+    log "      & owned by www-data user\". Check the storage volume's ownership."
 fi
 
 if [ -z "$(env_get APP_KEY)" ]; then

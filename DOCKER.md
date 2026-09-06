@@ -25,7 +25,7 @@ Only `docker compose down -v` or an explicit `docker volume rm` destroys them.
 | Volume       | Mounted at                          | Holds |
 |--------------|-------------------------------------|-------|
 | `uploads`    | `/var/www/html/public/uploads`      | **every uploaded file** — product images, business and invoice logos, documents, CMS media, and the local-disk database backups |
-| `storage`    | `/var/www/html/storage`             | logs, compiled views, Passport signing keys, mPDF temp files |
+| `storage`    | `/var/www/html/storage`             | **the live `.env`**, logs, compiled views, Passport signing keys, mPDF temp files |
 | `db-data`    | `/var/lib/mysql`                    | the database |
 | `redis-data` | `/data`                             | Redis append-only file |
 
@@ -44,15 +44,13 @@ git clone <your-repo> /opt/ultimate-pos && cd /opt/ultimate-pos
 **1. Configuration.** One `.env` serves both Laravel and compose:
 
 ```bash
-cp .env.docker.example .env && chmod 644 .env
+cp .env.docker.example .env && chmod 600 .env
 ```
 
-644, not 600. The file is bind-mounted into the container with its host mode
-intact, and php-fpm runs as `www-data` (uid 33) — which will not be the uid that
-owns it on the host. A 600 `.env` is unreadable to the app, and Laravel ignores
-an unreadable `.env` *silently*, falling back to config defaults. If the host
-has other untrusted users, keep the secrets private by tightening the directory
-instead (`chmod 750 .` ), not the file.
+This is the *seed*: the containers copy it into the `storage` volume on first
+start and work from that copy, and compose reads `DB_*`/`REDIS_PASSWORD`/
+`HTTP_*` from it directly. See [Configuration](#configuration) — in particular
+how to push a later edit into the live copy.
 
 Edit it. At minimum set `DB_DATABASE`, `DB_USERNAME` (not `root`),
 `DB_PASSWORD`, `DB_ROOT_PASSWORD`, `REDIS_PASSWORD`, and the `APP_URL` /
@@ -98,7 +96,7 @@ Default login is `admin` / `12345678` — change it immediately.
 ## Migrations and seeding
 
 Artisan runs inside the `app` container — the only place that has `vendor/`, the
-`.env` mount, and a route to the database.
+live configuration, and a route to the database.
 
 ```bash
 docker compose exec app php artisan migrate --force
@@ -300,36 +298,72 @@ serves both. On the live side, terminate TLS in front of the stack (next
 section); nginx already forwards the scheme so PHP sees the request as secure,
 and `APP_URL` makes the app emit https links.
 
-## Settings that write to .env
+## Configuration
 
-The superadmin settings screen does not only write to the database — mail,
-payment gateway, backup, pusher and app-name settings are saved by rewriting
-`.env` itself. Three things have to line up for that to work in a container.
+There are two `.env` files, and knowing which is which saves a lot of confusion.
 
-**The mount is read-write.** `docker-compose.yml` mounts `./.env` without `:ro`.
-Add `:ro` back if you would rather manage configuration only from the host —
-the settings screen will then fail to save, which is the honest outcome.
+| | Path | Role |
+|---|---|---|
+| **Seed** | `./.env` on the host | What you edit. Compose reads `DB_*`, `REDIS_PASSWORD`, `HTTP_*`, `ADMINER_*` straight from it. Mounted into the app containers read-only at `/config/.env`. |
+| **Live** | `storage/env/.env` in the `storage` volume | What the application actually reads and writes. `/var/www/html/.env` is a symlink to it. |
 
-**www-data can write it.** php-fpm runs as `www-data` (uid 33) and the app
-checks `is_writable()` before saving; when that fails you get *"make sure .env
-file has 644 permission & owned by www-data user"*. The entrypoint now grants
-access on every start, by group rather than by owner:
+On first start the entrypoint copies the seed to the live location, `chown`s it
+to `www-data`, and links `/var/www/html/.env` at it. After that the live copy is
+authoritative and the seed is not consulted again unless you ask for it.
 
+### Why not just mount ./.env onto /var/www/html/.env
+
+That was the original design and it fails on real Linux hosts. The superadmin
+settings screen saves mail, payment gateway, backup, pusher and app-name
+settings **by rewriting `.env`**, and writing through a *single-file bind mount*
+gets refused on hosts running AppArmor or a snap-confined Docker, even when
+ownership and mode are provably correct — you see `is_writable()` return `true`
+while `open()` returns `EACCES`, because `access(2)` doesn't consult those
+layers and `open(2)` does. It also breaks whenever you edit the host file with
+an editor: `vim`, `nano` and `sed -i` replace the inode, and the mount keeps
+pointing at the old one.
+
+Neither applies to a Docker-managed volume, so the live copy lives there.
+
+Note that this is invisible on macOS: Docker Desktop and OrbStack share bind
+mounts through a VM filesystem that doesn't enforce Unix ownership, so the old
+arrangement appeared to work locally and failed only on the server.
+
+### Changing configuration
+
+**From the app** — the superadmin settings screen. It writes the live copy;
+nothing else is needed.
+
+**From the host** — edit `./.env`, then push it into the live copy by setting
+`ENV_RESEED=true` in that same file and restarting:
+
+```bash
+docker compose up -d
+# then set ENV_RESEED back to false
 ```
-chgrp 33 .env && chmod 664 .env
+
+That **overwrites** the live copy, discarding anything saved from the settings
+screen. For a single value, editing the live copy directly avoids that:
+
+```bash
+docker compose exec app vi /var/www/html/storage/env/.env
+docker compose restart app queue scheduler
 ```
 
-Because `.env` is a bind mount, that lands on the host file too — deliberately
-by group, so your own user keeps ownership and can still edit it without
-`sudo`. If it cannot be made writable (a `:ro` mount, a read-only host
-filesystem) the entrypoint logs a warning and carries on; the app still reads
-its configuration normally.
+Values compose itself needs (`DB_*`, `REDIS_PASSWORD`, `HTTP_*`, `ADMINER_*`)
+must be changed in the host `./.env` — compose never sees the live copy. The
+app never writes those keys, so the two cannot drift on them.
 
-**Nothing caches the old values.** Config caching is off (see [Notes](#notes-on-how-this-is-put-together)),
-so the next web request re-reads `.env` and picks the change up immediately.
-The `queue` and `scheduler` containers are the exception: they are long-lived
-PHP processes that read configuration once at boot. After changing settings
-that affect them — mail credentials above all — restart them:
+Since the container reads the seed as root before dropping privileges, the host
+file no longer has to be readable by `www-data`. `chmod 600 .env` is fine now.
+
+### Nothing caches the old values
+
+Config caching is off (see [Notes](#notes-on-how-this-is-put-together)), so the
+next web request re-reads `.env` and picks up a change immediately. The `queue`
+and `scheduler` containers are the exception — long-lived PHP processes that
+read configuration once at boot. After changing settings that affect them, mail
+credentials above all:
 
 ```bash
 docker compose restart queue scheduler
@@ -479,10 +513,11 @@ validation off) covers the bulk of the performance difference. `route:cache` is
 also skipped, because the module packages register routes in ways that do not
 always survive it.
 
-**`.env` is bind-mounted read-only** rather than injected as environment
-variables, because that is what Laravel and this app expect, and because compose
-reads the same file for `DB_*`, `REDIS_PASSWORD` and `HTTP_*`. One file, no
-duplication. Changing it needs `docker compose restart app queue scheduler`.
+**Configuration is a file, not environment variables**, because that is what
+Laravel and this app expect — and because the app rewrites it at runtime. The
+host copy seeds a live copy in the `storage` volume; see
+[Configuration](#configuration) for why the obvious single-file bind mount does
+not survive contact with AppArmor, snap Docker, or a text editor.
 
 **`max_input_vars` is raised to 10000.** A large sale or stock adjustment posts
 hundreds of line items; PHP's default of 1000 truncates such forms silently.

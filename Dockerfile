@@ -120,7 +120,11 @@ COPY docker/entrypoint.sh    /usr/local/bin/entrypoint
 
 COPY --from=vendor --chown=www-data:www-data ${APP_HOME} ${APP_HOME}
 
-RUN chmod +x /usr/local/bin/entrypoint \
+# The upstream php-fpm image leaves /var/www/html world-writable and sticky
+# (1777). Nothing needs that, it lets any process drop files in the docroot,
+# and it trips fs.protected_symlinks for the .env symlink the entrypoint makes.
+RUN chmod 755 ${APP_HOME} \
+    && chmod +x /usr/local/bin/entrypoint \
     && mkdir -p \
         ${APP_HOME}/bootstrap/cache \
         ${APP_HOME}/public/uploads \
