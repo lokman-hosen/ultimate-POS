@@ -131,6 +131,16 @@ class Transaction extends Model
         return $this->belongsTo(\App\TypesOfService::class, 'types_of_service_id');
     }
 
+    public function verifactuRecords()
+    {
+        return $this->hasMany(\App\Models\VerifactuRecord::class, 'transaction_id');
+    }
+
+    public function verifactuRecord()
+    {
+        return $this->hasOne(\App\Models\VerifactuRecord::class, 'transaction_id')->latestOfMany();
+    }
+
     /**
      * Retrieves documents path if exists
      */

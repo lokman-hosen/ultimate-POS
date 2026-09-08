@@ -33,6 +33,21 @@ class Kernel extends ConsoleKernel
 
             $schedule->command('pos:generateRecurringExpense')->dailyAt('02:00');
 
+            // AEAT VERI*FACTU scheduling
+            // Send pending invoices at 2:00 AM daily (low traffic)
+            $schedule->command('verifactu:send --batch=100')
+                ->dailyAt('02:00')
+                ->withoutOverlapping();
+
+            // Check status every 30 minutes
+            $schedule->command('verifactu:check-status --batch=50')
+                ->everyThirtyMinutes()
+                ->withoutOverlapping();
+
+            // Retry failed submissions every hour
+            $schedule->command('verifactu:send --batch=50 --force')
+                ->hourly()
+                ->withoutOverlapping();
         }
 
         if ($env === 'demo') {

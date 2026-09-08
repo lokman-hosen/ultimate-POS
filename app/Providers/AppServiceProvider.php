@@ -257,7 +257,35 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(\App\Services\Verifactu\SoapClientFactory::class, function ($app) {
+            return new \App\Services\Verifactu\SoapClientFactory();
+        });
+
+        $this->app->singleton(\App\Services\Verifactu\HashChainService::class, function ($app) {
+            return new \App\Services\Verifactu\HashChainService();
+        });
+
+        $this->app->singleton(\App\Services\Verifactu\XmlGenerator::class, function ($app) {
+            return new \App\Services\Verifactu\XmlGenerator();
+        });
+
+        $this->app->singleton(\App\Services\Verifactu\XmlValidator::class, function ($app) {
+            return new \App\Services\Verifactu\XmlValidator();
+        });
+
+        $this->app->singleton(\App\Services\Verifactu\SignatureService::class, function ($app) {
+            return new \App\Services\Verifactu\SignatureService();
+        });
+
+        $this->app->singleton(\App\Services\Verifactu\VerifactuService::class, function ($app) {
+            return new \App\Services\Verifactu\VerifactuService(
+                $app->make(\App\Services\Verifactu\SoapClientFactory::class),
+                $app->make(\App\Services\Verifactu\XmlGenerator::class),
+                $app->make(\App\Services\Verifactu\XmlValidator::class),
+                $app->make(\App\Services\Verifactu\SignatureService::class),
+                $app->make(\App\Services\Verifactu\HashChainService::class)
+            );
+        });
     }
 
     /**
