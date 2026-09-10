@@ -1,5 +1,12 @@
 @extends('layouts.app')
 @section('title', __('home.home'))
+@php
+    $is_admin = auth()->user()->hasRole('Admin#' . session('business.id')) ? true : false;
+    $common_settings = !empty(session('business.common_settings')) ? session('business.common_settings') : [];
+    $enabled_modules = !empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
+
+
+@endphp
 
 @section('content')
     @if(session('preferred_section') == 'quick-access')
@@ -35,32 +42,38 @@
                     <p class="launch-desc">{{ __('home.take_order') }}</p>
                 </a>
 
-                <a href="{{route('products.index')}}" class="launch-card">
-                <span class="launch-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 8l-9-5-9 5 9 5 9-5z"/>
-                        <path d="M3 8v8l9 5 9-5V8"/>
-                        <path d="M12 13v8"/>
-                    </svg>
-                </span>
-                    <p class="launch-title">{{ __('home.products') }}</p>
-                    <p class="launch-desc">{{ __('home.catalog_pricing_stock') }}</p>
-                </a>
+                @if(auth()->user()->can('product.view'))
+                    <a href="{{route('products.index')}}" class="launch-card">
+                        <span class="launch-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 8l-9-5-9 5 9 5 9-5z"/>
+                                <path d="M3 8v8l9 5 9-5V8"/>
+                                <path d="M12 13v8"/>
+                            </svg>
+                        </span>
+                        <p class="launch-title">{{ __('home.products') }}</p>
+                        <p class="launch-desc">{{ __('home.catalog_pricing_stock') }}</p>
+                    </a>
+                @endif
 
-                <a href="{{route('sells.index')}}" class="launch-card">
-                    <span class="launch-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 6h15l-1.5 9h-12z"/>
-                            <path d="M6 6l-1-3H2"/>
-                            <circle cx="9" cy="20" r="1"/>
-                            <circle cx="18" cy="20" r="1"/>
-                        </svg>
-                    </span>
-                    <p class="launch-title">{{ __('home.sales') }}</p>
-                    <p class="launch-desc">{{ __('home.all_orders_invoices') }}</p>
-                </a>
+                @if($is_admin || auth()->user()->hasAnyPermission(['sell.view', 'sell.create', 'direct_sell.access', 'direct_sell.view', 'view_own_sell_only', 'view_commission_agent_sell', 'access_shipping', 'access_own_shipping', 'access_commission_agent_shipping']))
+                    <a href="{{route('sells.index')}}" class="launch-card">
+                        <span class="launch-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 6h15l-1.5 9h-12z"/>
+                                <path d="M6 6l-1-3H2"/>
+                                <circle cx="9" cy="20" r="1"/>
+                                <circle cx="18" cy="20" r="1"/>
+                            </svg>
+                        </span>
+                        <p class="launch-title">{{ __('home.sales') }}</p>
+                        <p class="launch-desc">{{ __('home.all_orders_invoices') }}</p>
+                    </a>
+                @endif
 
-                <a href="{{route('purchases.index')}}" class="launch-card">
+
+                @if(auth()->user()->can('purchase.view') || auth()->user()->can('view_own_purchase'))
+                    <a href="{{route('purchases.index')}}" class="launch-card">
                     <span class="launch-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 7h11v8H3z"/>
@@ -69,11 +82,13 @@
                             <circle cx="17.5" cy="18" r="1.6"/>
                         </svg>
                     </span>
-                    <p class="launch-title">{{ __('home.purchases') }}</p>
-                    <p class="launch-desc">{{ __('home.orders_from_suppliers') }}</p>
-                </a>
+                        <p class="launch-title">{{ __('home.purchases') }}</p>
+                        <p class="launch-desc">{{ __('home.orders_from_suppliers') }}</p>
+                    </a>
+                @endif
 
-                <a href="{{route('contacts.index', ['type' => 'customer'])}}" class="launch-card">
+                @if(auth()->user()->can('supplier.view') || auth()->user()->can('supplier.view_own'))
+                    <a href="{{route('contacts.index', ['type' => 'customer'])}}" class="launch-card">
                     <span class="launch-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="9" cy="7" r="3.2"/>
@@ -82,11 +97,13 @@
                             <path d="M21 20v-1a4.5 4.5 0 0 0-3-4.25"/>
                         </svg>
                     </span>
-                    <p class="launch-title">{{ __('home.customers') }}</p>
-                    <p class="launch-desc">{{ __('home.directory_balances') }}</p>
-                </a>
+                        <p class="launch-title">{{ __('home.customers') }}</p>
+                        <p class="launch-desc">{{ __('home.directory_balances') }}</p>
+                    </a>
+                @endif
 
-                <a href="{{route('contacts.index', ['type' => 'supplier'])}}" class="launch-card">
+                @if(auth()->user()->can('customer.view') || auth()->user()->can('customer.view_own'))
+                    <a href="{{route('contacts.index', ['type' => 'supplier'])}}" class="launch-card">
                     <span class="launch-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 21V9l8-5 8 5v12"/>
@@ -94,31 +111,36 @@
                             <path d="M9 12h.01M15 12h.01M12 9h.01"/>
                         </svg>
                     </span>
-                    <p class="launch-title">{{ __('home.suppliers') }}</p>
-                    <p class="launch-desc">{{ __('home.vendor_directory') }}</p>
-                </a>
+                        <p class="launch-title">{{ __('home.suppliers') }}</p>
+                        <p class="launch-desc">{{ __('home.vendor_directory') }}</p>
+                    </a>
+                @endif
 
-                <a href="{{route('stock-transfers.index')}}" class="launch-card">
+                @if(auth()->user()->can('stock_transfer.view') || auth()->user()->can('stock_transfer.view_own'))
+                    <a href="{{route('stock-transfers.index')}}" class="launch-card">
                     <span class="launch-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 8h11l-3-3"/>
                             <path d="M20 16H9l3 3"/>
                         </svg>
                     </span>
-                    <p class="launch-title">{{ __('home.stock_transfer') }}</p>
-                    <p class="launch-desc">{{ __('home.move_stock_between_locations') }}</p>
-                </a>
+                        <p class="launch-title">{{ __('home.stock_transfer') }}</p>
+                        <p class="launch-desc">{{ __('home.move_stock_between_locations') }}</p>
+                    </a>
+                @endif
 
-                <a href="{{route('expenses.index')}}" class="launch-card">
-                    <span class="launch-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16v16H4z"/>
-                            <path d="M8 9h8M8 13h5"/>
-                        </svg>
-                    </span>
-                    <p class="launch-title">{{ __('home.expenses') }}</p>
-                    <p class="launch-desc">{{ __('home.track_categorize_spend') }}</p>
-                </a>
+               @if(in_array('expenses', $enabled_modules) && (auth()->user()->can('all_expense.access') || auth()->user()->can('view_own_expense')))
+                    <a href="{{route('expenses.index')}}" class="launch-card">
+                        <span class="launch-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16v16H4z"/>
+                                <path d="M8 9h8M8 13h5"/>
+                            </svg>
+                        </span>
+                        <p class="launch-title">{{ __('home.expenses') }}</p>
+                        <p class="launch-desc">{{ __('home.track_categorize_spend') }}</p>
+                    </a>
+               @endif
             </div>
         </div>
         <!--Quick Access Menus End-->
