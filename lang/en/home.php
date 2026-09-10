@@ -29,4 +29,23 @@ return [
     'stock_expiry_alert' => 'Stock Expiry Alert',
     'todays_profit' => "Today's profit",
     'dashboard' => 'Dashboard',
+    'jump_straight' => 'Jump straight into a module — tap a title to get started',
+    //quick access menu
+    'POS' => 'POS',
+    'take_order' => 'Take orders and get paid',
+    'products' => 'Products',
+    'catalog_pricing_stock' => 'Catalog, pricing & stock',
+    'sales' => 'Sales',
+    'all_orders_invoices' => 'All orders & invoices',
+    'purchases' => 'Purchases',
+    'orders_from_suppliers' => 'Orders from suppliers',
+    'customers' => 'Customers',
+    'directory_balances' => 'Directory & balances',
+    'suppliers' => 'Suppliers',
+    'vendor_directory' => 'Vendor directory',
+    'stock_transfer' => 'Stock Transfer',
+    'move_stock_between_locations' => 'Move stock between locations',
+    'expenses' => 'Expenses',
+    'track_categorize_spend' => 'Track & categorize spend',
+
 ];

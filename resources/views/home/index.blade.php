@@ -6,9 +6,9 @@
         <div class="launch-container" id="quick-access-menus">
             <div class="row">
                 <div class="col-md-12 col-lg-6">
-                    <p class="launch-eyebrow">Quick access</p>
-                    <h1 class="launch-heading">What would you like to do?</h1>
-                    <p class="launch-subheading">Jump straight into a module — tap a tile to get started.</p>
+{{--                    <p class="launch-eyebrow">Quick access</p>--}}
+                    <h1 class="launch-heading">{{ __('home.welcome_message', ['name' => Session::get('user.first_name')]) }}</h1>
+                    <p class="launch-subheading">{{ __('home.jump_straight') }}</p>
                 </div>
 
                 <div class="col-md-12 col-lg-6 text-right">
@@ -31,8 +31,8 @@
                         <path d="M12 16v4"/>
                     </svg>
                 </span>
-                    <p class="launch-title">POS</p>
-                    <p class="launch-desc">Take orders and get paid</p>
+                    <p class="launch-title">{{ __('home.POS') }}</p>
+                    <p class="launch-desc">{{ __('home.take_order') }}</p>
                 </a>
 
                 <a href="{{route('products.index')}}" class="launch-card">
@@ -43,8 +43,8 @@
                         <path d="M12 13v8"/>
                     </svg>
                 </span>
-                    <p class="launch-title">Products</p>
-                    <p class="launch-desc">Catalog, pricing & stock</p>
+                    <p class="launch-title">{{ __('home.products') }}</p>
+                    <p class="launch-desc">{{ __('home.catalog_pricing_stock') }}</p>
                 </a>
 
                 <a href="{{route('sells.index')}}" class="launch-card">
@@ -56,8 +56,8 @@
                             <circle cx="18" cy="20" r="1"/>
                         </svg>
                     </span>
-                    <p class="launch-title">Sales</p>
-                    <p class="launch-desc">All orders & invoices</p>
+                    <p class="launch-title">{{ __('home.sales') }}</p>
+                    <p class="launch-desc">{{ __('home.all_orders_invoices') }}</p>
                 </a>
 
                 <a href="{{route('purchases.index')}}" class="launch-card">
@@ -69,8 +69,8 @@
                             <circle cx="17.5" cy="18" r="1.6"/>
                         </svg>
                     </span>
-                    <p class="launch-title">Purchases</p>
-                    <p class="launch-desc">Orders from suppliers</p>
+                    <p class="launch-title">{{ __('home.purchases') }}</p>
+                    <p class="launch-desc">{{ __('home.orders_from_suppliers') }}</p>
                 </a>
 
                 <a href="{{route('contacts.index', ['type' => 'customer'])}}" class="launch-card">
@@ -82,8 +82,8 @@
                             <path d="M21 20v-1a4.5 4.5 0 0 0-3-4.25"/>
                         </svg>
                     </span>
-                    <p class="launch-title">Customers</p>
-                    <p class="launch-desc">Directory & balances</p>
+                    <p class="launch-title">{{ __('home.customers') }}</p>
+                    <p class="launch-desc">{{ __('home.directory_balances') }}</p>
                 </a>
 
                 <a href="{{route('contacts.index', ['type' => 'supplier'])}}" class="launch-card">
@@ -94,8 +94,8 @@
                             <path d="M9 12h.01M15 12h.01M12 9h.01"/>
                         </svg>
                     </span>
-                    <p class="launch-title">Suppliers</p>
-                    <p class="launch-desc">Vendor directory</p>
+                    <p class="launch-title">{{ __('home.suppliers') }}</p>
+                    <p class="launch-desc">{{ __('home.vendor_directory') }}</p>
                 </a>
 
                 <a href="{{route('stock-transfers.index')}}" class="launch-card">
@@ -105,8 +105,8 @@
                             <path d="M20 16H9l3 3"/>
                         </svg>
                     </span>
-                    <p class="launch-title">Stock Transfer</p>
-                    <p class="launch-desc">Move stock between locations</p>
+                    <p class="launch-title">{{ __('home.stock_transfer') }}</p>
+                    <p class="launch-desc">{{ __('home.move_stock_between_locations') }}</p>
                 </a>
 
                 <a href="{{route('expenses.index')}}" class="launch-card">
@@ -116,8 +116,8 @@
                             <path d="M8 9h8M8 13h5"/>
                         </svg>
                     </span>
-                    <p class="launch-title">Expenses</p>
-                    <p class="launch-desc">Track & categorize spend</p>
+                    <p class="launch-title">{{ __('home.expenses') }}</p>
+                    <p class="launch-desc">{{ __('home.track_categorize_spend') }}</p>
                 </a>
             </div>
         </div>
