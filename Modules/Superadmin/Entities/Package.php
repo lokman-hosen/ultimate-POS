@@ -4,6 +4,7 @@ namespace Modules\Superadmin\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Package extends Model
 {
@@ -57,4 +58,11 @@ class Package extends Model
     {
         return $query->where('is_private', 0);
     }
+
+//    protected function price(): Attribute
+//    {
+//        return Attribute::make(
+//            get: fn (string $value) => $value + ($value * 21 / 100),
+//        );
+//    }
 }

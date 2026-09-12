@@ -1,6 +1,6 @@
 <?php
 
-return [
+return array(
     'superadmin' => 'Superadmin',
     'dashboard' => 'Dashboard',
     'all_business' => 'All Businesses',
@@ -18,8 +18,12 @@ return [
     'invoice_count' => 'Number of Invoices',
     'interval' => 'Price Interval',
     'interval_count' => 'Interval',
-    'trial_days' => 'Trial Days',
     'price' => 'Price',
+    'regular_price' => 'Regular Price',
+    'regular_package' => 'If package has no offer then keep empty or enter 0',
+    'tooltip_pkg_regular_price' => 'Enter the regular price before any discount. This price will highlight the offer.',
+    'vat_percentage' => 'VAT(%). Will apply on price',
+    'vat_percentage_message' => 'Vat percentage will be applied on price amount. If VAT is 21% then enter 21',
     'sort_order' => 'Sort Order',
     'active' => 'Active',
     'mark_package_as_popular' => 'Mark Package as Popular',
@@ -265,4 +269,4 @@ return [
     'paid_via' => 'Paid Via',
     'payment_transaction_id' => 'Payment Transaction ID',
     'remaining' => 'Remaining',
-];
+);

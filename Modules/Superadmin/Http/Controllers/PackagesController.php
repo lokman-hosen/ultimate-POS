@@ -95,11 +95,13 @@ class PackagesController extends Controller
 
 
         try {
-            $input = $request->only(['name', 'description', 'location_count', 'user_count', 'product_count', 'invoice_count', 'interval', 'interval_count', 'trial_days', 'price', 'sort_order', 'is_active', 'mark_package_as_popular', 'custom_permissions', 'is_private', 'is_one_time', 'enable_custom_link', 'custom_link',
+            $input = $request->only(['name', 'description', 'location_count', 'user_count', 'product_count', 'invoice_count', 'interval', 'interval_count', 'trial_days', 'price', 'regular_price', 'vat', 'sort_order', 'is_active', 'mark_package_as_popular', 'custom_permissions', 'is_private', 'is_one_time', 'enable_custom_link', 'custom_link',
                 'custom_link_text', 'businesses' ]);
             $currency = System::getCurrency();
 
             $input['price'] = $this->businessUtil->num_uf($input['price'], $currency);
+            $input['regular_price'] = isset($input['regular_price']) ? $this->businessUtil->num_uf($input['regular_price'], $currency) : 0;
+            $input['vat'] = isset($input['vat']) ? $input['vat'] : 0;
             $input['is_active'] = empty($input['is_active']) ? 0 : 1;
             $input['mark_package_as_popular'] = empty($input['mark_package_as_popular']) ? 0 : 1;
             $input['created_by'] = $request->session()->get('user.id');
@@ -152,12 +154,13 @@ class PackagesController extends Controller
                             ->first();
 
         $intervals = ['days' => __('lang_v1.days'), 'months' => __('lang_v1.months'), 'years' => __('lang_v1.years')];
+        $currency = System::getCurrency();
 
         $permissions = $this->moduleUtil->getModuleData('superadmin_package', true);
         $businesses = Business::get()->pluck('name', 'id');
 
         return view('superadmin::packages.edit')
-               ->with(compact('packages', 'intervals', 'permissions', 'businesses'));
+               ->with(compact('packages', 'currency', 'intervals', 'permissions', 'businesses'));
     }
 
     /**
@@ -173,7 +176,7 @@ class PackagesController extends Controller
         }
 
         try {
-            $packages_details = $request->only(['name', 'id', 'description', 'location_count', 'user_count', 'product_count', 'invoice_count', 'interval', 'interval_count', 'trial_days', 'price', 'sort_order', 'is_active', 'mark_package_as_popular', 'custom_permissions', 'is_private', 'is_one_time', 'enable_custom_link', 'custom_link', 'custom_link_text', 'businesses']);
+            $packages_details = $request->only(['name', 'id', 'description', 'location_count', 'user_count', 'product_count', 'invoice_count', 'interval', 'interval_count', 'trial_days', 'price', 'regular_price', 'vat', 'sort_order', 'is_active', 'mark_package_as_popular', 'custom_permissions', 'is_private', 'is_one_time', 'enable_custom_link', 'custom_link', 'custom_link_text', 'businesses']);
 
             $packages_details['is_active'] = empty($packages_details['is_active']) ? 0 : 1;
             $packages_details['mark_package_as_popular'] = empty($packages_details['mark_package_as_popular']) ? 0 : 1;

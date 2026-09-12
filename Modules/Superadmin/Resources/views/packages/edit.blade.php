@@ -120,6 +120,29 @@
                                 </div>
                             </div>
 
+                            <div class="clearfix"></div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('price', __('superadmin::lang.regular_price') . ':') !!}
+                                    @show_tooltip(__('superadmin::lang.tooltip_pkg_price_before_offer'))
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-addon3"><b>{{ $currency->code }}
+                                                {{ $currency->symbol }}</b></span>
+                                        {!! Form::text('regular_price', $packages->regular_price, ['class' => 'form-control input_number', 'placeholder' => __('superadmin::lang.regular_price')]) !!}
+                                    </div>
+                                </div>
+
+                                <span class="help-block">
+                                    @lang('superadmin::lang.regular_package')
+                                </span>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('vat', __('superadmin::lang.vat_percentage') . '*:') !!}
+                                    {!! Form::number('vat', $packages->vat, ['class' => 'form-control', 'required', 'min' => 1, 'placeholder' => __('superadmin::lang.vat_percentage_message')]) !!}
+                                </div>
+                            </div>
+
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     {!! Form::label('sort_order	', __('superadmin::lang.sort_order') . ':') !!}

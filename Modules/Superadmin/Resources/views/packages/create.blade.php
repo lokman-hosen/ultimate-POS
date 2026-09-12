@@ -36,23 +36,23 @@
                         <div class="tw-inline-block tw-min-w-full tw-py-2 tw-align-middle sm:tw-px-5">
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('name', __('lang_v1.name') . ':') !!}
-                                    {!! Form::text('name', null, ['class' => 'form-control', 'required']) !!}
+                                    {!! Form::label('name', __('lang_v1.name') . '*:') !!}
+                                    {!! Form::text('name', null, ['class' => 'form-control', 'required', 'placeholder' => __('lang_v1.name')]) !!}
                                 </div>
                             </div>
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('description', __('superadmin::lang.description') . ':') !!}
-                                    {!! Form::text('description', null, ['class' => 'form-control', 'required']) !!}
+                                    {!! Form::label('description', __('superadmin::lang.description') . '*:') !!}
+                                    {!! Form::text('description', null, ['class' => 'form-control', 'required', 'placeholder' => __('superadmin::lang.description')]) !!}
                                 </div>
                             </div>
 
                             <div class="clearfix"></div>
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('location_count', __('superadmin::lang.location_count') . ':') !!}
-                                    {!! Form::number('location_count', null, ['class' => 'form-control', 'required', 'min' => 0]) !!}
+                                    {!! Form::label('location_count', __('superadmin::lang.location_count') . '*:') !!}
+                                    {!! Form::number('location_count', null, ['class' => 'form-control', 'required', 'min' => 0,'placeholder' => __('superadmin::lang.location_count')]) !!}
 
                                     <span class="help-block">
                                         @lang('superadmin::lang.infinite_help')
@@ -62,31 +62,8 @@
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('user_count', __('superadmin::lang.user_count') . ':') !!}
-                                    {!! Form::number('user_count', null, ['class' => 'form-control', 'required', 'min' => 0]) !!}
-
-                                    <span class="help-block">
-                                        @lang('superadmin::lang.infinite_help')
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="clearfix"></div>
-
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    {!! Form::label('product_count', __('superadmin::lang.product_count') . ':') !!}
-                                    {!! Form::number('product_count', null, ['class' => 'form-control', 'required', 'min' => 0]) !!}
-
-                                    <span class="help-block">
-                                        @lang('superadmin::lang.infinite_help')
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    {!! Form::label('invoice_count', __('superadmin::lang.invoice_count') . ':') !!}
-                                    {!! Form::number('invoice_count', null, ['class' => 'form-control', 'required', 'min' => 0]) !!}
+                                    {!! Form::label('user_count', __('superadmin::lang.user_count') . '*:') !!}
+                                    {!! Form::number('user_count', null, ['class' => 'form-control', 'required', 'min' => 0, 'placeholder' => __('superadmin::lang.user_count')]) !!}
 
                                     <span class="help-block">
                                         @lang('superadmin::lang.infinite_help')
@@ -97,7 +74,30 @@
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('interval', __('superadmin::lang.interval') . ':') !!}
+                                    {!! Form::label('product_count', __('superadmin::lang.product_count') . '*:') !!}
+                                    {!! Form::number('product_count', null, ['class' => 'form-control', 'required', 'min' => 0, 'placeholder' => __('superadmin::lang.product_count')]) !!}
+
+                                    <span class="help-block">
+                                        @lang('superadmin::lang.infinite_help')
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('invoice_count', __('superadmin::lang.invoice_count') . '*:') !!}
+                                    {!! Form::number('invoice_count', null, ['class' => 'form-control', 'required', 'min' => 0, 'placeholder' => __('superadmin::lang.invoice_count')]) !!}
+
+                                    <span class="help-block">
+                                        @lang('superadmin::lang.infinite_help')
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('interval', __('superadmin::lang.interval') . '*:') !!}
 
                                     {!! Form::select('interval', $intervals, null, [
                                         'class' => 'form-control select2',
@@ -109,28 +109,28 @@
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('interval_count	', __('superadmin::lang.interval_count') . ':') !!}
-                                    {!! Form::number('interval_count', null, ['class' => 'form-control', 'required', 'min' => 1]) !!}
+                                    {!! Form::label('interval_count	', __('superadmin::lang.interval_count') . '*:') !!}
+                                    {!! Form::number('interval_count', null, ['class' => 'form-control', 'required', 'min' => 1, 'placeholder' => __('superadmin::lang.interval_count')]) !!}
                                 </div>
                             </div>
                             <div class="clearfix"></div>
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('trial_days	', __('superadmin::lang.trial_days') . ':') !!}
-                                    {!! Form::number('trial_days', null, ['class' => 'form-control', 'required', 'min' => 0]) !!}
+                                    {!! Form::label('trial_days	', __('superadmin::lang.trial_days') . '*:') !!}
+                                    {!! Form::number('trial_days', null, ['class' => 'form-control', 'required', 'min' => 0, 'placeholder' => __('superadmin::lang.trial_days')]) !!}
                                 </div>
                             </div>
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('price', __('superadmin::lang.price') . ':') !!}
+                                    {!! Form::label('price', __('superadmin::lang.price') . '*:') !!}
                                     @show_tooltip(__('superadmin::lang.tooltip_pkg_price'))
 
                                     <div class="input-group">
                                         <span class="input-group-addon" id="basic-addon3"><b>{{ $currency->code }}
                                                 {{ $currency->symbol }}</b></span>
-                                        {!! Form::text('price', null, ['class' => 'form-control input_number', 'required']) !!}
+                                        {!! Form::text('price', null, ['class' => 'form-control input_number', 'required', 'placeholder' => __('superadmin::lang.price')]) !!}
                                     </div>
                                     <span class="help-block">
                                         0 = @lang('superadmin::lang.free_package')
@@ -138,10 +138,33 @@
                                 </div>
                             </div>
                             <div class="clearfix"></div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('price', __('superadmin::lang.regular_price') . ':') !!}
+                                    @show_tooltip(__('superadmin::lang.tooltip_pkg_price_before_offer'))
+                                    <div class="input-group">
+                                        <span class="input-group-addon" id="basic-addon3"><b>{{ $currency->code }}
+                                                {{ $currency->symbol }}</b></span>
+                                        {!! Form::text('regular_price', null, ['class' => 'form-control input_number', 'placeholder' => __('superadmin::lang.regular_price')]) !!}
+                                    </div>
+                                </div>
+
+                                <span class="help-block">
+                                    @lang('superadmin::lang.regular_package')
+                                </span>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    {!! Form::label('vat', __('superadmin::lang.vat_percentage') . '*:') !!}
+                                    {!! Form::number('vat', 21, ['class' => 'form-control', 'required', 'min' => 1, 'placeholder' => __('superadmin::lang.vat_percentage_message')]) !!}
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+
 
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    {!! Form::label('sort_order	', __('superadmin::lang.sort_order') . ':') !!}
+                                    {!! Form::label('sort_order	', __('superadmin::lang.sort_order') . '*:') !!}
                                     {!! Form::number('sort_order', 1, ['class' => 'form-control', 'required']) !!}
                                 </div>
                             </div>

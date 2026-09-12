@@ -25,6 +25,10 @@
 						/ {{$package->interval_count}} {{ucfirst($package->interval)}}
 					</small>)
         		</h3>
+				<h4>
+					Total Payable(Price + IVA 21%):
+					<span class="display_currency" data-currency_symbol="true">{{$package->price + ($package->price * 21 / 100)}}</span>
+				</h4>
         		<ul>
 					<li>
 						@if($package->location_count == 0)
@@ -81,7 +85,7 @@
 					@if (request()->has('code'))
 						<div class="alert alert-{{ $coupon_status['status'] }}">
 						  @if($coupon_status['status'] == 'success')
-							@lang('superadmin::lang.package_price_after_discount') = 
+							@lang('superadmin::lang.package_price_after_discount') =
 							<span class="display_currency" data-currency_symbol="true">{{ number_format($package_price_after_discount , 2, '.', ''); }}</span>
 							(@lang('superadmin::lang.you_save') <span class="display_currency" data-currency_symbol="true">{{ number_format($discount_amount , 2, '.', ''); }}</span>)
 						  @else
@@ -116,7 +120,7 @@
 						<div class="list-group-item">
 							<b>@lang('superadmin::lang.pay_via', ['method' => $v])</b>
 							<div class="row" id="paymentdiv_{{$k}}">
-								@php 
+								@php
 									$view = 'superadmin::subscription.partials.pay_'.$k;
 								@endphp
 								@includeIf($view)
