@@ -97,7 +97,8 @@ class BaseController extends Controller
             $subscription['status'] = 'approved';
         }
 
-        $subscription['package_price'] = empty($code) ? $package->price : $price;
+        //$subscription['package_price'] = empty($code) ? $package->price : $price;
+        $subscription['package_price'] = $price;
         $subscription['coupon_code'] = $code;
         $subscription['original_price'] = $package->price;
         $subscription['package_details'] = [

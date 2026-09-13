@@ -10,7 +10,7 @@
         <div class="tw-flex tw-flex-col tw-text-center">
             <h2 class="pos-price-name">{{ $package->name }}</h2>
             @if(($package->regular_price > $package->price))
-                <h4 class="text-muted tw-text-xl" style="text-decoration: line-through;">
+                <h4 class="text-muted tw-text-sm" style="text-decoration: line-through;">
                     <span class="display_currency" data-use_page_currency="true" data-currency_symbol="true">
                         {{number_format($package->regular_price,2)}}
                     </span>
@@ -27,13 +27,12 @@
                         {{ $package->price }}
                     </span>
                     <span class="pos-price-interval">/ {{ $package->interval_count }} {{ $interval_type }}</span>
-                    <br>
-                    <small>
+                    <p class="tw-text-sm">
                         <span class="display_currency" data-use_page_currency="true" data-currency_symbol="true">
                         {{$package->price + ($package->price * $package->vat / 100)}} IVA incl
                         </span>
                         <span class="text-blue">IVA incl</span>
-                    </small>
+                    </p>
 
                 @else
                     <span class="pos-price-free">
