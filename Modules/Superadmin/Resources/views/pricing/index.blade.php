@@ -27,7 +27,8 @@
                 </div>
 
                  <div class="box-body tw-mt-6">
-                <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-5 md:tw-gap-0 tw-mt-5 md:tw-mt-7 tw-mb-10 tw-h-auto"
+{{--                <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-5 md:tw-gap-0 tw-mt-5 md:tw-mt-7 tw-mb-10 tw-h-auto"--}}
+                <div class="row tw-gap-5 md:tw-gap-0 tw-mt-5 md:tw-mt-7 tw-mb-10 tw-h-auto"
                      id="packages">
                     @include('superadmin::subscription.partials.packages', [
                            'action_type' => 'register',

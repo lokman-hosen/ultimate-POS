@@ -1,4 +1,4 @@
-<div class="col-md-4 tw-mb-5 {{ $package->interval }} tw-relative price_card">
+<div class="col-md-6 col-lg-4 col-xl-3 tw-mb-5 {{ $package->interval }} tw-relative price_card">
     <div class="pos-price-card">
 
         @if ($package->mark_package_as_popular == 1)
@@ -9,7 +9,13 @@
 
         <div class="tw-flex tw-flex-col tw-text-center">
             <h2 class="pos-price-name">{{ $package->name }}</h2>
-
+            @if(($package->regular_price > $package->price))
+                <h4 class="text-muted tw-text-xl" style="text-decoration: line-through;">
+                    <span class="display_currency" data-use_page_currency="true" data-currency_symbol="true">
+                        {{number_format($package->regular_price,2)}}
+                    </span>
+                </h4>
+            @endif
             <h3 class="pos-price-amount">
                 @php
                     $interval_type = !empty($intervals[$package->interval])
