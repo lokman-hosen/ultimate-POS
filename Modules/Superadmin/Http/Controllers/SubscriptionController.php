@@ -934,8 +934,7 @@ class SubscriptionController extends BaseController
             $coupon_code = $request->input('coupon_code');
             $coupon = null;
             //$price = (float) $package->price;
-            $ivaRate = 21;
-            $price = (float) $package->price + ($package->price * $ivaRate / 100);;
+            $price = (float) $package->price + ($package->price * $package->vat / 100);;
 
             if (! empty($coupon_code)) {
                 $coupon = SuperadminCoupon::where('coupon_code', $coupon_code)->first();
