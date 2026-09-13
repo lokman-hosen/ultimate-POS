@@ -26,8 +26,15 @@
                     <span class="display_currency" data-use_page_currency="true" data-currency_symbol="true">
                         {{ $package->price }}
                     </span>
-
                     <span class="pos-price-interval">/ {{ $package->interval_count }} {{ $interval_type }}</span>
+                    <br>
+                    <small>
+                        <span class="display_currency" data-use_page_currency="true" data-currency_symbol="true">
+                        {{$package->price + ($package->price * $package->vat / 100)}} IVA incl
+                        </span>
+                        <span class="text-blue">IVA incl</span>
+                    </small>
+
                 @else
                     <span class="pos-price-free">
                         @lang('superadmin::lang.free_for_duration', ['duration' => $package->interval_count . ' ' . $interval_type])
