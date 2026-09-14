@@ -39,7 +39,8 @@
                 <th>@lang('superadmin::lang.package_name')</th>
                 <th>@lang('lang_v1.quantity')</th>
                 <th>@lang('lang_v1.price')</th>
-                <th>@lang('superadmin::lang.price_vat')</th>
+                <th>Vat(21%)</th>
+                <th>Total(@lang('superadmin::lang.price_vat'))</th>
               </tr>
             </thead>
             <body>
@@ -60,7 +61,8 @@
                   <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span>
                 
                 </td>
-                <td><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span></td>
+                <td><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{calculateVatForAmount($subscription->original_price)}}</span></td>
+                <td><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price + calculateVatForAmount($subscription->original_price) }}</span></td>
               </tr>
             </body>
           </table>
