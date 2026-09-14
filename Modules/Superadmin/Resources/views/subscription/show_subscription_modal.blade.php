@@ -61,8 +61,12 @@
                   <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span>
                 
                 </td>
-                <td><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{calculateVatForAmount($subscription->original_price)}}</span></td>
-                <td><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price + calculateVatForAmount($subscription->original_price) }}</span></td>
+                <td>
+                  <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{calculateVatForAmount($subscription->original_price)}}</span>
+                </td>
+                <td>
+                  <b><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price + calculateVatForAmount($subscription->original_price) }}</span></b>
+                </td>
               </tr>
             </body>
           </table>
