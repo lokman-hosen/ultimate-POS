@@ -20,6 +20,7 @@ return [
     'interval_count' => 'Intervalo',
     'trial_days' => 'Días de prueba',
     'price' => 'Precio',
+    'price_vat' => 'Precio + IVA',
     'sort_order' => 'Orden de clasificación',
     'is_active' => 'Activar',
     'mark_package_as_popular' => 'Marcar paquete como popular',

@@ -20,6 +20,7 @@ return [
     'interval_count' => 'Interval',
     'trial_days' => 'Trial Days',
     'price' => 'Price',
+    'price_vat' => 'Price + VAT',
     'sort_order' => 'Sort Order',
     'active' => 'Active',
     'mark_package_as_popular' => 'Mark Package as Popular',

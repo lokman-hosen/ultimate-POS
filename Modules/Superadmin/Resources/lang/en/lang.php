@@ -19,6 +19,7 @@ return array(
     'interval' => 'Price Interval',
     'interval_count' => 'Interval',
     'price' => 'Price',
+    'price_vat' => 'Precio + IVA',
     'regular_price' => 'Regular Price',
     'regular_package' => 'If package has no offer then keep empty or enter 0',
     'tooltip_pkg_regular_price' => 'Enter the regular price before any discount. This price will highlight the offer.',

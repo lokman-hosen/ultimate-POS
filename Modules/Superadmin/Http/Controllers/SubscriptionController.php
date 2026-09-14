@@ -818,6 +818,10 @@ class SubscriptionController extends BaseController
                  'package_price',
                  '<span class="display_currency" data-currency_symbol="true">{{$package_price}}</span>'
              )
+            ->editColumn(
+                 'original_price',
+                 '<span class="display_currency" data-currency_symbol="true">{{$original_price}}</span>'
+             )
              ->editColumn(
                  'created_at',
                  '@if(!empty($created_at)){{@format_date($created_at)}}@endif'
@@ -828,7 +832,7 @@ class SubscriptionController extends BaseController
              ->addColumn('action', function ($row) {
                  return '<button type="button" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-primary btn-modal" data-container=".view_modal" data-href="'.action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'show'], $row->id).'" ><i class="fa fa-eye" aria-hidden="true"></i> '.__('messages.view').'</button>';
              })
-             ->rawColumns(['package_price', 'action'])
+             ->rawColumns(['package_price', 'original_price', 'action'])
              ->make(true);
     }
 

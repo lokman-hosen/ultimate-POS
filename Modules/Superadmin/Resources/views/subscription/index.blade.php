@@ -8,95 +8,95 @@
 
         @include('superadmin::layouts.partials.currency')
 
-        {{-- <div class="box">
-        <div class="box-header">
-            <h3 class="box-title">@lang('superadmin::lang.active_subscription') </h3>
-        </div>
+{{--        --}}{{-- <div class="box">--}}
+{{--        <div class="box-header">--}}
+{{--            <h3 class="box-title">@lang('superadmin::lang.active_subscription') </h3>--}}
+{{--        </div>--}}
 
-        <div class="box-body">
-        	@if (!empty($active))
-        		<div class="col-md-4">
-	        		<div class="box box-success">
-						<div class="box-header with-border text-center">
-							<h2 class="box-title">
-								{{$active->package_details['name']}}
-							</h2>
+{{--        <div class="box-body">--}}
+{{--        	@if (!empty($active))--}}
+{{--        		<div class="col-md-4">--}}
+{{--	        		<div class="box box-success">--}}
+{{--						<div class="box-header with-border text-center">--}}
+{{--							<h2 class="box-title">--}}
+{{--								{{$active->package_details['name']}}--}}
+{{--							</h2>--}}
 
-							<div class="box-tools pull-right">
-								<span class="badge bg-green">
-									@lang('superadmin::lang.running')
-								</span>
-              				</div>
+{{--							<div class="box-tools pull-right">--}}
+{{--								<span class="badge bg-green">--}}
+{{--									@lang('superadmin::lang.running')--}}
+{{--								</span>--}}
+{{--              				</div>--}}
 
-						</div>
-						<div class="box-body text-center">
-							@lang('superadmin::lang.start_date') : {{@format_date($active->start_date)}} <br/>
-							@lang('superadmin::lang.end_date') : {{@format_date($active->end_date)}} <br/>
+{{--						</div>--}}
+{{--						<div class="box-body text-center">--}}
+{{--							@lang('superadmin::lang.start_date') : {{@format_date($active->start_date)}} <br/>--}}
+{{--							@lang('superadmin::lang.end_date') : {{@format_date($active->end_date)}} <br/>--}}
 
-							@lang('superadmin::lang.remaining', ['days' => \Carbon::today()->diffInDays($active->end_date)])
+{{--							@lang('superadmin::lang.remaining', ['days' => \Carbon::today()->diffInDays($active->end_date)])--}}
 
-						</div>
-					</div>
-				</div>
-        	@else
-        		<h3 class="text-danger">@lang('superadmin::lang.no_active_subscription')</h3>
-        	@endif
+{{--						</div>--}}
+{{--					</div>--}}
+{{--				</div>--}}
+{{--        	@else--}}
+{{--        		<h3 class="text-danger">@lang('superadmin::lang.no_active_subscription')</h3>--}}
+{{--        	@endif--}}
 
-        	@if (!empty($nexts))
-        		<div class="clearfix"></div>
-        		@foreach ($nexts as $next)
-        			<div class="col-md-4">
-		        		<div class="box box-success">
-							<div class="box-header with-border text-center">
-								<h2 class="box-title">
-									{{$next->package_details['name']}}
-								</h2>
-								<div class="box-tools pull-right">
-									<span class="badge bg-green">
-										@lang('superadmin::lang.upcoming')
-									</span>
-								</div>
-							</div>
-							<div class="box-body text-center">
-								@lang('superadmin::lang.start_date') : {{@format_date($next->start_date)}} <br/>
-								@lang('superadmin::lang.end_date') : {{@format_date($next->end_date)}}
-							</div>
-							<div class="box-footer bg-gray disabled text-center">
-								
-								<a href="{{ route('force-active', $next->id) }}"
-								class="btn btn-block btn-success force_activate_now">
-								 @lang('superadmin::lang.force_activate_now')
-								</a>
-					</div>
-						</div>
-					</div>
-        		@endforeach
-        	@endif
+{{--        	@if (!empty($nexts))--}}
+{{--        		<div class="clearfix"></div>--}}
+{{--        		@foreach ($nexts as $next)--}}
+{{--        			<div class="col-md-4">--}}
+{{--		        		<div class="box box-success">--}}
+{{--							<div class="box-header with-border text-center">--}}
+{{--								<h2 class="box-title">--}}
+{{--									{{$next->package_details['name']}}--}}
+{{--								</h2>--}}
+{{--								<div class="box-tools pull-right">--}}
+{{--									<span class="badge bg-green">--}}
+{{--										@lang('superadmin::lang.upcoming')--}}
+{{--									</span>--}}
+{{--								</div>--}}
+{{--							</div>--}}
+{{--							<div class="box-body text-center">--}}
+{{--								@lang('superadmin::lang.start_date') : {{@format_date($next->start_date)}} <br/>--}}
+{{--								@lang('superadmin::lang.end_date') : {{@format_date($next->end_date)}}--}}
+{{--							</div>--}}
+{{--							<div class="box-footer bg-gray disabled text-center">--}}
+{{--								--}}
+{{--								<a href="{{ route('force-active', $next->id) }}"--}}
+{{--								class="btn btn-block btn-success force_activate_now">--}}
+{{--								 @lang('superadmin::lang.force_activate_now')--}}
+{{--								</a>--}}
+{{--					</div>--}}
+{{--						</div>--}}
+{{--					</div>--}}
+{{--        		@endforeach--}}
+{{--        	@endif--}}
 
-        	@if (!empty($waiting))
-        		<div class="clearfix"></div>
-        		@foreach ($waiting as $row)
-        			<div class="col-md-4">
-		        		<div class="box box-success">
-							<div class="box-header with-border text-center">
-								<h2 class="box-title">
-									{{$row->package_details['name']}}
-								</h2>
-							</div>
-							<div class="box-body text-center">
-                                @if ($row->paid_via == 'offline')
-                                    @lang('superadmin::lang.waiting_approval')
-                                @else
-                                    @lang('superadmin::lang.waiting_approval_gateway')
-                                @endif
-							</div>
-						</div>
-					</div>
-        		@endforeach
-        	@endif
+{{--        	@if (!empty($waiting))--}}
+{{--        		<div class="clearfix"></div>--}}
+{{--        		@foreach ($waiting as $row)--}}
+{{--        			<div class="col-md-4">--}}
+{{--		        		<div class="box box-success">--}}
+{{--							<div class="box-header with-border text-center">--}}
+{{--								<h2 class="box-title">--}}
+{{--									{{$row->package_details['name']}}--}}
+{{--								</h2>--}}
+{{--							</div>--}}
+{{--							<div class="box-body text-center">--}}
+{{--                                @if ($row->paid_via == 'offline')--}}
+{{--                                    @lang('superadmin::lang.waiting_approval')--}}
+{{--                                @else--}}
+{{--                                    @lang('superadmin::lang.waiting_approval_gateway')--}}
+{{--                                @endif--}}
+{{--							</div>--}}
+{{--						</div>--}}
+{{--					</div>--}}
+{{--        		@endforeach--}}
+{{--        	@endif--}}
 
-        </div>
-    </div> --}}
+{{--        </div>--}}
+{{--    </div> --}}
 
         @component('components.widget')
             <div class="box-header">
@@ -236,6 +236,7 @@
                                         <th>@lang('superadmin::lang.start_date')</th>
                                         <th>@lang('superadmin::lang.trial_end_date')</th>
                                         <th>@lang('superadmin::lang.end_date')</th>
+                                        <th>@lang('superadmin::lang.price')(@lang('superadmin::lang.price_vat'))</th>
                                         <th>@lang('superadmin::lang.price')</th>
                                         <th>@lang('superadmin::lang.paid_via')</th>
                                         <th>@lang('superadmin::lang.payment_transaction_id')</th>
@@ -303,6 +304,10 @@
                     {
                         data: 'package_price',
                         name: 'package_price'
+                    },
+                    {
+                        data: 'original_price',
+                        name: 'original_price'
                     },
                     {
                         data: 'paid_via',

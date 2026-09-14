@@ -20,6 +20,7 @@ return [
     'interval_count' => 'Intervalo',
     'trial_days' => 'Días de prueba',
     'price' => 'Precio',
+    'price_vat' => 'Precio + IVA',
     'regular_price' => 'Regular Price',
     'regular_package' => 'If package has no offer then keep null or enter 0',
     'tooltip_pkg_regular_price' => 'Enter the regular price before any discount. This price will highlight the offer.',
