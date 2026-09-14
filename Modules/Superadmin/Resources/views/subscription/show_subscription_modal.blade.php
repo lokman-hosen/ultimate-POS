@@ -1,5 +1,5 @@
 <div class="modal-dialog" role="document">
-  <div class="modal-content">
+  <div class="modal-content modal-lg">
     <div class="modal-header no-print">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h4 class="modal-title"></h4>
@@ -39,6 +39,7 @@
                 <th>@lang('superadmin::lang.package_name')</th>
                 <th>@lang('lang_v1.quantity')</th>
                 <th>@lang('lang_v1.price')</th>
+                <th>@lang('superadmin::lang.price_vat')</th>
               </tr>
             </thead>
             <body>
@@ -46,18 +47,20 @@
                 <td>{{$subscription->package->name}}</td>
                 <td>1</td>
                 <td>
-                  @if (empty($subscription->coupon_code))
-                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span>
-                  @else
-                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span> <br>
-                      
-                     - <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true"> {{ $subscription->original_price - $subscription->package_price }}</span>  <small class="badge bg-info">{{ $subscription->coupon_code }}</small> <br>
+{{--                  @if (empty($subscription->coupon_code))--}}
+{{--                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span>--}}
+{{--                  @else--}}
+{{--                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span> <br>--}}
+{{--                      --}}
+{{--                     - <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true"> {{ $subscription->original_price - $subscription->package_price }}</span>  <small class="badge bg-info">{{ $subscription->coupon_code }}</small> <br>--}}
 
-                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span> <br>
+{{--                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span> <br>--}}
 
-                  @endif
+{{--                  @endif--}}
+                  <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span>
                 
                 </td>
+                <td><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span></td>
               </tr>
             </body>
           </table>
