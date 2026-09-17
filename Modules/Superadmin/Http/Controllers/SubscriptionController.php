@@ -21,6 +21,7 @@ use Srmklive\PayPal\Services\ExpressCheckout;
 use Stripe\Charge;
 use Stripe\Customer;
 use Stripe\Stripe;
+use Stripe\Subscription as StripeSubscription;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -1040,13 +1041,22 @@ class SubscriptionController extends BaseController
              */
             \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
 
+            [$stripe_interval, $stripe_interval_count] = $this->stripeRecurringInterval($package);
+
             $checkout_session = \Stripe\Checkout\Session::create([
-                'mode' => 'payment',
+                'mode' => 'subscription',
+                'payment_method_types' => array_values(array_filter(
+                    explode(',', (string) config('services.stripe.payment_method_types', 'card,sepa_debit'))
+                )),
 
                 'line_items' => [
                     [
                         'price_data' => [
                             'currency' => $currency,
+                            'recurring' => [
+                                'interval' => $stripe_interval,
+                                'interval_count' => $stripe_interval_count,
+                            ],
 
                             'product_data' => [
                                 'name' => $package->name,
@@ -1070,6 +1080,17 @@ class SubscriptionController extends BaseController
                     'package_name' => $package->name,
                     'coupon_code' => $coupon_code ?? '',
                     'price' => $price,
+                ],
+                'subscription_data' => [
+                    'metadata' => [
+                        'business_id' => (string) $business_id,
+                        'business_name' => $business_name,
+                        'user_id' => (string) $user_id,
+                        'package_id' => (string) $package_id,
+                        'package_name' => $package->name,
+                        'coupon_code' => $coupon_code ?? '',
+                        'price' => (string) $price,
+                    ],
                 ],
 
                 'success_url' => action([
@@ -1134,71 +1155,6 @@ class SubscriptionController extends BaseController
                 throw new \Exception('Stripe session ID is missing.');
             }
 
-            \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
-
-            /*
-             * Retrieve the Checkout Session from Stripe.
-             */
-            $checkout_session = \Stripe\Checkout\Session::retrieve($session_id);
-
-
-            /*
-             * Make sure the payment was actually successful.
-             */
-            if ($checkout_session->payment_status !== 'paid') {
-                throw new \Exception('Stripe payment was not completed.');
-            }
-
-            $metadata = $checkout_session->metadata;
-
-            $business_id = $metadata->business_id ?? null;
-            $package_id = $metadata->package_id ?? null;
-            $user_id = $metadata->user_id ?? null;
-            $coupon_code = $metadata->coupon_code ?? null;
-            $price = isset($metadata->price)
-                ? (float) $metadata->price
-                : null;
-
-            if (empty($business_id) || empty($package_id) || empty($user_id)) {
-                throw new \Exception('Invalid Stripe payment metadata.');
-            }
-
-            /*
-             * Prevent duplicate subscription creation.
-             */
-            $existing_subscription = Subscription::where(
-                'payment_transaction_id',
-                $checkout_session->payment_intent
-            )->first();
-
-            if ($existing_subscription) {
-                return redirect()
-                    ->action([
-                        \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
-                        'index'
-                    ])
-                    ->with('status', [
-                        'success' => 1,
-                        'msg' => __('lang_v1.success'),
-                    ]);
-            }
-
-            /*
-             * Add subscription only after Stripe confirms
-             * payment as paid.
-             */
-            $this->_add_subscription(
-                $coupon_code,
-                $price,
-                $business_id,
-                $package_id,
-                'stripe',
-                $checkout_session->payment_intent,
-                $user_id
-            );
-
-            Session::forget('stripe_checkout');
-
             return redirect()
                 ->action([
                     \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
@@ -1206,7 +1162,7 @@ class SubscriptionController extends BaseController
                 ])
                 ->with('status', [
                     'success' => 1,
-                    'msg' => __('lang_v1.success'),
+                    'msg' => 'Stripe checkout completed. Your subscription will activate after Stripe confirms the payment.',
                 ]);
 
         } catch (\Exception $e) {
@@ -1250,5 +1206,54 @@ class SubscriptionController extends BaseController
                 'success' => 0,
                 'msg' => 'Payment was cancelled.',
             ]);
+    }
+
+    public function stripeCancelAtPeriodEnd(Request $request)
+    {
+        if (! auth()->user()->can('superadmin.access_package_subscriptions')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $businessId = $request->session()->get('user.business_id');
+        $subscription = Subscription::where('business_id', $businessId)
+            ->whereNotNull('stripe_subscription_id')
+            ->whereIn('stripe_status', ['active', 'trialing', 'past_due'])
+            ->latest('end_date')
+            ->firstOrFail();
+
+        Stripe::setApiKey(config('services.stripe.secret_key'));
+        StripeSubscription::update($subscription->stripe_subscription_id, [
+            'cancel_at_period_end' => true,
+        ]);
+
+        $subscription->forceFill(['cancel_at_period_end' => true])->save();
+
+        return redirect()
+            ->action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index'])
+            ->with('status', [
+                'success' => 1,
+                'msg' => 'Your subscription will not renew and access will remain available until the paid period ends.',
+            ]);
+    }
+
+    protected function stripeRecurringInterval(Package $package): array
+    {
+        if ($package->interval === 'days') {
+            if ($package->interval_count > 7) {
+                throw new \InvalidArgumentException('Stripe supports a maximum recurring interval of 7 days.');
+            }
+
+            return ['day', $package->interval_count];
+        }
+
+        if ($package->interval === 'months') {
+            return ['month', $package->interval_count];
+        }
+
+        if ($package->interval === 'years') {
+            return ['year', $package->interval_count];
+        }
+
+        throw new \InvalidArgumentException('Unsupported package billing interval.');
     }
 }

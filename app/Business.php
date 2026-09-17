@@ -94,6 +94,15 @@ class Business extends Model
         return $this->hasMany('\Modules\Superadmin\Entities\Subscription');
     }
 
+    public function activeSubscription()
+    {
+        return $this->hasOne('\Modules\Superadmin\Entities\Subscription')
+            ->where('status', 'approved')
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->latestOfMany('end_date');
+    }
+
     /**
      * Creates a new business based on the input provided.
      *

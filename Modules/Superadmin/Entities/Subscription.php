@@ -22,6 +22,14 @@ class Subscription extends Model
         'end_date' => 'datetime',
         'package_details' => 'array',    ];
 
+    public function getIsActiveAttribute(): bool
+    {
+        return $this->status === 'approved'
+            && in_array($this->stripe_status, [null, 'active', 'trialing'], true)
+            && $this->start_date?->isPast()
+            && $this->end_date?->isFuture();
+    }
+
     /**
      * Scope a query to only include approved subscriptions.
      *

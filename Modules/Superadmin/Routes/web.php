@@ -80,6 +80,12 @@ Route::middleware('web', 'SetSessionData', 'auth', 'language', 'timezone', 'Admi
     Route::get('/subscriptions/stripe/cancel', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'stripeCancel'
     ])->name('superadmin.subscription.stripe.cancel');
 
+    Route::post('/subscriptions/stripe/cancel-at-period-end', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'stripeCancelAtPeriodEnd'
+    ])->name('superadmin.subscription.stripe.cancel-at-period-end');
+
 });
 
 Route::get('/page/{slug}', [Modules\Superadmin\Http\Controllers\PageController::class, 'showPage'])->name('frontend-pages');
+
+Route::post('subscriptions/webhook/stripe', [Modules\Superadmin\Http\Controllers\StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook');

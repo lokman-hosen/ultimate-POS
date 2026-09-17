@@ -123,6 +123,18 @@
                                 @lang('superadmin::lang.start_date') : {{ @format_date($active->start_date) }} <br />
                                 @lang('superadmin::lang.end_date') : {{ @format_date($active->end_date) }} <br />
                                 @lang('superadmin::lang.remaining') : {{\Carbon::today()->diffInDays($active->end_date)}} @lang('lang_v1.days')
+                                @if($active->stripe_subscription_id && !$active->cancel_at_period_end)
+                                    <form method="POST" action="{{ route('superadmin.subscription.stripe.cancel-at-period-end') }}" class="tw-mt-3">
+                                        @csrf
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            Cancel renewal
+                                        </button>
+                                    </form>
+                                @elseif($active->cancel_at_period_end)
+                                    <div class="text-warning tw-mt-2">
+                                        Renewal cancelled; access remains until the paid period ends.
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
