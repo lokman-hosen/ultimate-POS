@@ -71,6 +71,7 @@ class StripeWebhookController extends Controller
             'invoice.paid' => $this->invoicePaid($object),
             'invoice.payment_succeeded' => $this->invoicePaid($object),
             'invoice.payment_failed' => $this->invoicePaymentFailed($object),
+            'payment_intent.succeeded' => $this->paymentIntentSucceeded($object),
             default => null,
         };
     }
@@ -109,13 +110,15 @@ class StripeWebhookController extends Controller
 
     protected function invoicePaid(object $invoice): void
     {
-        $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+        $subscriptionId = $this->stripeId($invoice->subscription ?? null);
+        $paymentIntentId = $this->paymentIntentFromInvoice($invoice);
+        $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
 
-        if (!$subscription && !empty($invoice->subscription)) {
-            $this->syncSubscription($invoice->subscription, [
-                'payment_intent' => $invoice->payment_intent ?? null,
+        if (!$subscription && $subscriptionId) {
+            $this->syncSubscription($subscriptionId, [
+                'payment_intent' => $paymentIntentId,
             ]);
-            $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+            $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
         }
 
         if (!$subscription) {
@@ -126,17 +129,20 @@ class StripeWebhookController extends Controller
             'status' => 'approved',
             'stripe_status' => 'active',
             'stripe_invoice_id' => $invoice->id,
-            'stripe_payment_intent_id' => $invoice->payment_intent ?? $subscription->stripe_payment_intent_id,
+            'payment_transaction_id' => $paymentIntentId ?: $subscription->payment_transaction_id,
+            'stripe_payment_intent_id' => $paymentIntentId ?: $subscription->stripe_payment_intent_id,
         ])->save();
     }
 
     protected function invoicePaymentFailed(object $invoice): void
     {
-        $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+        $subscriptionId = $this->stripeId($invoice->subscription ?? null);
+        $paymentIntentId = $this->paymentIntentFromInvoice($invoice);
+        $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
 
-        if (!$subscription && !empty($invoice->subscription)) {
-            $this->syncSubscription($invoice->subscription);
-            $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+        if (!$subscription && $subscriptionId) {
+            $this->syncSubscription($subscriptionId);
+            $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
         }
 
         if (!$subscription) {
@@ -146,7 +152,54 @@ class StripeWebhookController extends Controller
         $subscription->forceFill([
             'stripe_status' => 'past_due',
             'stripe_invoice_id' => $invoice->id,
-            'stripe_payment_intent_id' => $invoice->payment_intent ?? $subscription->stripe_payment_intent_id,
+            'stripe_payment_intent_id' => $paymentIntentId ?: $subscription->stripe_payment_intent_id,
+        ])->save();
+    }
+
+    protected function paymentIntentSucceeded(object $paymentIntent): void
+    {
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
+
+        $paymentIntentId = $this->stripeId($paymentIntent);
+        $invoiceId = $this->stripeId($paymentIntent->invoice ?? null);
+        $subscriptionId = null;
+
+        $checkoutSessionId = $paymentIntent->payment_details->order_reference ?? null;
+        if ($checkoutSessionId && str_starts_with($checkoutSessionId, 'cs_')) {
+            $checkoutSession = \Stripe\Checkout\Session::retrieve($checkoutSessionId);
+            $subscriptionId = $this->stripeId($checkoutSession->subscription ?? null);
+            $invoiceId = $invoiceId ?: $this->stripeId($checkoutSession->invoice ?? null);
+        }
+
+        if (!$invoiceId && !$subscriptionId) {
+            return;
+        }
+
+        $subscription = $subscriptionId
+            ? Subscription::where('stripe_subscription_id', $subscriptionId)->first()
+            : null;
+
+        $subscription = $subscription ?: Subscription::where('stripe_invoice_id', $invoiceId)->first();
+        if (!$subscription) {
+            if (!$invoiceId) {
+                return;
+            }
+
+            $invoice = \Stripe\Invoice::retrieve($invoiceId);
+            $subscriptionId = $this->stripeId($invoice->subscription ?? null);
+            $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
+        }
+
+        if (!$subscription) {
+            return;
+        }
+
+        $subscription->forceFill([
+            'stripe_invoice_id' => $invoiceId ?: $subscription->stripe_invoice_id,
+            'payment_transaction_id' => $paymentIntentId,
+            'stripe_payment_intent_id' => $paymentIntentId,
+            'status' => 'approved',
+            'stripe_status' => 'active',
         ])->save();
     }
 
@@ -171,6 +224,30 @@ class StripeWebhookController extends Controller
             throw new \RuntimeException('Stripe subscription package does not exist.');
         }
 
+        $latestInvoice = null;
+        $startTimestamp = $stripeSubscription->start_date ?? now()->timestamp;
+        $endTimestamp = $stripeSubscription->current_period_end
+            ?? ($stripeSubscription->items->data[0]->current_period_end ?? null);
+        if (!empty($stripeSubscription->latest_invoice)) {
+            $latestInvoice = \Stripe\Invoice::retrieve($this->stripeId($stripeSubscription->latest_invoice));
+            if (!$endTimestamp) {
+                $endTimestamp = $latestInvoice->period_end
+                    ?? ($latestInvoice->lines->data[0]->period->end ?? null);
+            }
+        }
+
+        if (!$endTimestamp || $endTimestamp <= $startTimestamp) {
+            $endTimestamp = $this->packageEndTimestamp(
+                Carbon::createFromTimestamp($startTimestamp),
+                $package
+            );
+        }
+
+        $paymentIntentId = $this->stripeId($extra['payment_intent'] ?? null);
+        if (!$paymentIntentId && $latestInvoice) {
+            $paymentIntentId = $this->paymentIntentFromInvoice($latestInvoice);
+        }
+
         $active = in_array($stripeSubscription->status, ['active', 'trialing'], true);
         $subscription = Subscription::firstOrNew([
             'stripe_subscription_id' => $stripeSubscription->id,
@@ -183,9 +260,9 @@ class StripeWebhookController extends Controller
             'original_price' => $package->price,
             'coupon_code' => $metadata->coupon_code ?? null,
             'paid_via' => 'stripe',
-            'payment_transaction_id' => $stripeSubscription->latest_invoice ?? $subscription->payment_transaction_id,
-            'start_date' => $this->dateFromTimestamp($stripeSubscription->start_date ?? now()->timestamp),
-            'end_date' => $this->dateFromTimestamp($stripeSubscription->current_period_end),
+            'payment_transaction_id' => $paymentIntentId ?: $subscription->payment_transaction_id,
+            'start_date' => $this->dateFromTimestamp($startTimestamp),
+            'end_date' => $this->dateFromTimestamp($endTimestamp),
             'trial_end_date' => !empty($stripeSubscription->trial_end)
                 ? $this->dateFromTimestamp($stripeSubscription->trial_end)
                 : null,
@@ -194,7 +271,7 @@ class StripeWebhookController extends Controller
             'stripe_price_id' => $stripeSubscription->items->data[0]->price->id ?? $subscription->stripe_price_id,
             'stripe_payment_method_id' => $stripeSubscription->default_payment_method ?? $subscription->stripe_payment_method_id,
             'stripe_invoice_id' => $stripeSubscription->latest_invoice ?? $subscription->stripe_invoice_id,
-            'stripe_payment_intent_id' => $extra['payment_intent'] ?? $subscription->stripe_payment_intent_id,
+            'stripe_payment_intent_id' => $paymentIntentId ?: $subscription->stripe_payment_intent_id,
             'stripe_status' => $stripeSubscription->status,
             'cancel_at_period_end' => (bool) $stripeSubscription->cancel_at_period_end,
             'package_details' => $this->packageDetails($package),
@@ -216,5 +293,47 @@ class StripeWebhookController extends Controller
     protected function dateFromTimestamp(?int $timestamp): ?Carbon
     {
         return $timestamp ? Carbon::createFromTimestamp($timestamp) : null;
+    }
+
+    protected function packageEndTimestamp(Carbon $startDate, Package $package): int
+    {
+        return match ($package->interval) {
+            'days' => $startDate->copy()->addDays((int) $package->interval_count)->timestamp,
+            'months' => $startDate->copy()->addMonths((int) $package->interval_count)->timestamp,
+            'years' => $startDate->copy()->addYears((int) $package->interval_count)->timestamp,
+            default => throw new \InvalidArgumentException('Unsupported package billing interval.'),
+        };
+    }
+
+    protected function stripeId($value): ?string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        return is_object($value) ? ($value->id ?? null) : null;
+    }
+
+    protected function paymentIntentFromInvoice(?object $invoice): ?string
+    {
+        if (!$invoice) {
+            return null;
+        }
+
+        $paymentIntentId = $this->stripeId($invoice->payment_intent ?? null);
+        if ($paymentIntentId) {
+            return $paymentIntentId;
+        }
+
+        foreach (($invoice->payments->data ?? []) as $payment) {
+            $paymentIntentId = $this->stripeId($payment->payment_intent ?? null)
+                ?? $this->stripeId($payment->payment->payment_intent ?? null);
+
+            if ($paymentIntentId) {
+                return $paymentIntentId;
+            }
+        }
+
+        return null;
     }
 }
