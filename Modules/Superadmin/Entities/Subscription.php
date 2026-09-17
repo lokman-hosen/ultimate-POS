@@ -19,6 +19,7 @@ class Subscription extends Model
      */
     protected $casts = [
         'start_date' => 'datetime',
+        'trial_end_date' => 'datetime',
         'end_date' => 'datetime',
         'package_details' => 'array',    ];
 

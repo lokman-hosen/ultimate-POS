@@ -69,6 +69,7 @@ class StripeWebhookController extends Controller
             'customer.subscription.updated' => $this->subscriptionUpdated($object),
             'customer.subscription.deleted' => $this->subscriptionDeleted($object),
             'invoice.paid' => $this->invoicePaid($object),
+            'invoice.payment_succeeded' => $this->invoicePaid($object),
             'invoice.payment_failed' => $this->invoicePaymentFailed($object),
             default => null,
         };
@@ -88,7 +89,7 @@ class StripeWebhookController extends Controller
 
     protected function subscriptionUpdated(object $stripeSubscription, array $extra = []): void
     {
-        $this->syncSubscription($stripeSubscription, $extra);
+        $this->syncSubscription($stripeSubscription->id, $extra);
     }
 
     protected function subscriptionDeleted(object $stripeSubscription): void
@@ -109,6 +110,14 @@ class StripeWebhookController extends Controller
     protected function invoicePaid(object $invoice): void
     {
         $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+
+        if (!$subscription && !empty($invoice->subscription)) {
+            $this->syncSubscription($invoice->subscription, [
+                'payment_intent' => $invoice->payment_intent ?? null,
+            ]);
+            $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+        }
+
         if (!$subscription) {
             return;
         }
@@ -124,6 +133,12 @@ class StripeWebhookController extends Controller
     protected function invoicePaymentFailed(object $invoice): void
     {
         $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+
+        if (!$subscription && !empty($invoice->subscription)) {
+            $this->syncSubscription($invoice->subscription);
+            $subscription = Subscription::where('stripe_subscription_id', $invoice->subscription)->first();
+        }
+
         if (!$subscription) {
             return;
         }
