@@ -8,11 +8,13 @@ use Modules\Superadmin\Entities\Package;
 
 class SubscriptionPricingService
 {
+    private const VAT_RATE = 21.0;
+
     public function resolve(Business $business, Package $package, ?Carbon $periodStart = null): array
     {
         $periodStart = ($periodStart ?: now())->copy();
         $baseAmount = $this->baseAmount($business, $package, $periodStart);
-        $vatAmount = round($baseAmount * ((float) $package->vat / 100), 2);
+        $vatAmount = round($baseAmount * (self::VAT_RATE / 100), 2);
 
         return [
             'base_amount' => round($baseAmount, 2),
@@ -37,13 +39,33 @@ class SubscriptionPricingService
     {
         return match ($business->business_type) {
             'company' => Carbon::create(2027, 1, 1)->startOfDay(),
-            'self_employed' => Carbon::create(2027, 6, 1)->startOfDay(),
+            'self_employed' => Carbon::create(2027, 7, 1)->startOfDay(),
             default => null,
         };
     }
 
     protected function baseAmount(Business $business, Package $package, Carbon $periodStart): float
     {
+        if ($package->interval === 'months' || $package->interval === 'years') {
+            $periodMonths = $package->interval === 'years'
+                ? (int) $package->interval_count * 12
+                : (int) $package->interval_count;
+            $monthlyPackageAmount = (float) $package->price / $periodMonths;
+            $promotionEnd = $this->promotionEnd($business);
+            $baseAmount = 0.0;
+            $month = $periodStart->copy()->startOfMonth();
+
+            for ($monthNumber = 0; $monthNumber < $periodMonths; $monthNumber++) {
+                $baseAmount += $promotionEnd !== null && $month->lt($promotionEnd)
+                    ? 1.00
+                    : $monthlyPackageAmount;
+
+                $month->addMonth();
+            }
+
+            return $baseAmount;
+        }
+
         return $this->promotionApplies($business, $periodStart)
             ? 1.00
             : (float) $package->price;
