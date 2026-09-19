@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Modules\Superadmin\Entities\Package;
+use Modules\Superadmin\Entities\StripeInvoiceRecord;
 use Modules\Superadmin\Entities\StripeWebhookEvent;
 use Modules\Superadmin\Entities\Subscription;
 
@@ -125,13 +126,36 @@ class StripeWebhookController extends Controller
             return;
         }
 
+        $paidAmount = ((int) ($invoice->amount_paid ?? $invoice->total ?? 0)) / 100;
         $subscription->forceFill([
             'status' => 'approved',
             'stripe_status' => 'active',
             'stripe_invoice_id' => $invoice->id,
             'payment_transaction_id' => $paymentIntentId ?: $subscription->payment_transaction_id,
             'stripe_payment_intent_id' => $paymentIntentId ?: $subscription->stripe_payment_intent_id,
+            'package_price' => $paidAmount > 0 ? $paidAmount : $subscription->package_price,
+            'start_date' => $this->dateFromTimestamp($invoice->period_start ?? null) ?: $subscription->start_date,
+            'end_date' => $this->dateFromTimestamp($invoice->period_end ?? null) ?: $subscription->end_date,
         ])->save();
+
+        $amount = $paidAmount;
+        $metadata = $invoice->metadata ?? [];
+        StripeInvoiceRecord::updateOrCreate(
+            ['stripe_invoice_id' => $invoice->id],
+            [
+                'subscription_id' => $subscription->id,
+                'package_id' => $subscription->package_id,
+                'stripe_payment_intent_id' => $paymentIntentId,
+                'base_amount' => (float) ($metadata->base_price ?? $subscription->package_price),
+                'vat_amount' => (float) ($metadata->vat_amount ?? 0),
+                'total_amount' => $amount,
+                'currency' => $invoice->currency ?? null,
+                'billing_period_start' => $this->dateFromTimestamp($invoice->period_start ?? null),
+                'billing_period_end' => $this->dateFromTimestamp($invoice->period_end ?? null),
+                'paid_at' => now(),
+                'status' => 'paid',
+            ]
+        );
     }
 
     protected function invoicePaymentFailed(object $invoice): void
@@ -225,7 +249,8 @@ class StripeWebhookController extends Controller
         }
 
         $latestInvoice = null;
-        $startTimestamp = $stripeSubscription->start_date ?? now()->timestamp;
+        $startTimestamp = $stripeSubscription->current_period_start
+            ?? ($stripeSubscription->start_date ?? now()->timestamp);
         $endTimestamp = $stripeSubscription->current_period_end
             ?? ($stripeSubscription->items->data[0]->current_period_end ?? null);
         if (!empty($stripeSubscription->latest_invoice)) {
@@ -256,7 +281,11 @@ class StripeWebhookController extends Controller
         $subscription->forceFill([
             'business_id' => $businessId,
             'package_id' => $package->id,
-            'package_price' => $metadata->price ?? $package->price,
+            'package_price' => $metadata->price ?? $subscription->package_price ?? $package->price,
+            'next_renewal_price' => $metadata->renewal_price ?? $subscription->next_renewal_price,
+            'next_renewal_at' => !empty($metadata->renewal_at)
+                ? Carbon::parse($metadata->renewal_at)
+                : $subscription->next_renewal_at,
             'original_price' => $package->price,
             'coupon_code' => $metadata->coupon_code ?? null,
             'paid_via' => 'stripe',
@@ -270,7 +299,7 @@ class StripeWebhookController extends Controller
             'stripe_customer_id' => $extra['customer'] ?? $stripeSubscription->customer ?? $subscription->stripe_customer_id,
             'stripe_price_id' => $stripeSubscription->items->data[0]->price->id ?? $subscription->stripe_price_id,
             'stripe_payment_method_id' => $stripeSubscription->default_payment_method ?? $subscription->stripe_payment_method_id,
-            'stripe_invoice_id' => $stripeSubscription->latest_invoice ?? $subscription->stripe_invoice_id,
+            'stripe_invoice_id' => $this->stripeId($stripeSubscription->latest_invoice) ?: $subscription->stripe_invoice_id,
             'stripe_payment_intent_id' => $paymentIntentId ?: $subscription->stripe_payment_intent_id,
             'stripe_status' => $stripeSubscription->status,
             'cancel_at_period_end' => (bool) $stripeSubscription->cancel_at_period_end,

@@ -63,6 +63,7 @@ class SuperadminServiceProvider extends ServiceProvider
             $this->app->booted(function () {
                 $schedule = $this->app->make(Schedule::class);
                 $schedule->command('pos:sendSubscriptionExpiryAlert')->daily();
+                $schedule->command('subscriptions:sync-renewal-prices')->dailyAt('23:00');
             });
         }
     }
@@ -86,7 +87,8 @@ class SuperadminServiceProvider extends ServiceProvider
     protected function registerCommands()
     {
         $this->commands([
-            \Modules\Superadmin\Console\SubscriptionExpiryAlert::class
+            \Modules\Superadmin\Console\SubscriptionExpiryAlert::class,
+            \Modules\Superadmin\Console\SyncRenewalPrices::class,
         ]);
     }
 

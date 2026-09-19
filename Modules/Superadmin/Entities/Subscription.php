@@ -21,6 +21,7 @@ class Subscription extends Model
         'start_date' => 'datetime',
         'trial_end_date' => 'datetime',
         'end_date' => 'datetime',
+        'next_renewal_at' => 'datetime',
         'package_details' => 'array',    ];
 
     public function getIsActiveAttribute(): bool

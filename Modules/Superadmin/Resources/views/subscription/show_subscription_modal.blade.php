@@ -12,9 +12,9 @@
             <strong>@lang('business.business_name'): </strong> {{$system["invoice_business_name"]}} <br>
             <strong>@lang('business.email'): </strong> {{$system["email"]}} <br>
             <strong>@lang('business.landmark'): </strong> {{$system["invoice_business_landmark"]}} <br>
-            <strong>@lang('business.city'): </strong> {{$system["invoice_business_city"]}}
+            <strong>@lang('business.city'): </strong> {{$system["invoice_business_city"]}} <br>
             <strong>@lang('business.zip_code'): </strong> {{$system["invoice_business_zip"]}} <br>
-            <strong>@lang('business.state'): </strong> {{$system["invoice_business_state"]}}
+            <strong>@lang('business.state'): </strong> {{$system["invoice_business_state"]}} <br>
             <strong>@lang('business.country'): </strong> {{$system["invoice_business_country"]}}
           </div>
         </div>
@@ -33,6 +33,11 @@
       </div>
       <div class="row">
         <div class="col-md-12">
+          @php
+            $total_amount = (float) $subscription->package_price;
+            $price = $total_amount / 1.21;
+            $vat_amount = $total_amount - $price;
+          @endphp
           <table class="table subscription-details">
             <thead>
               <tr>
@@ -43,32 +48,22 @@
                 <th>Total(@lang('superadmin::lang.price_vat'))</th>
               </tr>
             </thead>
-            <body>
+            <tbody>
               <tr>
                 <td>{{$subscription->package->name}}</td>
                 <td>1</td>
                 <td>
-{{--                  @if (empty($subscription->coupon_code))--}}
-{{--                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span>--}}
-{{--                  @else--}}
-{{--                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span> <br>--}}
-{{--                      --}}
-{{--                     - <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true"> {{ $subscription->original_price - $subscription->package_price }}</span>  <small class="badge bg-info">{{ $subscription->coupon_code }}</small> <br>--}}
-
-{{--                      <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->package_price }}</span> <br>--}}
-
-{{--                  @endif--}}
-                  <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price }}</span>
+                  <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $price }}</span>
                 
                 </td>
                 <td>
-                  <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{calculateVatForAmount($subscription->original_price)}}</span>
+                  <span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $vat_amount }}</span>
                 </td>
                 <td>
-                  <b><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $subscription->original_price + calculateVatForAmount($subscription->original_price) }}</span></b>
+                  <b><span class="display_currency" data-currency_symbol="true" data-use_page_currency="true">{{ $total_amount }}</span></b>
                 </td>
               </tr>
-            </body>
+            </tbody>
           </table>
         </div>
       </div>

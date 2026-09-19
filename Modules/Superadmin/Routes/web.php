@@ -83,6 +83,9 @@ Route::middleware('web', 'SetSessionData', 'auth', 'language', 'timezone', 'Admi
     Route::post('/subscriptions/stripe/cancel-at-period-end', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'stripeCancelAtPeriodEnd'
     ])->name('superadmin.subscription.stripe.cancel-at-period-end');
 
+    Route::post('/subscriptions/package/change', [Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'changePackage'
+    ])->name('superadmin.subscription.package.change');
+
 });
 
 Route::get('/page/{slug}', [Modules\Superadmin\Http\Controllers\PageController::class, 'showPage'])->name('frontend-pages');

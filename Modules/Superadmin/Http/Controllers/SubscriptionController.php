@@ -13,6 +13,9 @@ use Modules\Superadmin\Entities\Package;
 use Modules\Superadmin\Entities\Subscription;
 use Modules\Superadmin\Entities\SuperadminCoupon;
 use Modules\Superadmin\Notifications\SubscriptionOfflinePaymentActivationConfirmation;
+use Modules\Superadmin\Services\StripePriceService;
+use Modules\Superadmin\Services\SubscriptionChangeService;
+use Modules\Superadmin\Services\SubscriptionPricingService;
 use Notification;
 use Paystack;
 use Pesapal;
@@ -911,6 +914,9 @@ class SubscriptionController extends BaseController
         try {
             $business_id = request()->session()->get('user.business_id');
             $business_name = request()->session()->get('business.name');
+            if (empty($business_name) and $business_id){
+                $business_name = Business::find($business_id)->name;
+            }
             $user_id = request()->session()->get('user.id');
 
             $package = Package::active()->findOrFail($package_id);
@@ -938,8 +944,10 @@ class SubscriptionController extends BaseController
              */
             $coupon_code = $request->input('coupon_code');
             $coupon = null;
-            //$price = (float) $package->price;
-            $price = (float) $package->price + ($package->price * $package->vat / 100);
+            $business = Business::findOrFail($business_id);
+            $pricing = app(SubscriptionPricingService::class)->resolve($business, $package);
+            $base_price = $pricing['base_amount'];
+            $price = $pricing['total_amount'];
 
             if (! empty($coupon_code)) {
                 $coupon = SuperadminCoupon::where('coupon_code', $coupon_code)->first();
@@ -967,13 +975,13 @@ class SubscriptionController extends BaseController
 
                     if ($valid_coupon) {
                         if ($coupon->discount_type == 'fixed') {
-                            $price = (float) $package->price - (float) $coupon->discount;
+                            $base_price -= (float) $coupon->discount;
                         } elseif ($coupon->discount_type == 'percentage') {
-                            $discount_amount = (float) $package->price * ((float) $coupon->discount / 100);
-                            $price = (float) $package->price - $discount_amount;
+                            $base_price -= $base_price * ((float) $coupon->discount / 100);
                         }
 
-                        $price = max(0, $price);
+                        $base_price = max(0, $base_price);
+                        $price = round($base_price + ($base_price * ((float) $package->vat / 100)), 2);
                     }
                 }
             }
@@ -1041,7 +1049,10 @@ class SubscriptionController extends BaseController
              */
             \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
 
-            [$stripe_interval, $stripe_interval_count] = $this->stripeRecurringInterval($package);
+            $stripe_price_id = null;
+            if (empty($coupon_code)) {
+                $stripe_price_id = app(StripePriceService::class)->forRecurringPackage($package, $pricing);
+            }
 
             $checkout_session = \Stripe\Checkout\Session::create([
                 'mode' => 'subscription',
@@ -1050,24 +1061,23 @@ class SubscriptionController extends BaseController
                 )),
 
                 'line_items' => [
-                    [
-                        'price_data' => [
-                            'currency' => $currency,
-                            'recurring' => [
-                                'interval' => $stripe_interval,
-                                'interval_count' => $stripe_interval_count,
+                    $stripe_price_id
+                        ? ['price' => $stripe_price_id, 'quantity' => 1]
+                        : [
+                            'price_data' => [
+                                'currency' => $currency,
+                                'recurring' => [
+                                    'interval' => $this->stripeRecurringInterval($package)[0],
+                                    'interval_count' => $this->stripeRecurringInterval($package)[1],
+                                ],
+                                'product_data' => [
+                                    'name' => $package->name,
+                                    'description' => config('app.name') . ' Subscription',
+                                ],
+                                'unit_amount' => $stripe_amount,
                             ],
-
-                            'product_data' => [
-                                'name' => $package->name,
-                                'description' => config('app.name') . ' Subscription',
-                            ],
-
-                            'unit_amount' => $stripe_amount,
+                            'quantity' => 1,
                         ],
-
-                        'quantity' => 1,
-                    ],
                 ],
 
                 'customer_email' => auth()->user()->email ?? null,
@@ -1080,6 +1090,8 @@ class SubscriptionController extends BaseController
                     'package_name' => $package->name,
                     'coupon_code' => $coupon_code ?? '',
                     'price' => $price,
+                    'base_price' => $base_price,
+                    'vat_amount' => round($price - $base_price, 2),
                 ],
                 'subscription_data' => [
                     'metadata' => [
@@ -1090,6 +1102,8 @@ class SubscriptionController extends BaseController
                         'package_name' => $package->name,
                         'coupon_code' => $coupon_code ?? '',
                         'price' => (string) $price,
+                        'base_price' => (string) $base_price,
+                        'vat_amount' => (string) round($price - $base_price, 2),
                     ],
                 ],
 
@@ -1233,6 +1247,31 @@ class SubscriptionController extends BaseController
             ->with('status', [
                 'success' => 1,
                 'msg' => 'Your subscription will not renew and access will remain available until the paid period ends.',
+            ]);
+    }
+
+    public function changePackage(Request $request, SubscriptionChangeService $changes)
+    {
+        if (! auth()->user()->can('superadmin.access_package_subscriptions')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate(['package_id' => ['required', 'integer']]);
+        $businessId = $request->session()->get('user.business_id');
+        $subscription = Subscription::where('business_id', $businessId)
+            ->whereNotNull('stripe_subscription_id')
+            ->whereIn('stripe_status', ['active', 'trialing', 'past_due'])
+            ->latest('end_date')
+            ->firstOrFail();
+        $package = Package::active()->findOrFail($request->integer('package_id'));
+
+        $changes->change($subscription, $package);
+
+        return redirect()
+            ->action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index'])
+            ->with('status', [
+                'success' => 1,
+                'msg' => 'Your package change was submitted and the billing adjustment will be confirmed by Stripe.',
             ]);
     }
 
