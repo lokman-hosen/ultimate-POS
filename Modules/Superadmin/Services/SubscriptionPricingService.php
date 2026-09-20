@@ -39,7 +39,7 @@ class SubscriptionPricingService
     {
         return match ($business->business_type) {
             'company' => Carbon::create(2027, 1, 1)->startOfDay(),
-            'self_employed' => Carbon::create(2027, 7, 1)->startOfDay(),
+            'self_employed' => Carbon::create(2027, 6, 1)->startOfDay(),
             default => null,
         };
     }

@@ -89,6 +89,29 @@ class StripeWebhookController extends Controller
         ]);
     }
 
+    public function syncCheckoutSession(string $sessionId): void
+    {
+        \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
+
+        $session = \Stripe\Checkout\Session::retrieve([
+            'id' => $sessionId,
+            'expand' => ['subscription'],
+        ]);
+
+        if (($session->mode ?? null) !== 'subscription' || empty($session->subscription)) {
+            return;
+        }
+
+        $stripeSubscription = is_object($session->subscription)
+            ? $session->subscription
+            : \Stripe\Subscription::retrieve($session->subscription);
+
+        $this->syncSubscription($stripeSubscription->id, [
+            'customer' => $session->customer ?? null,
+            'payment_intent' => $session->payment_intent ?? null,
+        ]);
+    }
+
     protected function subscriptionUpdated(object $stripeSubscription, array $extra = []): void
     {
         $this->syncSubscription($stripeSubscription->id, $extra);

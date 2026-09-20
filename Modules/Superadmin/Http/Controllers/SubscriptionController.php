@@ -1169,6 +1169,8 @@ class SubscriptionController extends BaseController
                 throw new \Exception('Stripe session ID is missing.');
             }
 
+            app(StripeWebhookController::class)->syncCheckoutSession($session_id);
+
             return redirect()
                 ->action([
                     \Modules\Superadmin\Http\Controllers\SubscriptionController::class,
