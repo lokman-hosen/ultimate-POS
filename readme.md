@@ -28,3 +28,7 @@ The Ultimate POS software is licensed under the [Codecanyon license](https://cod
 Businbess:
 Username: admin
 Pass: 12345678
+
+## Stripe Webhook(Local Environment)
+1. Run the following command (run the 2nd command if this does not work): stripe listen --forward-to http://127.0.0.1:8000/subscriptions/webhook/stripe
+2. In the second terminal run the following command. stripe listen --all-snapshot --forward-to http://127.0.0.1:8000/subscriptions/webhook/stripe

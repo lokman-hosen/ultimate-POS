@@ -26,14 +26,24 @@ class SubscriptionChangeService
             throw new \RuntimeException('This subscription cannot be changed through Stripe.');
         }
 
+        if ((int) $subscription->package_id === (int) $newPackage->id) {
+            throw new \RuntimeException('You are already subscribed to this package.');
+        }
+
         $stripeSubscription = StripeSubscription::retrieve($subscription->stripe_subscription_id);
         $item = $stripeSubscription->items->data[0] ?? null;
         if (!$item) {
             throw new \RuntimeException('The Stripe subscription has no subscription item.');
         }
 
-        $periodStart = Carbon::createFromTimestamp($stripeSubscription->current_period_start);
-        $periodEnd = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
+        $periodStartTimestamp = $item->current_period_start ?? null;
+        $periodEndTimestamp = $item->current_period_end ?? null;
+        if (!$periodStartTimestamp || !$periodEndTimestamp) {
+            throw new \RuntimeException('The Stripe subscription item has no billing period dates.');
+        }
+
+        $periodStart = Carbon::createFromTimestamp($periodStartTimestamp);
+        $periodEnd = Carbon::createFromTimestamp($periodEndTimestamp);
         $at = now();
         $old = $this->pricing->resolve($subscription->business, $subscription->package, $periodStart);
         $new = $this->pricing->resolve($subscription->business, $newPackage, $periodStart);
@@ -68,6 +78,7 @@ class SubscriptionChangeService
             StripeSubscription::update($stripeSubscription->id, [
                 'items' => [['id' => $item->id, 'price' => $stripePriceId]],
                 'proration_behavior' => 'none',
+                'cancel_at_period_end' => false,
             ]);
 
             DB::table('subscription_changes')->insert([
@@ -92,6 +103,7 @@ class SubscriptionChangeService
                 'package_price' => $new['total_amount'],
                 'original_price' => $newPackage->price,
                 'stripe_price_id' => $stripePriceId,
+                'cancel_at_period_end' => false,
                 'package_details' => $this->packageDetails($newPackage),
             ])->save();
         });

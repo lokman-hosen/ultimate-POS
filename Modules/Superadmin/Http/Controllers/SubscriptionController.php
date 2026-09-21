@@ -103,11 +103,53 @@ class SubscriptionController extends BaseController
         }
 
         try {
-            DB::beginTransaction();
-
             $business_id = request()->session()->get('user.business_id');
 
             $package = Package::active()->find($package_id);
+            if (!$package) {
+                throw new \RuntimeException('The selected package is not available.');
+            }
+
+            if (empty($form_register)) {
+                $activeSubscription = Subscription::with(['package', 'business'])
+                    ->where('business_id', $business_id)
+                    ->where('status', 'approved')
+                    ->whereDate('start_date', '<=', today())
+                    ->whereDate('end_date', '>=', today())
+                    ->latest('end_date')
+                    ->first();
+
+                if ($activeSubscription) {
+                    if ((int) $activeSubscription->package_id === (int) $package->id) {
+                        return redirect()
+                            ->back()
+                            ->with('status', [
+                                'success' => 0,
+                                'msg' => 'You are already subscribed to this package.',
+                            ]);
+                    }
+
+                    if (!$activeSubscription->stripe_subscription_id) {
+                        return redirect()
+                            ->back()
+                            ->with('status', [
+                                'success' => 0,
+                                'msg' => 'Your active subscription cannot be changed automatically. Please contact support.',
+                            ]);
+                    }
+
+                    app(SubscriptionChangeService::class)->change($activeSubscription, $package);
+
+                    return redirect()
+                        ->action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index'])
+                        ->with('status', [
+                            'success' => 1,
+                            'msg' => 'Your package has been changed and the billing adjustment was submitted to Stripe.',
+                        ]);
+                }
+            }
+
+            DB::beginTransaction();
 
             //Check if superadmin only package
             if ($package->is_private == 1 && ! auth()->user()->can('superadmin')) {

@@ -47,20 +47,23 @@ class SubscriptionPricingService
     protected function baseAmount(Business $business, Package $package, Carbon $periodStart): float
     {
         if ($package->interval === 'months' || $package->interval === 'years') {
-            $periodMonths = $package->interval === 'years'
-                ? (int) $package->interval_count * 12
-                : (int) $package->interval_count;
-            $monthlyPackageAmount = (float) $package->price / $periodMonths;
+            $periodEnd = $this->periodEnd($periodStart, $package);
+            $periodMonths = $periodStart->diffInMonths($periodEnd);
+            $monthlyPackageAmount = (float) $package->price / max(1, $periodMonths);
             $promotionEnd = $this->promotionEnd($business);
             $baseAmount = 0.0;
             $month = $periodStart->copy()->startOfMonth();
 
             for ($monthNumber = 0; $monthNumber < $periodMonths; $monthNumber++) {
-                $baseAmount += $promotionEnd !== null && $month->lt($promotionEnd)
+                $isPromotionalMonth = $promotionEnd !== null
+                    && $month->lt($promotionEnd)
+                    && $month->copy()->endOfMonth()->gte($periodStart);
+
+                $baseAmount += $isPromotionalMonth
                     ? 1.00
                     : $monthlyPackageAmount;
 
-                $month->addMonth();
+                $month->addMonthNoOverflow();
             }
 
             return $baseAmount;
