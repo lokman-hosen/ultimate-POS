@@ -8,13 +8,12 @@ use Modules\Superadmin\Entities\Package;
 
 class SubscriptionPricingService
 {
-    private const VAT_RATE = 21.0;
-
     public function resolve(Business $business, Package $package, ?Carbon $periodStart = null): array
     {
-        $periodStart = ($periodStart ?: now())->copy();
+        $periodStart = ($periodStart ? $periodStart->copy() : Carbon::now('UTC'));
         $baseAmount = $this->baseAmount($business, $package, $periodStart);
-        $vatAmount = round($baseAmount * (self::VAT_RATE / 100), 2);
+        $vatRate = (float) ($package->vat ?? 0);
+        $vatAmount = round($baseAmount * ($vatRate / 100), 2);
 
         return [
             'base_amount' => round($baseAmount, 2),
@@ -35,11 +34,20 @@ class SubscriptionPricingService
         return round($amount * ($remainingSeconds / $totalSeconds), 2);
     }
 
+    /**
+     * Promotion cutoff dates are business-financial facts, not display
+     * values, so they must be anchored to UTC regardless of which
+     * business's local timezone happens to be active for this request
+     * (see Timezone middleware, which calls date_default_timezone_set()
+     * per business). periodStart (derived from Stripe timestamps) is
+     * always UTC, so comparing it against a non-UTC promotion end date
+     * can shift month-boundary decisions by the timezone's offset.
+     */
     public function promotionEnd(Business $business): ?Carbon
     {
         return match ($business->business_type) {
-            'company' => Carbon::create(2027, 1, 1)->startOfDay(),
-            'self_employed' => Carbon::create(2027, 6, 1)->startOfDay(),
+            'company' => Carbon::create(2027, 1, 1, 0, 0, 0, 'UTC'),
+            'self_employed' => Carbon::create(2027, 6, 1, 0, 0, 0, 'UTC'),
             default => null,
         };
     }
@@ -52,7 +60,7 @@ class SubscriptionPricingService
             $monthlyPackageAmount = (float) $package->price / max(1, $periodMonths);
             $promotionEnd = $this->promotionEnd($business);
             $baseAmount = 0.0;
-            $month = $periodStart->copy()->startOfMonth();
+            $month = $periodStart->copy()->utc()->startOfMonth();
 
             for ($monthNumber = 0; $monthNumber < $periodMonths; $monthNumber++) {
                 $isPromotionalMonth = $promotionEnd !== null

@@ -134,7 +134,7 @@ class StripeWebhookController extends Controller
 
     protected function invoicePaid(object $invoice): void
     {
-        $subscriptionId = $this->stripeId($invoice->subscription ?? null);
+        $subscriptionId = $this->subscriptionIdFromInvoice($invoice);
         $paymentIntentId = $this->paymentIntentFromInvoice($invoice);
         $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
 
@@ -150,16 +150,31 @@ class StripeWebhookController extends Controller
         }
 
         $paidAmount = ((int) ($invoice->amount_paid ?? $invoice->total ?? 0)) / 100;
-        $subscription->forceFill([
+
+        /*
+         * Only a full-period invoice (subscription creation or a normal
+         * renewal cycle) represents the subscription's current price and
+         * billing dates. A "manual"/"subscription_update" invoice is a
+         * prorated upgrade/downgrade adjustment charge and must not be
+         * mistaken for the full period price.
+         */
+        $isFullPeriodInvoice = in_array($invoice->billing_reason ?? null, ['subscription_create', 'subscription_cycle'], true);
+
+        $fill = [
             'status' => 'approved',
             'stripe_status' => 'active',
             'stripe_invoice_id' => $invoice->id,
             'payment_transaction_id' => $paymentIntentId ?: $subscription->payment_transaction_id,
             'stripe_payment_intent_id' => $paymentIntentId ?: $subscription->stripe_payment_intent_id,
-            'package_price' => $paidAmount > 0 ? $paidAmount : $subscription->package_price,
-            'start_date' => $this->dateFromTimestamp($invoice->period_start ?? null) ?: $subscription->start_date,
-            'end_date' => $this->dateFromTimestamp($invoice->period_end ?? null) ?: $subscription->end_date,
-        ])->save();
+        ];
+
+        if ($isFullPeriodInvoice) {
+            $fill['package_price'] = $paidAmount > 0 ? $paidAmount : $subscription->package_price;
+            $fill['start_date'] = $this->dateFromTimestamp($invoice->period_start ?? null) ?: $subscription->start_date;
+            $fill['end_date'] = $this->dateFromTimestamp($invoice->period_end ?? null) ?: $subscription->end_date;
+        }
+
+        $subscription->forceFill($fill)->save();
 
         $amount = $paidAmount;
         $metadata = $invoice->metadata ?? [];
@@ -183,7 +198,7 @@ class StripeWebhookController extends Controller
 
     protected function invoicePaymentFailed(object $invoice): void
     {
-        $subscriptionId = $this->stripeId($invoice->subscription ?? null);
+        $subscriptionId = $this->subscriptionIdFromInvoice($invoice);
         $paymentIntentId = $this->paymentIntentFromInvoice($invoice);
         $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
 
@@ -211,11 +226,9 @@ class StripeWebhookController extends Controller
         $invoiceId = $this->stripeId($paymentIntent->invoice ?? null);
         $subscriptionId = null;
 
-        $checkoutSessionId = $paymentIntent->payment_details->order_reference ?? null;
-        if ($checkoutSessionId && str_starts_with($checkoutSessionId, 'cs_')) {
-            $checkoutSession = \Stripe\Checkout\Session::retrieve($checkoutSessionId);
-            $subscriptionId = $this->stripeId($checkoutSession->subscription ?? null);
-            $invoiceId = $invoiceId ?: $this->stripeId($checkoutSession->invoice ?? null);
+        if ($invoiceId) {
+            $invoice = \Stripe\Invoice::retrieve($invoiceId);
+            $subscriptionId = $this->subscriptionIdFromInvoice($invoice);
         }
 
         if (!$invoiceId && !$subscriptionId) {
@@ -227,15 +240,6 @@ class StripeWebhookController extends Controller
             : null;
 
         $subscription = $subscription ?: Subscription::where('stripe_invoice_id', $invoiceId)->first();
-        if (!$subscription) {
-            if (!$invoiceId) {
-                return;
-            }
-
-            $invoice = \Stripe\Invoice::retrieve($invoiceId);
-            $subscriptionId = $this->stripeId($invoice->subscription ?? null);
-            $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
-        }
 
         if (!$subscription) {
             return;
@@ -355,6 +359,16 @@ class StripeWebhookController extends Controller
             'years' => $startDate->copy()->addYears((int) $package->interval_count)->timestamp,
             default => throw new \InvalidArgumentException('Unsupported package billing interval.'),
         };
+    }
+
+    protected function subscriptionIdFromInvoice(?object $invoice): ?string
+    {
+        if (!$invoice) {
+            return null;
+        }
+
+        return $this->stripeId($invoice->subscription ?? null)
+            ?? $this->stripeId($invoice->parent->subscription_details->subscription ?? null);
     }
 
     protected function stripeId($value): ?string

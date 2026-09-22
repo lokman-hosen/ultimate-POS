@@ -964,6 +964,26 @@ class SubscriptionController extends BaseController
             $package = Package::active()->findOrFail($package_id);
 
             /*
+             * A business must have at most one active Stripe subscription.
+             * If one already exists, route through the package-change flow
+             * instead of starting a second, parallel Stripe subscription.
+             */
+            $activeStripeSubscription = Subscription::where('business_id', $business_id)
+                ->whereNotNull('stripe_subscription_id')
+                ->whereIn('stripe_status', ['active', 'trialing', 'past_due'])
+                ->latest('end_date')
+                ->first();
+
+            if ($activeStripeSubscription) {
+                return redirect()
+                    ->back()
+                    ->with('status', [
+                        'success' => 0,
+                        'msg' => 'You already have an active subscription. Please use the package change option instead.',
+                    ]);
+            }
+
+            /*
              * Check one-time package restriction
              */
             if ($package->is_one_time) {

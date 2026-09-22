@@ -52,8 +52,11 @@ class SubscriptionChangeService
         $adjustment = round($newRemaining - $oldRemaining, 2);
         $changeType = $adjustment >= 0 ? 'upgrade' : 'downgrade';
         $stripePriceId = $this->prices->forRecurringPackage($newPackage, $new);
+        $vatShare = $new['total_amount'] > 0 ? $new['vat_amount'] / $new['total_amount'] : 0;
+        $adjustmentVat = round($adjustment * $vatShare, 2);
+        $adjustmentBase = round($adjustment - $adjustmentVat, 2);
 
-        DB::transaction(function () use ($subscription, $newPackage, $stripeSubscription, $item, $stripePriceId, $adjustment, $changeType, $periodStart, $periodEnd, $new) {
+        DB::transaction(function () use ($subscription, $newPackage, $stripeSubscription, $item, $stripePriceId, $adjustment, $adjustmentBase, $adjustmentVat, $changeType, $periodStart, $periodEnd, $new) {
             if ($adjustment !== 0.0) {
                 InvoiceItem::create([
                     'customer' => $subscription->stripe_customer_id,
@@ -63,6 +66,8 @@ class SubscriptionChangeService
                     'metadata' => [
                         'subscription_id' => (string) $subscription->id,
                         'package_change' => 'true',
+                        'base_price' => (string) $adjustmentBase,
+                        'vat_amount' => (string) $adjustmentVat,
                     ],
                 ]);
 
@@ -71,6 +76,12 @@ class SubscriptionChangeService
                         'customer' => $subscription->stripe_customer_id,
                         'subscription' => $stripeSubscription->id,
                         'auto_advance' => true,
+                        'metadata' => [
+                            'subscription_id' => (string) $subscription->id,
+                            'package_change' => 'true',
+                            'base_price' => (string) $adjustmentBase,
+                            'vat_amount' => (string) $adjustmentVat,
+                        ],
                     ]);
                 }
             }
@@ -79,6 +90,17 @@ class SubscriptionChangeService
                 'items' => [['id' => $item->id, 'price' => $stripePriceId]],
                 'proration_behavior' => 'none',
                 'cancel_at_period_end' => false,
+                'metadata' => [
+                    'business_id' => (string) $subscription->business_id,
+                    'business_name' => optional($subscription->business)->name,
+                    'user_id' => (string) $subscription->created_id,
+                    'package_id' => (string) $newPackage->id,
+                    'package_name' => $newPackage->name,
+                    'coupon_code' => (string) $subscription->coupon_code,
+                    'price' => (string) $new['total_amount'],
+                    'base_price' => (string) $new['base_amount'],
+                    'vat_amount' => (string) $new['vat_amount'],
+                ],
             ]);
 
             DB::table('subscription_changes')->insert([

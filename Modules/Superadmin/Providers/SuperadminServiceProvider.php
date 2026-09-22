@@ -51,8 +51,6 @@ class SuperadminServiceProvider extends ServiceProvider
             $__system_currency = System::getCurrency();
             $view->with(compact('__system_currency'));
         });
-
-        $this->registerScheduleCommands();
     }
 
     public function registerScheduleCommands()
