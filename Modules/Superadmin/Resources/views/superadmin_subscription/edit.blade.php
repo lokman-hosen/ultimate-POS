@@ -23,7 +23,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( "superadmin::lang.update")</button>
+{{--        <button type="submit" class="tw-dw-btn tw-dw-btn-primary tw-text-white">@lang( "superadmin::lang.update")</button>--}}
         <button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang( "superadmin::lang.close")</button>
       </div>
       {!! Form::close() !!}

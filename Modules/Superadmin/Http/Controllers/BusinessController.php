@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Modules\Superadmin\Entities\Package;
 use Modules\Superadmin\Notifications\PasswordUpdateNotification;
 use Spatie\Permission\Models\Permission;
@@ -236,10 +237,9 @@ class BusinessController extends BaseController
             $months[$i] = __('business.months.'.$i);
         }
 
-        $is_admin = true;
+        $business_sectors = $this->businessUtil->allBusinessSectors();
 
-        $packages = Package::active()->orderby('sort_order')->pluck('name', 'id');
-        $gateways = $this->_payment_gateways();
+        $is_admin = true;
 
         return view('superadmin::business.create')
             ->with(compact(
@@ -247,9 +247,8 @@ class BusinessController extends BaseController
                 'timezone_list',
                 'accounting_methods',
                 'months',
-                'is_admin',
-                'packages',
-                'gateways'
+                'business_sectors',
+                'is_admin'
             ));
     }
 
@@ -265,6 +264,43 @@ class BusinessController extends BaseController
             abort(403, 'Unauthorized action.');
         }
 
+        //Admin creates the business with basic details only; tax, package
+        //and payment details are completed later by the business owner.
+        $validator = Validator::make($request->all(), [
+            'business_type' => 'required|in:self_employed,company',
+            'name' => 'required|max:255',
+            'legal_name' => 'required_if:business_type,company|nullable|max:255',
+            'business_activity' => 'required|max:255',
+            'business_sector' => ['required', 'in:'.implode(',', array_keys($this->businessUtil->allBusinessSectors()))],
+            'currency_id' => 'required|numeric',
+            'country' => 'required|max:255',
+            'state' => 'required|max:255',
+            'city' => 'required|max:255',
+            'zip_code' => 'required|max:255',
+            'landmark' => 'required|max:255',
+            'time_zone' => 'required|max:255',
+            'mobile' => 'required|max:255',
+            'contact_email' => 'required|email|max:255',
+            'first_name' => 'required|max:255',
+            'username' => 'required|min:4|max:255|unique:users',
+            'email' => 'required|email|unique:users|max:255',
+            'password' => 'required|min:4|max:255',
+            'confirm_password' => 'required|same:password',
+        ], [], [
+            'name' => __('business.trading_name'),
+            'legal_name' => __('business.legal_company_name'),
+            'business_type' => __('business.business_type'),
+            'business_sector' => __('business.business_sector'),
+            'contact_email' => __('business.business_email'),
+            'landmark' => __('business.physical_address'),
+            'state' => __('business.province'),
+            'zip_code' => __('business.postal_code'),
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
         try {
             DB::beginTransaction();
 
@@ -274,7 +310,7 @@ class BusinessController extends BaseController
 
             $user = User::create_user($owner_details);
 
-            $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity','name', 'start_date', 'currency_id', 'tax_label_1', 'tax_number_1', 'tax_label_2', 'tax_number_2', 'time_zone', 'accounting_method', 'fy_start_month']);
+            $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity','name', 'start_date', 'currency_id', 'time_zone', 'accounting_method', 'fy_start_month']);
 
             $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark', 'website', 'mobile','contact_email', 'whatsapp_number', 'address_line_2','alternate_number']);
 
@@ -290,8 +326,8 @@ class BusinessController extends BaseController
                 $business_details['logo'] = $logo_name;
             }
 
-            //default enabled modules
-            $business_details['enabled_modules'] = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+            //enabled modules based on business sector
+            $business_details['enabled_modules'] = $this->businessUtil->enabledModulesForSector($business_details['business_sector']);
 
             //created_by
             $business_details['created_by'] = $request->session()->get('user.id');
@@ -307,15 +343,6 @@ class BusinessController extends BaseController
 
             //create new permission with the new location
             Permission::create(['name' => 'location.'.$new_location->id]);
-
-            $subscription_details = $request->only(['package_id', 'paid_via', 'payment_transaction_id']);
-
-            //Add subscription if present
-            if (! empty($subscription_details['package_id']) && ! empty($subscription_details['paid_via'])) {
-                $package = Package::find($subscription_details['package_id']);
-
-                $subscription = $this->_add_subscription(null, $package->price, $business->id, $subscription_details['package_id'], $subscription_details['paid_via'], $subscription_details['payment_transaction_id'], $request->session()->get('user.id'), true);
-            }
 
             DB::commit();
 

@@ -183,6 +183,68 @@ class BusinessUtil extends Util
     }
 
     /**
+     * Gives a list of all business sectors shown in the registration forms
+     *
+     * @return array
+     */
+    public function allBusinessSectors()
+    {
+        return [
+            'bakery' => __('business.bakery'),
+            'butcher' => __('business.butcher_shop'),
+            'cafe' => __('business.cafe'),
+            'clothing' => __('business.clothing_store'),
+            'electronics' => __('business.electronics'),
+            'fast_food' => __('business.fast_food'),
+            'grocery' => __('business.grocery_store'),
+            'hairdresser' => __('business.hairdresser_beauty'),
+            'hotel' => __('business.hotel'),
+            'manufacturing' => __('business.manufacturing'),
+            'pharmacy' => __('business.pharmacy'),
+            'restaurant' => __('business.restaurant'),
+            'retail' => __('business.retail_store'),
+            'super_market' => __('business.supermarket'),
+            'other' => __('business.other'),
+        ];
+    }
+
+    /**
+     * Gives the modules to enable for a new business based on its sector
+     *
+     * @param  string|null  $business_sector
+     * @return array
+     */
+    public function enabledModulesForSector($business_sector)
+    {
+        $default = ['purchases', 'add_sale', 'pos_sale', 'stock_transfers', 'stock_adjustment', 'expenses'];
+        $with_account = array_merge($default, ['account']);
+        $service_based = ['purchases', 'add_sale', 'pos_sale', 'expenses', 'account', 'service_staff'];
+        $food_service = array_merge($default, ['tables', 'modifiers', 'service_staff', 'kitchen', 'types_of_service']);
+
+        $sector_modules = [
+            'super_market' => $with_account,
+            'pharmacy' => $with_account,
+            'electronics' => array_merge($with_account, ['subscription']),
+            'services' => $service_based,
+            'restaurant' => array_merge($food_service, ['booking']),
+            'essentials' => $with_account,
+            'manufacturing' => $default,
+            'cafe' => $food_service,
+            'fast_food' => $food_service,
+            'bakery' => $with_account,
+            'grocery' => $with_account,
+            'butcher' => $default,
+            'clothing' => $with_account,
+            'hairdresser' => $service_based,
+            'retail' => $with_account,
+            'hotel' => array_merge($food_service, ['booking']),
+            'other' => $default,
+        ];
+
+        return $sector_modules[$business_sector] ?? $default;
+    }
+
+    /**
      * Creates new business with default settings.
      *
      * @return array

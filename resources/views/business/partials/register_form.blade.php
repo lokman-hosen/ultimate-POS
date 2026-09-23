@@ -61,6 +61,15 @@
         </div>
     </div>
 
+    @if(!empty($is_admin))
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group">
+                {!! Form::label('business_sector', __('business.business_sector') . ':*') !!}
+                {!! Form::select('business_sector', ['' => __('business.select_sector')] + $business_sectors, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']) !!}
+            </div>
+        </div>
+    @endif
+
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('start_date', __('business.activity_start_date') . ':') !!}
@@ -209,24 +218,7 @@
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
                 {!! Form::label('business_sector', 'Business Category') !!}
-                {!! Form::select('business_sector', [
-                    ''              => __('business.select_sector'),
-                    'bakery'        => __('business.bakery'),
-                    'butcher'       => __('business.butcher_shop'),
-                    'cafe'          => __('business.cafe'),
-                    'clothing'      => __('business.clothing_store'),
-                    'electronics'   => __('business.electronics'),
-                    'fast_food'     => __('business.fast_food'),
-                    'grocery'       => __('business.grocery_store'),
-                    'hairdresser'   => __('business.hairdresser_beauty'),
-                    'hotel'         => __('business.hotel'),
-                    'manufacturing' => __('business.manufacturing'),
-                    'pharmacy'      => __('business.pharmacy'),
-                    'restaurant'    => __('business.restaurant'),
-                    'retail'        => __('business.retail_store'),
-                    'super_market'  => __('business.supermarket'),
-                    'other'         => __('business.other'),
-                ], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']) !!}
+                {!! Form::select('business_sector', ['' => __('business.select_sector')] + $business_sectors, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']) !!}
             </div>
         </div>
 
