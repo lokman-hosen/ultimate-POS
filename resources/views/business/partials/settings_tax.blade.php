@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('tax_label_1', __('business.tax_1_name') . ':') !!}
+                {!! Form::label('tax_label_1', __('business.nif_cif') . ':') !!}
                 <div class="input-group">
                     <span class="input-group-addon">
                         <i class="fa fa-info"></i>
@@ -13,38 +13,42 @@
         </div>
         <div class="col-sm-4">
             <div class="form-group">
-                {!! Form::label('tax_number_1', __('business.tax_1_no') . ':') !!}
+                {!! Form::label('tax_number_1', __('business.nif_cif') . ' No :') !!}
                 <div class="input-group">
                     <span class="input-group-addon">
                         <i class="fa fa-info"></i>
                     </span>
                     {!! Form::text('tax_number_1', $business->tax_number_1, ['class' => 'form-control']); !!}
                 </div>
+                <small class="help-block">@lang('business.nif_cif_help')</small>
             </div>
         </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('tax_label_2', __('business.tax_2_name') . ':') !!}
-                <div class="input-group">
+        @if($business->business_type == 'company')
+            <div class="col-sm-4">
+                <div class="form-group">
+                    {!! Form::label('tax_label_2', __('business.representative_dni_nie') . ':') !!}
+                    <div class="input-group">
                     <span class="input-group-addon">
                         <i class="fa fa-info"></i>
                     </span>
-                    {!! Form::text('tax_label_2', $business->tax_label_2, ['class' => 'form-control','placeholder' => __('business.tax_1_placeholder')]); !!}
+                        {!! Form::text('tax_label_2', $business->tax_label_2, ['class' => 'form-control','placeholder' => __('business.tax_1_placeholder')]); !!}
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('tax_number_2', __('business.tax_2_no') . ':') !!}
-                <div class="input-group">
+            <div class="clearfix"></div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    {!! Form::label('tax_number_2', __('business.representative_dni_nie') . ' No :') !!}
+                    <div class="input-group">
                     <span class="input-group-addon">
                         <i class="fa fa-info"></i>
                     </span>
-                    {!! Form::text('tax_number_2', $business->tax_number_2, ['class' => 'form-control']); !!}
+                        {!! Form::text('tax_number_2', $business->tax_number_2, ['class' => 'form-control']); !!}
+                    </div>
+                    <small class="help-block">12345678Z,X1234567L,12345678Z</small>
                 </div>
             </div>
-        </div>
+        @endif
         <div class="col-sm-8">
             <div class="form-group">
                 <div class="checkbox">
