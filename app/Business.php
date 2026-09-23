@@ -114,10 +114,6 @@ class Business extends Model
             $details['tax_number_2'] = null;
             $details['tax_label_2'] = null;
         }
-        if ($details['business_type'] == 'company'){
-            $details['tax_number_1'] = null;
-            $details['tax_label_1'] = null;
-        }
         $business = Business::create($details);
 
         return $business;

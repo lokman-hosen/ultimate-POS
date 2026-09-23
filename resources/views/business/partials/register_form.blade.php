@@ -334,7 +334,7 @@
             @if(!empty($system_settings['superadmin_enable_register_tc']) && !empty($is_register))
                 <div class="form-group">
                     <label>
-                        {!! Form::checkbox('accept_tc', 0, false, ['required', 'class' => 'input-check-box']) !!}
+                        {!! Form::checkbox('accept_tc', 1, false, ['required', 'class' => 'input-check-box']) !!}
                         <a class="terms_condition cursor-pointer" data-toggle="modal" data-target="#tc_modal">
                             @lang('lang_v1.accept_terms_and_conditions') <i></i>
                         </a>
