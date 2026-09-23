@@ -80,7 +80,14 @@ ship with the app — they are mounted inside the db container at `/backup`:
 
 ```bash
 docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" < /backup/ultimatepos.sql'
+docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" < /backup/yaigo_pos_stripe_tested.sql'
 docker compose exec -T db sh -c 'mysql -u root -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" < /backup/ultimatepos_super_admin_pos.sql'
+```
+
+drop all tables
+
+```bash
+docker compose exec app php artisan db:wipe
 ```
 
 **5. Check.**
