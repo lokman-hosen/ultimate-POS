@@ -2467,6 +2467,65 @@ class SellPosController extends Controller
         return $variation_details;
     }
 
+    /**
+     * Updates only variations.sell_price_inc_tax of the product edited from the POS price modal.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateMainProductPrice(Request $request)
+    {
+        if (! auth()->user()->can('edit_product_price_from_sale_screen')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'product_id' => 'required|integer',
+            'variation_id' => 'nullable|integer',
+            'price' => 'required',
+        ]);
+
+        $price = $this->productUtil->num_uf($request->input('price'));
+        if (! is_numeric($price) || $price < 0) {
+            return ['success' => false, 'msg' => __('lang_v1.unable_to_update_product_main_price')];
+        }
+
+        try {
+            $business_id = $request->session()->get('user.business_id');
+
+            $query = DB::table('variations')
+                ->join('products', 'products.id', '=', 'variations.product_id')
+                ->where('products.business_id', $business_id)
+                ->where('variations.product_id', $request->input('product_id'))
+                ->whereNull('variations.deleted_at');
+
+            //Restrict to the edited variation so other variations of a variable product stay untouched
+            if (! empty($request->input('variation_id'))) {
+                $query->where('variations.id', $request->input('variation_id'));
+            }
+
+            $variation_ids = $query->pluck('variations.id');
+
+            if ($variation_ids->isEmpty()) {
+                return ['success' => false, 'msg' => __('lang_v1.unable_to_update_product_main_price')];
+            }
+
+            DB::table('variations')
+                ->whereIn('id', $variation_ids)
+                ->update([
+                    'sell_price_inc_tax' => $price,
+                    'default_sell_price' => $price
+                ]);
+
+            $output = ['success' => true, 'msg' => __('lang_v1.product_main_price_updated')];
+        } catch (\Exception $e) {
+            \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
+
+            $output = ['success' => false, 'msg' => __('lang_v1.unable_to_update_product_main_price')];
+        }
+
+        return $output;
+    }
+
     public function getTypesOfServiceDetails(Request $request)
     {
         $location_id = $request->input('location_id');

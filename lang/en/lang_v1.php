@@ -1686,4 +1686,7 @@ return [
     'works_online_offline' => 'Works online or offline',
     'businesses_serve' => 'Businesses served',
     'trusted_businesses_worldwide' => 'Trusted by businesses worldwide',
+    'update_product_main_price_also' => 'Do you want to update product main price also?',
+    'product_main_price_updated' => 'Product main price updated successfully.',
+    'unable_to_update_product_main_price' => 'Unable to update product main price.',
 ];

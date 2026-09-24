@@ -12,6 +12,13 @@
 					@endphp
 					<label>@lang('sale.unit_price')</label>
 						<input type="text" name="products[{{$row_count}}][unit_price]" class="form-control pos_unit_price input_number mousetrap" value="{{@num_format($pos_unit_price)}}" @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$pos_unit_price}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($pos_unit_price)])}}" @endif>
+					@can('edit_product_price_from_sale_screen')
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="update_main_price" class="update_main_price" value="1"> @lang('lang_v1.update_product_main_price_also')
+							</label>
+						</div>
+					@endcan
 				</div>
 				@if(!auth()->user()->can('edit_product_price_from_sale_screen'))
 					<div class="form-group col-xs-12">
@@ -52,7 +59,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white" data-dismiss="modal">@lang('messages.close')</button>
+			<button type="button" class="tw-dw-btn tw-dw-btn-neutral tw-text-white row_edit_product_price_close" data-dismiss="modal">@lang('messages.close')</button>
 		</div>
 	</div>
 </div>

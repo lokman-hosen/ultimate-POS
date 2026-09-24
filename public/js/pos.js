@@ -1037,6 +1037,38 @@ $(document).ready(function() {
             .select();
     });
 
+    //Optionally update product main price (variations.sell_price_inc_tax) when price modal is closed
+    $(document).on('click', '.row_edit_product_price_model .row_edit_product_price_close', function() {
+        var modal = $(this).closest('.row_edit_product_price_model');
+        var checkbox = modal.find('input.update_main_price');
+        if (!checkbox.length || !checkbox.is(':checked')) {
+            return;
+        }
+
+        var tr = modal.closest('tr.product_row');
+        $.ajax({
+            method: 'POST',
+            url: '/sells/pos/update-main-product-price',
+            dataType: 'json',
+            data: {
+                product_id: tr.find('input.product_id').val(),
+                variation_id: tr.find('input.row_variation_id').val(),
+                price: __read_number(modal.find('input.pos_unit_price')),
+            },
+            success: function(result) {
+                if (result.success) {
+                    checkbox.prop('checked', false);
+                    toastr.success(result.msg);
+                } else {
+                    toastr.error(result.msg);
+                }
+            },
+            error: function() {
+                toastr.error(LANG.something_went_wrong);
+            },
+        });
+    });
+
     //Update Order tax
     $('button#posEditOrderTaxModalUpdate').click(function() {
         //Close modal
