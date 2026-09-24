@@ -20,7 +20,7 @@
 (function ($) {
     'use strict';
 
-    var SEARCH_DEBOUNCE_MS = 500;
+    var SEARCH_DEBOUNCE_MS = 1000;
 
     if (!$ || !$.fn || !$.fn.dataTable) {
         return;
