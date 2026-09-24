@@ -23,6 +23,7 @@
 <![endif]-->
 
 <script src="{{ asset('js/vendor.js?v=' . $asset_v) }}"></script>
+<script src="{{ asset('js/datatable-search-debounce.js?v=' . $asset_v) }}"></script>
 
 @if (file_exists(public_path('js/lang/' . session()->get('user.language', config('app.locale')) . '.js')))
     <script src="{{ asset('js/lang/' . session()->get('user.language', config('app.locale')) . '.js?v=' . $asset_v) }}">
