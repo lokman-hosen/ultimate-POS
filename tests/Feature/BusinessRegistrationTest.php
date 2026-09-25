@@ -9,6 +9,7 @@ use App\System;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Password;
+use Tests\Feature\Concerns\RegistrationPayload;
 use Tests\TestCase;
 
 /**
@@ -18,7 +19,7 @@ use Tests\TestCase;
  */
 class BusinessRegistrationTest extends TestCase
 {
-    use DatabaseTransactions;
+    use DatabaseTransactions, RegistrationPayload;
 
     protected function setUp(): void
     {
@@ -32,44 +33,10 @@ class BusinessRegistrationTest extends TestCase
         }
     }
 
+    //Superadmin welcome notification (the Yaigo welcome email with the document is covered by BusinessWelcomeMailTest)
     protected function sentMessages()
     {
         return app('mailer')->getSymfonyTransport()->messages()->map->getOriginalMessage();
-    }
-
-    protected function payload(array $overrides = [])
-    {
-        $suffix = uniqid();
-
-        return array_merge([
-            'lang' => 'es',
-            'language' => 'es',
-            'business_type' => 'self_employed',
-            'name' => 'Test Shop '.$suffix,
-            'tax_label_1' => 'NIE',
-            'tax_number_1' => 'x1234567l',
-            'business_sector' => 'restaurant',
-            'currency_id' => 110,
-            'website' => 'unimerkat.es',
-            'contact_person' => 'Ana García',
-            'contact_email' => 'shop'.$suffix.'@example.com',
-            'mobile_prefix' => '+34',
-            'mobile' => '612 345 678',
-            'whatsapp_same_as_mobile' => 1,
-            'country' => 'Spain',
-            'community_code' => '09',
-            'province_code' => '08',
-            'municipality_code' => '08019',
-            'zip_code' => '08001',
-            'landmark' => 'Carrer Major 1',
-            'address_line_2' => '2º 1ª',
-            'first_name' => 'Ana',
-            'last_name' => 'García',
-            'username' => 'user'.$suffix,
-            'email' => 'owner'.$suffix.'@example.com',
-            'password' => 'secret123',
-            'confirm_password' => 'secret123',
-        ], $overrides);
     }
 
     public function test_guest_pages_default_to_spanish_and_keep_the_chosen_language()
@@ -150,7 +117,7 @@ class BusinessRegistrationTest extends TestCase
         $this->assertSame('Ana García', $location->contact_person);
         $this->assertSame('2º 1ª', $location->address_line_2);
 
-        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email']);
+        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email'] && $m->getSubject() != __('mail.yaigo_welcome_subject', [], 'es'));
         $this->assertNotNull($welcome, 'welcome email sent');
         $this->assertSame('Bienvenido a '.config('app.name'), $welcome->getSubject());
         $this->assertStringContainsString('Gracias por registrar', $welcome->getHtmlBody());
@@ -188,7 +155,7 @@ class BusinessRegistrationTest extends TestCase
         $this->post('/business/register', $data2)->assertSessionHasNoErrors();
         $this->assertSame('restaurant', Business::findOrFail(User::where('username', $data2['username'])->value('business_id'))->business_sector);
 
-        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email']);
+        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email'] && $m->getSubject() != __('mail.yaigo_welcome_subject', [], 'es'));
         $this->assertStringStartsWith('Welcome ', $welcome->getSubject());
         $this->assertStringContainsString('Welcome to '.$business->name, $welcome->getTextBody());
     }

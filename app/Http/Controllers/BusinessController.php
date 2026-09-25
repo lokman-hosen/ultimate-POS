@@ -225,6 +225,9 @@ class BusinessController extends Controller
 
             DB::commit();
 
+            //Spanish welcome email with the document to fill in (never breaks the registration)
+            app(\App\Services\BusinessWelcomeMailer::class)->send($business, $user);
+
             //Module function to be called after after business is created
             if (config('app.env') != 'demo') {
                 $this->moduleUtil->getModuleData('after_business_created', ['business' => $business]);
