@@ -10,6 +10,8 @@ class NewBusinessNotification extends Notification
 {
     use Queueable;
 
+    protected $business;
+
     /**
      * Create a new notification instance.
      *
@@ -46,11 +48,21 @@ class NewBusinessNotification extends Notification
             'phone' => $this->business->locations->first()->mobile,
         ]);
 
-        return (new MailMessage)
+        $mail = (new MailMessage)
                 ->subject(__('mail.new_business_subject'))
                 ->greeting(__('mail.hello'))
                 ->line(__('mail.new_business_intro'))
                 ->line($details);
+
+        //Same document the owner receives with the welcome email
+        $attachment = base_path(NewBusinessWelcomNotification::ATTACHMENT_PATH);
+        if (file_exists($attachment)) {
+            $mail->attach($attachment, ['mime' => 'application/pdf']);
+        } else {
+            \Log::error('New business email attachment not found: '.NewBusinessWelcomNotification::ATTACHMENT_PATH);
+        }
+
+        return $mail;
     }
 
     /**
