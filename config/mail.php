@@ -94,7 +94,16 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Yaigo POS')),
+    ],
+
+    /*
+    | Optional global Reply-To (e.g. a monitored support inbox). Left out
+    | of outgoing mail when MAIL_REPLY_TO_ADDRESS is empty.
+    */
+    'reply_to' => [
+        'address' => env('MAIL_REPLY_TO_ADDRESS'),
+        'name' => env('MAIL_REPLY_TO_NAME', env('MAIL_FROM_NAME', env('APP_NAME'))),
     ],
 
     /*

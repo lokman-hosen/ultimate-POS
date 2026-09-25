@@ -4,9 +4,9 @@
 # {{ $greeting }}
 @else
 @if ($level == 'error')
-# Whoops!
+# @lang('mail.whoops')
 @else
-# Hello!
+# @lang('mail.hello')
 @endif
 @endif
 
@@ -45,14 +45,14 @@
 @if (! empty($salutation))
 {{ $salutation }}
 @else
-Regards,<br>{{ config('app.name') }}
+@lang('mail.regards')<br>
+{{ config('app.name') }}
 @endif
 
-{{-- Subcopy --}}
-@isset($actionText)
+{{-- Subcopy (plain-text copy of the link; notifications can opt out with viewData hide_action_url) --}}
+@if (isset($actionText) && empty($hide_action_url))
 @component('mail::subcopy')
-If you’re having trouble clicking the "{{ $actionText }}" button, copy and paste the URL below
-into your web browser: [{{ $actionUrl }}]({{ $actionUrl }})
+@lang('mail.trouble_clicking', ['actionText' => $actionText]) [{{ $actionUrl }}]({{ $actionUrl }})
 @endcomponent
-@endisset
+@endif
 @endcomponent

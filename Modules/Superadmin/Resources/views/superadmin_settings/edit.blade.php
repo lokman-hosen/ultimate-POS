@@ -74,7 +74,7 @@
     $(document).ready( function(){
         if ($('#welcome_email_body').length) {
             tinymce.init({
-                selector: 'textarea#welcome_email_body',
+                selector: 'textarea#welcome_email_body, textarea#welcome_email_body_es',
             });
         }
 

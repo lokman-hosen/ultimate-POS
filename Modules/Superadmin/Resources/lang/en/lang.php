@@ -270,4 +270,6 @@ return array(
     'paid_via' => 'Paid Via',
     'payment_transaction_id' => 'Payment Transaction ID',
     'remaining' => 'Remaining',
+    'welcome_email_template_es' => 'Welcome email template (Spanish)',
+    'welcome_email_template_es_help' => 'Used for owners who registered in Spanish. If left empty, a default Spanish welcome text is sent.',
 );

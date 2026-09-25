@@ -1461,4 +1461,9 @@ return [
     'works_online_offline' => 'Funciona en línea o sin conexión',
     'businesses_serve' => 'Empresas atendidas',
     'trusted_businesses_worldwide' => 'Empresas de todo el mundo confían en nosotros',
+
+    // Inicio de sesión / restablecer contraseña
+    'username_or_email' => 'Usuario o correo electrónico',
+    'send_password_reset_link_help' => 'Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
+    'back_to_login' => 'Volver a iniciar sesión',
 ];

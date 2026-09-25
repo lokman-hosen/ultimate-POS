@@ -11,7 +11,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title') - {{ config('app.name', 'POS') }}</title>
-    @if(!route_is('login') and !route_is('password.request'))
+    @if(!route_is('login') and !route_is('password.request') and !route_is('password.reset'))
         @include('layouts.partials.css')
     @endif
 
@@ -229,8 +229,12 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('.select2_register').select2();
-        $('.change_lang').click(function() {
-            window.location = "{{ route('login') }}?lang=" + $(this).attr('value');
+        // Switch language on the current page, keeping its other query parameters (e.g. package)
+        $('.change_lang').off('click').click(function(e) {
+            e.preventDefault();
+            var url = new URL(window.location.href);
+            url.searchParams.set('lang', $(this).attr('value'));
+            window.location = url.toString();
         });
     });
 </script>

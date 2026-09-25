@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
             \URL::forceScheme('https');
         }
 
-        if (request()->has('lang')) {
+        if (request()->has('lang') && array_key_exists(request()->get('lang'), config('constants.langs'))) {
             \App::setLocale(request()->get('lang'));
         }
 

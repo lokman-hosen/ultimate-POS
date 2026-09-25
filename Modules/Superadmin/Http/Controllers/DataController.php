@@ -72,23 +72,29 @@ class DataController extends Controller
 
             if (!empty($email) && $is_notif_enabled == 1) {
                 Notification::route('mail', $email)
-                    ->notify(new NewBusinessNotification($business));
+                    ->notify((new NewBusinessNotification($business))->locale(in_array(config('app.locale'), ['en', 'es']) ? config('app.locale') : 'en'));
             }
 
-            //Send welcome email to business owner
-            $welcome_email_settings = System::getProperties(['enable_welcome_email', 'welcome_email_subject', 'welcome_email_body'], true);
+            //Send welcome email to business owner, in the owner's language (en/es)
+            $locale = $business->owner->mailLocale();
+            $welcome_email_settings = System::getProperties(['enable_welcome_email', 'welcome_email_subject', 'welcome_email_body', 'welcome_email_subject_es', 'welcome_email_body_es'], true);
 
             if (isset($welcome_email_settings['enable_welcome_email']) && $welcome_email_settings['enable_welcome_email'] == 1 && !empty($welcome_email_settings['welcome_email_subject']) && !empty($welcome_email_settings['welcome_email_body'])) {
-                $subject = $this->removeTags($welcome_email_settings['welcome_email_subject'], $business);
-                $body = $this->removeTags($welcome_email_settings['welcome_email_body'], $business);
+                $subject = $welcome_email_settings['welcome_email_subject'];
+                $body = $welcome_email_settings['welcome_email_body'];
+                if ($locale == 'es') {
+                    //Spanish template from superadmin settings, else the default Spanish text
+                    $subject = !empty($welcome_email_settings['welcome_email_subject_es']) ? $welcome_email_settings['welcome_email_subject_es'] : __('mail.welcome_subject', ['app' => config('app.name')], 'es');
+                    $body = !empty($welcome_email_settings['welcome_email_body_es']) ? $welcome_email_settings['welcome_email_body_es'] : __('mail.welcome_body', ['app' => config('app.name')], 'es');
+                }
 
                 $welcome_email_data = [
-                    'subject' => $subject,
-                    'body' => $body,
+                    'subject' => $this->removeTags($subject, $business),
+                    'body' => $this->removeTags($body, $business),
                 ];
 
                 Notification::route('mail', $business->owner->email)
-                    ->notify(new NewBusinessWelcomNotification($welcome_email_data));
+                    ->notify((new NewBusinessWelcomNotification($welcome_email_data))->locale($locale));
             }
         } catch (\Exception $e) {
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());

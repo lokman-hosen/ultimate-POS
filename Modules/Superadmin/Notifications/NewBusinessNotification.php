@@ -39,13 +39,17 @@ class NewBusinessNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $details = 'Business: '.$this->business->name.', Business Owner: '.$this->business->owner->user_full_name.', Email: '.$this->business->owner->email.
-        ', Business contact number: '.$this->business->locations->first()->mobile;
+        $details = __('mail.new_business_details', [
+            'business' => $this->business->name,
+            'owner' => $this->business->owner->user_full_name,
+            'email' => $this->business->owner->email,
+            'phone' => $this->business->locations->first()->mobile,
+        ]);
 
         return (new MailMessage)
-                ->subject('New Business Registration')
-                ->greeting('Hello!')
-                ->line('New business registered successfully')
+                ->subject(__('mail.new_business_subject'))
+                ->greeting(__('mail.hello'))
+                ->line(__('mail.new_business_intro'))
                 ->line($details);
     }
 

@@ -3,6 +3,7 @@
 @section('title', __('lang_v1.reset_password'))
 
 @section('content')
+    <div class="pos-center-screen">
     <div class="pos-login-wrap">
         <div class="pos-card">
             <div style="margin-bottom:1.5rem;">
@@ -15,7 +16,7 @@
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 <div class="form-group has-feedback pos-form-group {{ $errors->has('email') ? ' has-error' : '' }}">
-                    <label class="pos-label">@lang('Email')</label>
+                    <label class="pos-label" for="email">@lang('lang_v1.email_address')</label>
                     <div class="pos-input-wrap">
                         <input id="email" type="email" class="pos-input" name="email"
                                value="{{ $email ?? old('email') }}" required autofocus
@@ -27,9 +28,9 @@
                 </div>
 
                 <div class="form-group has-feedback pos-form-group {{ $errors->has('password') ? ' has-error' : '' }}">
-                    <label class="pos-label">@lang('lang_v1.password')</label>
+                    <label class="pos-label" for="password">@lang('lang_v1.password')</label>
                     <div class="pos-input-wrap">
-                        <input id="password" type="password" class="pos-input" name="password" required
+                        <input id="password" type="password" class="pos-input" name="password" required autocomplete="new-password"
                                placeholder="@lang('lang_v1.password')">
                     </div>
                     @if ($errors->has('password'))
@@ -38,9 +39,9 @@
                 </div>
 
                 <div class="form-group has-feedback pos-form-group {{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                    <label class="pos-label">@lang('business.confirm_password')</label>
+                    <label class="pos-label" for="password_confirmation">@lang('business.confirm_password')</label>
                     <div class="pos-input-wrap">
-                        <input id="password" type="password" class="pos-input" name="password_confirmation"
+                        <input id="password_confirmation" type="password" class="pos-input" name="password_confirmation" autocomplete="new-password"
                                required placeholder="@lang('business.confirm_password')">
                     </div>
                     @if ($errors->has('password_confirmation'))
@@ -51,5 +52,6 @@
                 <button type="submit" class="pos-submit">@lang('lang_v1.reset_password')</button>
             </form>
         </div>
+    </div>
     </div>
 @endsection

@@ -1689,4 +1689,9 @@ return [
     'update_product_main_price_also' => 'Do you want to update product main price also?',
     'product_main_price_updated' => 'Product main price updated successfully.',
     'unable_to_update_product_main_price' => 'Unable to update product main price.',
+
+    // Login / password reset
+    'username_or_email' => 'Username or email',
+    'send_password_reset_link_help' => 'Enter your email address and we will send you a link to reset your password.',
+    'back_to_login' => 'Back to login',
 ];

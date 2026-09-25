@@ -12,6 +12,7 @@ use App\User;
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\RestaurantUtil;
+use App\Utils\SpainLocationUtil;
 use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use App\Rules\ReCaptcha;
+use App\Rules\SpanishTaxId;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 class BusinessController extends Controller
@@ -95,25 +97,18 @@ class BusinessController extends Controller
 
         $currencies = $this->businessUtil->allCurrencies();
 
-        $timezone_list = $this->businessUtil->allTimeZones();
-
-        $months = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $months[$i] = __('business.months.'.$i);
-        }
-
-        $accounting_methods = $this->businessUtil->allAccountingMethods();
-        $business_sectors = $this->businessUtil->allBusinessSectors();
+        $business_activities = $this->businessUtil->businessActivitiesDropdown();
+        $phone_prefixes = $this->businessUtil->phonePrefixes();
+        $communities = (new SpainLocationUtil())->communitiesDropdown();
         $package_id = request()->package;
 
         $system_settings = System::getProperties(['superadmin_enable_register_tc', 'superadmin_register_tc'], true);
 
         return view('business.register', compact(
             'currencies',
-            'timezone_list',
-            'months',
-            'accounting_methods',
-            'business_sectors',
+            'business_activities',
+            'phone_prefixes',
+            'communities',
             'package_id',
             'system_settings'
         ));
@@ -130,115 +125,40 @@ class BusinessController extends Controller
             return redirect('/');
         }
 
-        $businessSector = $request->business_sector ?? null;
-
         try {
-            $rules = [
+            $new_business_activity = $this->businessUtil->normalizeRegistrationInput($request);
+
+            [$rules, $attributes] = $this->businessUtil->registrationValidation($request);
+
+            $rules += [
                 'business_type' => 'required|in:self_employed,company',
                 'name' => 'required|max:255',
-                'business_activity' => 'required|max:255',
                 'currency_id' => 'required|numeric',
-                'country' => 'required|max:255',
-                'state' => 'required|max:255',
-                'city' => 'required|max:255',
-                'zip_code' => 'required|max:255',
-                'landmark' => 'required|max:255',
-                'time_zone' => 'required|max:255',
-                'contact_person' => 'required|max:255',
-                'mobile' => 'required|max:255',
                 'contact_email' => 'required|email|max:255',
+                'referred_by' => 'nullable|max:255',
                 'first_name' => 'required|max:255',
                 'username' => 'required|min:4|max:255|unique:users',
                 'email' => 'required|email|unique:users|max:255',
                 'password' => 'required|min:4|max:255',
                 'confirm_password' => 'required|same:password',
-                'fy_start_month' => 'required',
-                'accounting_method' => 'required',
-                'business_sector' => 'required',
             ];
 
-            // Business type specific fields
-//            if ($request->business_type == 'company') {
-//                $rules['legal_name'] = 'required|max:255';
-//                // Representative DNI/NIE: 8 digits + 1 letter OR X/Y/Z + 7 digits + 1 letter
-//                $rules['tax_label_2'] = 'required|in:DNI,NIE';
-//                $rules['tax_number_2'] = [
-//                    'required',
-//                    Rule::regex('/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'),
-//                ];
-//            } else {
-//                // Self-Employed: DNI (8 digits + 1 letter) or NIE (X/Y/Z + 7 digits + 1 letter)
-//                $rules['tax_label_1'] = 'required|in:CIF,NIF';
-//                $rules['tax_number_1'] = [
-//                    'required',
-//                    Rule::regex('/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'),
-//                ];
-//
-//            }
-
+            //Document type depends on the business type: self-employed -> DNI/NIE, company (SL) -> CIF
+            //plus the legal representative's DNI/NIE. Control letter/digit is checked too.
             if ($request->business_type == 'company') {
                 $rules['legal_name'] = 'required|max:255';
-                $rules['tax_label_1'] = 'required|in:NIF,CIF';
-                // Company CIF/NIF: 1 letter + 7 digits + 1 control character
-                $rules['tax_number_1'] = [
-                    'required',
-                    'regex:/^[A-Z]{1}[0-9]{7}[A-Z0-9]{1}$/'
-                ];
-                // Representative DNI/NIE: 8 digits + 1 letter OR X/Y/Z + 7 digits + 1 letter
+                $rules['tax_label_1'] = 'required|in:CIF';
+                $rules['tax_number_1'] = ['required', new SpanishTaxId('CIF')];
+                $rules['legal_rep_name'] = 'required|max:255';
+                $rules['legal_rep_position'] = 'required|max:255';
                 $rules['tax_label_2'] = 'required|in:DNI,NIE';
-                $rules['tax_number_2'] = [
-                    'required',
-                    'regex:/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'
-                ];
+                $rules['tax_number_2'] = ['required', new SpanishTaxId($request->tax_label_2)];
             } else {
-                $rules['tax_label_1'] = 'required|in:NIF,CIF';
-                // Self-Employed: DNI (8 digits + 1 letter) or NIE (X/Y/Z + 7 digits + 1 letter)
-                $rules['tax_number_1'] = [
-                    'required',
-                    'regex:/^(?:[0-9]{8}[A-Z]|[XYZ][0-9]{7}[A-Z])$/'
-                ];
-                $rules['tax_label_2'] = 'nullable';
-                $rules['tax_number_2'] = 'nullable';
+                $rules['tax_label_1'] = 'required|in:DNI,NIE';
+                $rules['tax_number_1'] = ['required', new SpanishTaxId($request->tax_label_1)];
             }
 
-
-
-
-            $customMessages = [
-                'name.required' => __('validation.required', ['attribute' => __('business.business_name')]),
-                'currency_id.required' => __('validation.required', ['attribute' => __('business.currency')]),
-                'country.required' => __('validation.required', ['attribute' => __('business.country')]),
-                'state.required' => __('validation.required', ['attribute' => __('business.state')]),
-                'city.required' => __('validation.required', ['attribute' => __('business.city')]),
-                'zip_code.required' => __('validation.required', ['attribute' => __('business.zip_code')]),
-                'landmark.required' => __('validation.required', ['attribute' => __('business.landmark')]),
-                'time_zone.required' => __('validation.required', ['attribute' => __('business.time_zone')]),
-                'contact_person.required' => __('validation.required', ['attribute' => __('business.contact_person_name')]),
-                'mobile.required' => __('validation.required', ['attribute' => __('business.business_phone')]),
-                'contact_email.required' => __('validation.required', ['attribute' => __('business.business_email')]),
-                'contact_email.email' => __('validation.email', ['attribute' => __('business.business_email')]),
-                'first_name.required' => __('validation.required', ['attribute' => __('business.first_name')]),
-                'username.required' => __('validation.required', ['attribute' => __('business.username')]),
-                'username.min' => __('validation.min', ['attribute' => __('business.username')]),
-                'password.required' => __('validation.required', ['attribute' => __('business.password')]),
-                'password.min' => __('validation.min', ['attribute' => __('business.password')]),
-                'confirm_password.required' => __('validation.required', ['attribute' => __('business.confirm_password')]),
-                'confirm_password.same' => __('validation.same', ['attribute' => __('business.confirm_password')]),
-                'fy_start_month.required' => __('validation.required', ['attribute' => __('business.fy_start_month')]),
-                'accounting_method.required' => __('validation.required', ['attribute' => __('business.accounting_method')]),
-                'business_sector.required' => __('validation.required', ['attribute' => __('business.business_sector')]),
-                'business_type.required' => __('validation.required', ['attribute' => __('business.business_type')]),
-                'business_type.in' => __('validation.in', ['attribute' => __('business.business_type')]),
-                'tax_number_1.required' => __('validation.required', ['attribute' => __('business.nif_cif')]),
-                'tax_number_1.regex' => __('validation.regex', ['attribute' => __('business.nif_cif')]),
-                'tax_number_2.required' => __('validation.required', ['attribute' => __('business.representative_dni_nie')]),
-                'tax_number_2.regex' => __('validation.regex', ['attribute' => __('business.representative_dni_nie')]),
-                'legal_name.required' => __('validation.required', ['attribute' => __('business.legal_company_name')]),
-                'tax_label_1.required' => __('validation.required', ['attribute' => __('business.tax_type')]),
-                'tax_label_2.required' => __('validation.required', ['attribute' => __('business.tax_type')]),
-            ];
-
-            $validator = Validator::make($request->all(), $rules, $customMessages);
+            $validator = Validator::make($request->all(), $rules, [], $attributes);
 
             if ($validator->fails()) {
                 return back()->withErrors($validator)->withInput();
@@ -260,16 +180,20 @@ class BusinessController extends Controller
             //Create owner.
             $owner_details = $request->only(['surname', 'first_name', 'last_name', 'username', 'email', 'password', 'language']);
 
-            $owner_details['language'] = empty($owner_details['language']) ? config('app.locale') : $owner_details['language'];
+            $owner_details['language'] = ! empty($owner_details['language']) && array_key_exists($owner_details['language'], config('constants.langs'))
+                ? $owner_details['language'] : config('app.locale');
 
             $user = User::create_user($owner_details);
 
             $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity', 'referred_by', 'accept_tc', 'accept_marketing', 'name', 'start_date', 'currency_id', 'time_zone',
                 'fy_start_month', 'accounting_method', 'tax_label_1', 'tax_number_1',
-                'tax_label_2', 'tax_number_2']);
+                'tax_label_2', 'tax_number_2', 'legal_rep_name', 'legal_rep_position']);
+            if ($business_details['business_type'] != 'company') {
+                $business_details['legal_rep_name'] = null;
+                $business_details['legal_rep_position'] = null;
+            }
 
-            $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark',
-                'website', 'mobile', 'contact_email', 'whatsapp_number', 'address_line_2', 'alternate_number']);
+            $business_location = $this->businessUtil->registrationLocationDetails($request);
 
             //Create the business
             $business_details['owner_id'] = $user->id;
@@ -283,9 +207,11 @@ class BusinessController extends Controller
                 $business_details['logo'] = $logo_name;
             }
             //enabled modules based on business sector
-            $business_details['enabled_modules'] = $this->businessUtil->enabledModulesForSector($businessSector);
+            $business_details['enabled_modules'] = $this->businessUtil->enabledModulesForSector($business_details['business_sector']);
 
             $business = $this->businessUtil->createNewBusiness($business_details);
+
+            $this->businessUtil->saveBusinessActivity($new_business_activity);
 
             //Update user with business id
             $user->business_id = $business->id;
@@ -319,7 +245,7 @@ class BusinessController extends Controller
                 'msg' => __('business.business_created_succesfully'),
             ];
 
-            return redirect('login')->with('status', $output);
+            return redirect()->route('login', ['lang' => $user->language])->with('status', $output);
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());

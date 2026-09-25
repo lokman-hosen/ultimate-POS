@@ -132,7 +132,7 @@
                 {{ csrf_field() }}
 
                 <div class="form-group has-feedback pos-form-group {{ $errors->has('username') ? ' has-error' : '' }}">
-                    <label class="pos-label">@lang('lang_v1.username')</label>
+                    <label class="pos-label" for="username">@lang('lang_v1.username_or_email')</label>
                     <div class="pos-input-wrap">
                         <span class="pos-input-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -141,7 +141,7 @@
                             </svg>
                         </span>
                         <input class="pos-input pos-input--icon" name="username" required autofocus
-                               placeholder="@lang('lang_v1.username')" data-last-active-input="" id="username"
+                               placeholder="@lang('lang_v1.username_or_email')" autocomplete="username" data-last-active-input="" id="username"
                                type="text" value="{{ $username }}" />
                     </div>
                     @if ($errors->has('username'))

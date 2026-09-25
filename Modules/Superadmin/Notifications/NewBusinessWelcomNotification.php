@@ -46,7 +46,7 @@ class NewBusinessWelcomNotification extends Notification
         return (new MailMessage)
                     ->subject($mail_data['subject'])
                     ->view(
-                        'emails.plain_html',
+                        ['emails.plain_html', 'emails.plain_text'],
                         ['content' => $mail_data['body']]
                     );
     }
