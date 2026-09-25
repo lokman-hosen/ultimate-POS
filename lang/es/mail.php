@@ -21,15 +21,4 @@ return [
     'new_business_subject' => 'Nuevo registro de empresa',
     'new_business_intro' => 'Se ha registrado una nueva empresa.',
     'new_business_details' => 'Empresa: :business, propietario: :owner, correo: :email, teléfono de contacto: :phone',
-
-    // Welcome email on business sign-up (with document to fill in)
-    'yaigo_welcome_subject' => '¡Bienvenido a Yaigo! Tu registro se ha completado',
-    'yaigo_welcome_greeting' => 'Hola :name:',
-    'yaigo_welcome_success' => '¡Gracias por registrar **:business** en Yaigo! Tu cuenta se ha creado correctamente.',
-    'yaigo_welcome_attachment' => 'Te adjuntamos un documento que debes completar. Por favor, rellénalo, fírmalo y envíanoslo.',
-    'yaigo_welcome_send_back' => 'Puedes enviarlo a **:email** (o simplemente responder a este correo).',
-    'yaigo_welcome_username' => 'Tu usuario: **:username**',
-    'yaigo_welcome_login' => 'Iniciar sesión en Yaigo',
-    'yaigo_welcome_questions' => 'Si tienes alguna pregunta, responde a este correo.',
-    'yaigo_welcome_team' => 'El equipo de Yaigo',
 ];

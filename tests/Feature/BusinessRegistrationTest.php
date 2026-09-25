@@ -33,7 +33,6 @@ class BusinessRegistrationTest extends TestCase
         }
     }
 
-    //Superadmin welcome notification (the Yaigo welcome email with the document is covered by BusinessWelcomeMailTest)
     protected function sentMessages()
     {
         return app('mailer')->getSymfonyTransport()->messages()->map->getOriginalMessage();
@@ -117,11 +116,13 @@ class BusinessRegistrationTest extends TestCase
         $this->assertSame('Ana García', $location->contact_person);
         $this->assertSame('2º 1ª', $location->address_line_2);
 
-        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email'] && $m->getSubject() != __('mail.yaigo_welcome_subject', [], 'es'));
+        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email']);
         $this->assertNotNull($welcome, 'welcome email sent');
         $this->assertSame('Bienvenido a '.config('app.name'), $welcome->getSubject());
         $this->assertStringContainsString('Gracias por registrar', $welcome->getHtmlBody());
         $this->assertStringContainsString('Gracias por registrar', $welcome->getTextBody());
+        $this->assertSame('info@yaigo.es', $welcome->getReplyTo()[0]->getAddress());
+        $this->assertSame(['YAIGO_customer_agreement.pdf'], array_map(fn ($a) => $a->getFilename(), $welcome->getAttachments()));
     }
 
     public function test_company_registration_in_english_stores_representative_and_new_activity()
@@ -155,7 +156,7 @@ class BusinessRegistrationTest extends TestCase
         $this->post('/business/register', $data2)->assertSessionHasNoErrors();
         $this->assertSame('restaurant', Business::findOrFail(User::where('username', $data2['username'])->value('business_id'))->business_sector);
 
-        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email'] && $m->getSubject() != __('mail.yaigo_welcome_subject', [], 'es'));
+        $welcome = $this->sentMessages()->first(fn ($m) => $m->getTo()[0]->getAddress() == $data['email']);
         $this->assertStringStartsWith('Welcome ', $welcome->getSubject());
         $this->assertStringContainsString('Welcome to '.$business->name, $welcome->getTextBody());
     }
