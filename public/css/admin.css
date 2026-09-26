@@ -402,6 +402,42 @@ button:focus-visible {
     line-height: 1.45;
 }
 
+.launch-title {
+    overflow-wrap: anywhere;
+}
+
+.launch-icon i {
+    font-size: 1.4rem;
+    color: #fff;
+}
+
+.launch-group + .launch-group {
+    margin-top: 2rem;
+}
+
+.launch-group-heading {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--brand-ink-800);
+    margin: 0 0 1rem;
+}
+
+.launch-group-icon {
+    display: inline-flex;
+    color: var(--brand-blue-600);
+}
+
+.launch-group-icon svg,
+.launch-group-icon i {
+    height: 1.25rem;
+    width: 1.25rem;
+    font-size: 1.1rem;
+}
+
 
 /* -- Page background (replaces the old indigo/blue gradient) -- */
 
