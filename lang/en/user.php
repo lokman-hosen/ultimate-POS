@@ -39,4 +39,8 @@ return [
     'leave_password_blank' => "Leave password field blank if you don't want to update password",
     'user_update_success' => 'User updated successfully',
     'user_delete_success' => 'User deleted successfully',
+    'status' => 'Status',
+    'status_active' => 'Active',
+    'status_inactive' => 'Inactive',
+    'status_terminated' => 'Terminated',
 ];
