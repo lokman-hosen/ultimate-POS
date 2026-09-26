@@ -223,8 +223,9 @@ button:focus-visible {
 /* ---------------------------------------------------------------------- */
 
 .theme-header-bg {
-    background: linear-gradient(90deg, var(--brand-ink-900) 0%, var(--brand-navy-2) 100%) !important;
+    /*background: linear-gradient(90deg, var(--brand-ink-900) 0%, var(--brand-navy-2) 100%) !important;*/
     /*background: rgb(20, 21, 26);*/
+    background: rgb(238 242 246/var(--tw-bg-opacity));
     border-color: transparent !important;
 }
 
@@ -583,4 +584,19 @@ button:focus-visible {
 
 .pos-price-cta:active {
     transform: translateY(1px);
+}
+
+.top-navbar{
+    background-color: rgb(11 42 77);
+}
+
+.pos-button{
+    background-color: #18ccee !important;
+}
+#side-bar .theme-sidebar-active {
+    background-color: #18ccee !important;
+    Color: #fff !important;
+}
+#side-bar a:hover svg, #side-bar a:hover i, #side-bar a.theme-sidebar-active svg, #side-bar a.theme-sidebar-active i {
+    Color: #fff;
 }

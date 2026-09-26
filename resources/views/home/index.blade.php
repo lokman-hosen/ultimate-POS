@@ -152,8 +152,7 @@
             <div class="tw-px-5 tw-pt-3">
                 <div class="sm:tw-flex sm:tw-items-center sm:tw-justify-between sm:tw-gap-12">
                     <div class="tw-mt-2 sm:tw-w-1/2 md:tw-w-1/2">
-                        <h1
-                                class="tw-text-2xl md:tw-text-4xl tw-tracking-tight tw-text-primary-800 tw-font-semibold text-white tw-mb-10 md:tw-mb-0">
+                        <h1 class="tw-text-2xl md:tw-text-4xl tw-tracking-tight tw-text-primary-800 tw-font-semibold text-black tw-mb-10 md:tw-mb-0">
                             {{ __('home.welcome_message', ['name' => Session::get('user.first_name')]) }}
                         </h1>
                     </div>

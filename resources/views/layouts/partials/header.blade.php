@@ -1,8 +1,7 @@
 @inject('request', 'Illuminate\Http\Request')
 <!-- Main Header -->
 
-<div
-    class="  tw-transition-all tw-duration-5000 tw-border-b theme-header-bg tw-shrink-0 lg:tw-h-15 tw-border-primary-500/30 no-print">
+<div class="tw-transition-all tw-duration-5000 tw-border-b tw-shrink-0 lg:tw-h-15 tw-border-primary-500/30 no-print top-navbar">
     <div class="tw-px-5 tw-py-3">
         <div class="tw-flex tw-items-start tw-justify-between tw-gap-6 lg:tw-items-center">
             <div class="tw-flex tw-items-center tw-gap-3">
@@ -150,7 +149,7 @@
                 @if (in_array('pos_sale', $enabled_modules))
                     @can('sell.create')
                         <a href="{{ action([\App\Http\Controllers\SellPosController::class, 'create']) }}"
-                            class="sm:tw-inline-flex tw-transition-all tw-duration-200 tw-gap-2 theme-btn-bg tw-py-1.5 tw-px-3 tw-rounded-lg tw-items-center tw-justify-center tw-text-sm tw-font-medium tw-ring-1 tw-ring-white/10 hover:tw-text-white tw-text-white">
+                            class="sm:tw-inline-flex tw-transition-all tw-duration-200 tw-gap-2 theme-btn-bg tw-py-1.5 tw-px-3 tw-rounded-lg tw-items-center tw-justify-center tw-text-sm tw-font-medium tw-ring-1 tw-ring-white/10 hover:tw-text-white tw-text-white pos-button">
                             <svg aria-hidden="true" class="tw-size-5 tw-hidden md:tw-block" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
                                 stroke-linecap="round" stroke-linejoin="round">
