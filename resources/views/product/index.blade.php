@@ -1,6 +1,18 @@
 @extends('layouts.app')
 @section('title', __('sale.products'))
 
+@section('css')
+    <style>
+        #product_table .product-name-hover {
+            transition: color 0.15s ease-in-out;
+        }
+        #product_table tr:hover .product-name-hover,
+        #product_table .product-name-hover:hover {
+            color: #2563eb !important;
+        }
+    </style>
+@endsection
+
 @section('content')
 
     <!-- Content Header (Page header) -->
@@ -260,11 +272,18 @@
                         d = __datatable_ajax_callback(d);
                     }
                 },
-                columnDefs: [{
-                    "targets": [0, 1, 2],
-                    "orderable": false,
-                    "searchable": false
-                }],
+                columnDefs: [
+                    {
+                        "targets": [0, 1, 2],
+                        "orderable": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": 1,
+                        "width": "60px",
+                        "className": "text-center"
+                    }
+                ],
                 columns: [{
                         data: 'mass_delete'
                     },
@@ -279,6 +298,14 @@
                     {
                         data: 'product',
                         name: 'products.name'
+                    },
+                    {
+                        data: 'category',
+                        name: 'c1.name'
+                    },
+                    {
+                        data: 'brand',
+                        name: 'brands.name'
                     },
                     {
                         data: 'product_locations',
@@ -306,21 +333,9 @@
                         name: 'products.type'
                     },
                     {
-                        data: 'category',
-                        name: 'c1.name'
-                    },
-                    {
-                        data: 'brand',
-                        name: 'brands.name'
-                    },
-                    {
                         data: 'tax',
                         name: 'tax_rates.name',
                         searchable: false
-                    },
-                    {
-                        data: 'sku',
-                        name: 'products.sku'
                     },
                     {
                         data: 'product_custom_field1',

@@ -197,7 +197,22 @@ class ProductController extends Controller
                         return $row->product_locations->implode('name', ', ');
                     }
                 )
-                ->editColumn('category', '{{$category}} @if(!empty($sub_category))<br/> -- {{$sub_category}}@endif')
+                ->editColumn('category', function ($row) {
+                    if (empty($row->category)) {
+                        return '--';
+                    }
+                    $html = '<span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-purple-100 tw-text-purple-800" style="background-color: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; font-weight: 600; font-size: 11px; padding: 2px 8px; border-radius: 9999px; display: inline-block;">' . e($row->category) . '</span>';
+                    if (!empty($row->sub_category)) {
+                        $html .= '<br/><span class="tw-text-xs tw-text-gray-500" style="font-size: 11px; color: #6b7280;">-- ' . e($row->sub_category) . '</span>';
+                    }
+                    return $html;
+                })
+                ->editColumn('brand', function ($row) {
+                    if (empty($row->brand)) {
+                        return '--';
+                    }
+                    return '<span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-orange-100 tw-text-orange-800" style="background-color: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; font-weight: 600; font-size: 11px; padding: 2px 8px; border-radius: 9999px; display: inline-block;">' . e($row->brand) . '</span>';
+                })
                 ->addColumn(
                     'action',
                     function ($row) use ($selling_price_group_count) {
@@ -257,19 +272,31 @@ class ProductController extends Controller
                     }
                 )
                 ->editColumn('product', function ($row) use ($is_woocommerce) {
-                    $product = $row->is_inactive == 1 ? e($row->product).' <span class="label bg-gray">'.__('lang_v1.inactive').'</span>' : e($row->product);
+                    $product = '<div class="product-info-wrap">';
+                    $product .= '<span class="product-name-hover" style="font-weight: 700; color: #1e293b; display: inline-block;">' . e($row->product) . '</span>';
 
-                    $product = $row->not_for_selling == 1 ? $product.' <span class="label bg-gray">'.__('lang_v1.not_for_selling').
-                        '</span>' : $product;
+                    if (!empty($row->sku)) {
+                        $product .= '<div class="product-sku-wrap" style="font-size: 11px; color: #64748b; font-weight: normal; margin-top: 1px;"><span style="font-weight: 600; color: #94a3b8;">SKU:</span> ' . e($row->sku) . '</div>';
+                    }
+
+                    if ($row->is_inactive == 1) {
+                        $product .= ' <span class="label bg-gray" style="margin-top: 2px; display: inline-block;">' . __('lang_v1.inactive') . '</span>';
+                    }
+
+                    if ($row->not_for_selling == 1) {
+                        $product .= ' <span class="label bg-gray" style="margin-top: 2px; display: inline-block;">' . __('lang_v1.not_for_selling') . '</span>';
+                    }
 
                     if ($is_woocommerce && ! $row->woocommerce_disable_sync) {
-                        $product = $product.'<br><i class="fab fa-wordpress"></i>';
+                        $product .= ' <br><i class="fab fa-wordpress text-primary" title="WooCommerce Sync Enabled"></i>';
                     }
+
+                    $product .= '</div>';
 
                     return $product;
                 })
                 ->editColumn('image', function ($row) {
-                    return '<div style="display: flex;"><img src="'.$row->image_url.'" alt="Product image" class="product-thumbnail-small"></div>';
+                    return '<div style="display: flex; justify-content: center; align-items: center;"><img src="'.$row->image_url.'" alt="Product image" class="product-thumbnail-small" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px;"></div>';
                 })
                 ->editColumn('type', '@lang("lang_v1." . $type)')
                 ->addColumn('mass_delete', function ($row) {
@@ -292,6 +319,15 @@ class ProductController extends Controller
                     'selling_price',
                     '<div style="white-space: nowrap;">@format_currency($min_price) @if($max_price != $min_price && $type == "variable") -  @format_currency($max_price)@endif </div>'
                 )
+                ->filterColumn('product', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('products.name', 'like', "%{$keyword}%")
+                            ->orWhere('products.sku', 'like', "%{$keyword}%")
+                            ->orWhereHas('variations', function ($sub) use ($keyword) {
+                                $sub->where('sub_sku', 'like', "%{$keyword}%");
+                            });
+                    });
+                })
                 ->filterColumn('products.sku', function ($query, $keyword) {
                     $query->whereHas('variations', function ($q) use ($keyword) {
                         $q->where('sub_sku', 'like', "%{$keyword}%");
@@ -306,7 +342,7 @@ class ProductController extends Controller
                             return '';
                         }
                     }, ])
-                ->rawColumns(['action', 'image', 'mass_delete', 'product', 'selling_price', 'purchase_price', 'category', 'current_stock'])
+                ->rawColumns(['action', 'image', 'mass_delete', 'product', 'selling_price', 'purchase_price', 'category', 'brand', 'current_stock'])
                 ->make(true);
         }
 
