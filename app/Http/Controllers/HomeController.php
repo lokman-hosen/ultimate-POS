@@ -152,6 +152,7 @@ class HomeController extends Controller
         }
 
         $sells_chart_1 = new CommonChart;
+        $sells_chart_1->height(250);
 
         $sells_chart_1->labels($labels)
                         ->options($this->__chartOptions(__(
@@ -209,6 +210,7 @@ class HomeController extends Controller
         }
 
         $sells_chart_2 = new CommonChart;
+        $sells_chart_2->height(250);
         $sells_chart_2->labels($labels)
                     ->options($this->__chartOptions(__(
                         'home.total_sells',

@@ -117,6 +117,11 @@
                                         grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
                                     }
                                 }
+                                @media (min-width: 1024px) {
+                                    .chart-wrapper-70 { flex: 0 0 calc(70% - 10px) !important; max-width: calc(70% - 10px) !important; }
+                                    .summary-wrapper-30 { flex: 0 0 calc(30% - 10px) !important; max-width: calc(30% - 10px) !important; }
+                                }
+                                .custom-chart-h { height: 285px !important; }
                             </style>
                             <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4 tw-mt-6 sm:tw-gap-5 dashboard-8-cols">
 
@@ -381,33 +386,80 @@
                         <div class="tw-grid tw-grid-cols-1 tw-gap-4 sm:tw-gap-5 lg:tw-grid-cols-2">
                             @if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view'))
                                 @if (!empty($all_locations))
-                                    <div
-                                        class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2 tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200">
-                                        <div class="tw-p-4 sm:tw-p-5">
-                                            <div class="tw-flex tw-items-center tw-gap-2.5">
-                                                <div
-                                                    class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
-                                                    <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0"
-                                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"
-                                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                        <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                                        <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                                        <path d="M17 17h-11v-14h-2"></path>
-                                                        <path d="M6 5l14 1l-1 7h-13"></path>
-                                                    </svg>
+                                    <div class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2">
+                                        <div class="tw-flex tw-flex-col lg:tw-flex-row tw-gap-4 sm:tw-gap-5">
+                                            <!-- Chart Card (70%) -->
+                                            <div class="tw-w-full chart-wrapper-70 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200 tw-flex tw-flex-col">
+                                                <div class="tw-p-4 sm:tw-p-5 tw-flex-1 tw-flex tw-flex-col">
+                                                    <div class="tw-flex tw-items-center tw-gap-2.5">
+                                                        <div class="tw-border-2 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10">
+                                                            <svg aria-hidden="true" class="tw-size-5 tw-text-sky-500 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                                <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                                                <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                                                <path d="M17 17h-11v-14h-2"></path>
+                                                                <path d="M6 5l14 1l-1 7h-13"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
+                                                            {{ __('home.sells_last_30_days') }}
+                                                        </h3>
+                                                    </div>
+                                                    <div class="tw-mt-5 tw-flex-1 tw-min-w-0">
+                                                        <div class="tw-w-full custom-chart-h tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 tw-p-2 tw-overflow-hidden">
+                                                            {!! $sells_chart_1->container() !!}
+                                                        </div>
+                                                    </div>
                                                 </div>
-
-                                                <h3 class="tw-font-bold tw-text-base lg:tw-text-xl">
-                                                    {{ __('home.sells_last_30_days') }}
-                                                </h3>
                                             </div>
-                                            <div class="tw-mt-5">
-                                                <div
-                                                    class="tw-grid tw-w-full tw-h-100 tw-border tw-border-gray-200 tw-border-dashed tw-rounded-xl tw-bg-gray-50 ">
-                                                    <p class="tw-text-sm tw-italic tw-font-normal tw-text-gray-400">
-                                                        {!! $sells_chart_1->container() !!}
-                                                    </p>
+                                            <!-- Summary Card (30%) -->
+                                            <div class="tw-w-full summary-wrapper-30 tw-transition-all tw-duration-200 tw-bg-white tw-shadow-sm tw-rounded-xl tw-ring-1 hover:tw-shadow-md hover:tw--translate-y-0.5 tw-ring-gray-200 tw-flex tw-flex-col">
+                                                <div class="tw-p-4 sm:tw-p-5 tw-flex-1 tw-flex tw-flex-col">
+                                                    <div class="tw-flex tw-items-center tw-gap-2.5">
+                                                        <div class="tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10 tw-bg-blue-600 tw-text-white">
+                                                            <svg aria-hidden="true" class="tw-size-5 tw-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                <path d="M21.216 15.155l-9.181 9.167a2.022 2.022 0 0 1 -2.859 0l-7.05 -7.039a2.022 2.022 0 0 1 0 -2.858l9.181 -9.167a2.022 2.022 0 0 1 2.859 0l7.05 7.039a2.022 2.022 0 0 1 0 2.858z" />
+                                                                <path d="M7 12l2 2l4 -4" />
+                                                            </svg>
+                                                        </div>
+                                                        <h3 class="tw-font-bold tw-text-base lg:tw-text-xl tw-text-gray-800">
+                                                            Today's Summary
+                                                        </h3>
+                                                    </div>
+                                                    <div class="tw-mt-2 tw-flex-1 tw-flex tw-flex-col">
+                                                        <p class="tw-text-sm tw-text-gray-500 tw-mb-0">Total Sales</p>
+                                                        <h2 class="total_sell tw-text-3xl xl:tw-text-4xl tw-font-bold tw-text-gray-900 tw-mb-1 tw-font-mono"></h2>
+                                                        
+                                                        <div class="tw-w-full tw-bg-gray-100 tw-h-px tw-my-3"></div>
+                                                        
+                                                        <div class="tw-flex tw-flex-col tw-gap-3 tw-mt-3">
+                                                            <div class="tw-flex tw-justify-between tw-items-center">
+                                                                <div class="tw-flex tw-items-center tw-gap-3 tw-w-1/3">
+                                                                    <svg class="tw-w-7 tw-h-7 tw-text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 6v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h2"/><path d="M8 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2z"/><path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/></svg>
+                                                                    <span class="tw-text-gray-600 tw-text-lg">Cash</span>
+                                                                </div>
+                                                                <span class="total_sell_by_cash tw-font-bold tw-text-gray-900 tw-font-mono tw-text-lg tw-w-1/3 tw-text-center"></span>
+                                                                <span class="total_sell_by_cash_percent tw-text-gray-500 tw-text-sm tw-font-mono tw-w-1/3 tw-text-right"></span>
+                                                            </div>
+                                                            <div class="tw-flex tw-justify-between tw-items-center">
+                                                                <div class="tw-flex tw-items-center tw-gap-3 tw-w-1/3">
+                                                                    <svg class="tw-w-7 tw-h-7 tw-text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 5m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"/><path d="M3 10l18 0"/><path d="M7 15l.01 0"/><path d="M11 15l2 0"/></svg>
+                                                                    <span class="tw-text-gray-600 tw-text-lg">Card</span>
+                                                                </div>
+                                                                <span class="total_sell_by_card tw-font-bold tw-text-gray-900 tw-font-mono tw-text-lg tw-w-1/3 tw-text-center"></span>
+                                                                <span class="total_sell_by_card_percent tw-text-gray-500 tw-text-sm tw-font-mono tw-w-1/3 tw-text-right"></span>
+                                                            </div>
+                                                            <div class="tw-flex tw-justify-between tw-items-center">
+                                                                <div class="tw-flex tw-items-center tw-gap-3 tw-w-1/3">
+                                                                    <svg class="tw-w-7 tw-h-7 tw-text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h14"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/></svg>
+                                                                    <span class="tw-text-gray-600 tw-text-lg tw-whitespace-nowrap">Other</span>
+                                                                </div>
+                                                                <span class="total_sell_by_other tw-font-bold tw-text-gray-900 tw-font-mono tw-text-lg tw-w-1/3 tw-text-center"></span>
+                                                                <span class="total_sell_by_other_percent tw-text-gray-500 tw-text-sm tw-font-mono tw-w-1/3 tw-text-right"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

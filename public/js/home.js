@@ -185,6 +185,9 @@ function update_statistics(start, end) {
     $('.total_purchase_return').html(loader);
     $('.total_sell_return').html(loader);
     $('.net').html(loader);
+    $('.total_sell_by_cash').html(loader);
+    $('.total_sell_by_card').html(loader);
+    $('.total_sell_by_other').html(loader);
     $.ajax({
         method: 'get',
         url: '/home/get-totals',
@@ -198,6 +201,22 @@ function update_statistics(start, end) {
             //sell details
             $('.total_sell').html(__currency_trans_from_en(data.total_sell, true));
             $('.invoice_due').html(__currency_trans_from_en(data.invoice_due, true));
+            var total_sell_by_cash = data.total_sell_by_cash ? parseFloat(data.total_sell_by_cash) : 0;
+            var total_sell_by_card = data.total_sell_by_card ? parseFloat(data.total_sell_by_card) : 0;
+            var total_sell_by_other = data.total_sell_by_other ? parseFloat(data.total_sell_by_other) : 0;
+            
+            var total_sales_calculated = total_sell_by_cash + total_sell_by_card + total_sell_by_other;
+            var cash_percent = total_sales_calculated > 0 ? ((total_sell_by_cash / total_sales_calculated) * 100).toFixed(1) : 0.0;
+            var card_percent = total_sales_calculated > 0 ? ((total_sell_by_card / total_sales_calculated) * 100).toFixed(1) : 0.0;
+            var other_percent = total_sales_calculated > 0 ? ((total_sell_by_other / total_sales_calculated) * 100).toFixed(1) : 0.0;
+            
+            $('.total_sell_by_cash').html(__currency_trans_from_en(total_sell_by_cash, true));
+            $('.total_sell_by_card').html(__currency_trans_from_en(total_sell_by_card, true));
+            $('.total_sell_by_other').html(__currency_trans_from_en(total_sell_by_other, true));
+            
+            $('.total_sell_by_cash_percent').html(cash_percent + '%');
+            $('.total_sell_by_card_percent').html(card_percent + '%');
+            $('.total_sell_by_other_percent').html(other_percent + '%');
             //expense details
             $('.total_expense').html(__currency_trans_from_en(data.total_expense, true));
             var total_purchase_return = data.total_purchase_return - data.total_purchase_return_paid;
