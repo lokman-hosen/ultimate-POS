@@ -311,6 +311,10 @@
                         data: 'product_locations',
                         name: 'product_locations'
                     },
+                    {
+                        data: 'type',
+                        name: 'products.type'
+                    },
                     @can('view_purchase_price')
                         {
                             data: 'purchase_price',
@@ -327,10 +331,6 @@
                     @endcan {
                         data: 'current_stock',
                         searchable: false
-                    },
-                    {
-                        data: 'type',
-                        name: 'products.type'
                     },
                     {
                         data: 'tax',
