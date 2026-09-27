@@ -27,7 +27,7 @@
         background: #ffffff;
       }
       .contact-modal-custom .modal-header {
-        padding: 24px 28px 16px;
+        padding: 20px 28px 16px;
         border-bottom: 1px solid #f1f5f9;
         position: relative;
         background: #ffffff;
@@ -39,16 +39,10 @@
         margin: 0;
         line-height: 1.2;
       }
-      .contact-modal-custom .modal-header .modal-subtitle {
-        font-size: 13px;
-        color: #64748b;
-        margin-top: 4px;
-        margin-bottom: 0;
-      }
       .contact-modal-custom .modal-header .close {
         position: absolute;
         right: 24px;
-        top: 24px;
+        top: 20px;
         font-size: 24px;
         color: #94a3b8;
         opacity: 0.8;
@@ -67,8 +61,8 @@
         overflow-y: auto;
       }
       .contact-section-group {
-        padding-bottom: 22px;
-        margin-bottom: 22px;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
         border-bottom: 1px solid #f1f5f9;
       }
       .contact-section-group:last-child {
@@ -78,7 +72,7 @@
       }
       .contact-section-header {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: 12px;
         margin-bottom: 16px;
       }
@@ -94,7 +88,6 @@
         font-size: 12px;
         font-weight: 700;
         flex-shrink: 0;
-        margin-top: 1px;
       }
       .contact-section-title-wrap {
         flex: 1;
@@ -105,17 +98,6 @@
         color: #0f172a;
         margin: 0;
         line-height: 1.3;
-      }
-      .contact-section-title .contact-optional {
-        font-weight: 400;
-        color: #64748b;
-        font-size: 13px;
-      }
-      .contact-section-desc {
-        font-size: 12.5px;
-        color: #64748b;
-        margin-top: 2px;
-        margin-bottom: 0;
       }
       .contact-type-cards-grid {
         display: grid;
@@ -190,11 +172,6 @@
         font-weight: 700;
         color: #0f172a;
         margin: 0;
-      }
-      .contact-type-card .card-subtitle {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 1px;
       }
       .contact-modal-custom .form-group {
         margin-bottom: 16px;
@@ -309,11 +286,6 @@
         color: #0f172a;
         margin: 0;
       }
-      .contact-accordion-subtitle {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 1px;
-      }
       .contact-accordion-chevron {
         color: #64748b;
         font-size: 14px;
@@ -376,18 +348,16 @@
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <h4 class="modal-title">@lang('contact.add_contact')</h4>
-      <p class="modal-subtitle">Añade los datos básicos de tu proveedor / cliente.</p>
     </div>
 
     <div class="modal-body">
         
-        <!-- SECTION 1: TIPO DE PROVEEDOR / CONTACT TYPE -->
+        <!-- SECTION 1: TIPO DE CONTACTO / CONTACT TYPE -->
         <div class="contact-section-group">
           <div class="contact-section-header">
             <span class="contact-badge-number">1</span>
             <div class="contact-section-title-wrap">
               <h5 class="contact-section-title">@lang('contact.contact_type')</h5>
-              <p class="contact-section-desc">Selecciona el tipo de proveedor o entidad.</p>
             </div>
           </div>
 
@@ -406,7 +376,6 @@
               </div>
               <div class="card-info">
                 <h6 class="card-title">@lang('lang_v1.individual')</h6>
-                <p class="card-subtitle">Persona física</p>
               </div>
             </div>
 
@@ -417,7 +386,6 @@
               </div>
               <div class="card-info">
                 <h6 class="card-title">@lang('business.business')</h6>
-                <p class="card-subtitle">Persona jurídica</p>
               </div>
             </div>
           </div>
@@ -441,6 +409,9 @@
                         <i class="fa fa-id-badge contact-input-icon"></i>
                         {!! Form::text('contact_id', null, ['class' => 'form-control','placeholder' => __('lang_v1.contact_id')]); !!}
                     </div>
+                    <p class="help-block">
+                        @lang('lang_v1.leave_empty_to_autogenerate')
+                    </p>
                 </div>
             </div>
 
@@ -461,8 +432,7 @@
           <div class="contact-section-header">
             <span class="contact-badge-number">2</span>
             <div class="contact-section-title-wrap">
-              <h5 class="contact-section-title">Información principal</h5>
-              <p class="contact-section-desc">Datos básicos de tu proveedor o cliente.</p>
+              <h5 class="contact-section-title">@lang('contact.contact')</h5>
             </div>
           </div>
 
@@ -505,13 +475,13 @@
                 </div>
             </div>
 
-            <!-- Tax Number (NIF / CIF) -->
+            <!-- Tax Number (Tax No) -->
             <div class="col-md-6">
                 <div class="form-group">
                   {!! Form::label('tax_number', __('contact.tax_no') . ':') !!}
                   <div class="contact-input-icon-wrap">
                       <i class="fa fa-file-text-o fa-id-card-o contact-input-icon"></i>
-                      {!! Form::text('tax_number', null, ['class' => 'form-control', 'placeholder' => 'NIF o CIF']); !!}
+                      {!! Form::text('tax_number', null, ['class' => 'form-control', 'placeholder' => __('contact.tax_no')]); !!}
                   </div>
                 </div>
             </div>
@@ -547,8 +517,7 @@
           <div class="contact-section-header">
             <span class="contact-badge-number">3</span>
             <div class="contact-section-title-wrap">
-              <h5 class="contact-section-title">Dirección <span class="contact-optional">(@lang('lang_v1.optional'))</span></h5>
-              <p class="contact-section-desc">Dirección fiscal o de contacto del proveedor.</p>
+              <h5 class="contact-section-title">@lang('business.address')</h5>
             </div>
           </div>
 
@@ -569,8 +538,7 @@
           <div class="contact-section-header">
             <span class="contact-badge-number">4</span>
             <div class="contact-section-title-wrap">
-              <h5 class="contact-section-title">Datos de compra / pago <span class="contact-optional">(@lang('lang_v1.optional'))</span></h5>
-              <p class="contact-section-desc">Información para gestionar tus compras y condiciones de pago.</p>
+              <h5 class="contact-section-title">@lang('contact.pay_term')</h5>
             </div>
           </div>
 
@@ -620,6 +588,7 @@
                             <i class="fa fa-line-chart contact-input-icon"></i>
                             {!! Form::text('credit_limit', $default_credit_limit ?? null, ['class' => 'form-control input_number', 'placeholder' => __('lang_v1.credit_limit')]); !!}
                         </div>
+                        <p class="help-block">@lang('lang_v1.credit_limit_help')</p>
                     </div>
                   </div>
                 </div>
@@ -632,8 +601,7 @@
           <div class="contact-section-header">
             <span class="contact-badge-number">5</span>
             <div class="contact-section-title-wrap">
-              <h5 class="contact-section-title">Asignación <span class="contact-optional">(@lang('lang_v1.optional'))</span></h5>
-              <p class="contact-section-desc">Asigna este proveedor a un usuario o equipo.</p>
+              <h5 class="contact-section-title">@lang('lang_v1.assigned_to')</h5>
             </div>
           </div>
 
@@ -644,7 +612,7 @@
                     <div class="form-group">
                         <div class="contact-input-icon-wrap">
                             <i class="fa fa-user contact-input-icon"></i>
-                            {!! Form::select('assigned_to_users[]', $users ?? [], null , ['class' => 'form-control select2', 'id' => 'assigned_to_users', 'multiple', 'placeholder' => 'Selecciona un usuario', 'style' => 'width: 100%;']); !!}
+                            {!! Form::select('assigned_to_users[]', $users ?? [], null , ['class' => 'form-control select2', 'id' => 'assigned_to_users', 'multiple', 'placeholder' => __('messages.please_select'), 'style' => 'width: 100%;']); !!}
                         </div>
                     </div>
                 </div>
@@ -672,8 +640,7 @@
                   <i class="fa fa-file-text-o"></i>
                 </div>
                 <div>
-                  <h6 class="contact-accordion-title">Información adicional</h6>
-                  <p class="contact-accordion-subtitle">Contactos alternativos, notas, dirección detallada y otros datos.</p>
+                  <h6 class="contact-accordion-title">@lang('lang_v1.more_info')</h6>
                 </div>
               </div>
             </div>
