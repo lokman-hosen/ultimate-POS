@@ -583,6 +583,12 @@ class ContactController extends Controller
             ->editColumn('supplier_business_name', function ($row) {
                 return $this->formatBusinessNameAvatar($row->supplier_business_name);
             })
+            ->editColumn('customer_group', function ($row) {
+                if (empty($row->customer_group)) {
+                    return '--';
+                }
+                return '<span class="customer-group-tag" style="display:inline-flex; align-items:center; justify-content:center; padding:4px 12px; border-radius:9999px; background-color:#f3e8ff; color:#7e22ce; border:1px solid #d8b4fe; font-weight:600; font-size:12.5px; white-space:nowrap;">' . e($row->customer_group) . '</span>';
+            })
             ->editColumn('total_rp', '{{$total_rp ?? 0}}')
             ->editColumn('created_at', '{{@format_date($created_at)}}')
             ->removeColumn('total_invoice')
@@ -612,7 +618,7 @@ class ContactController extends Controller
             $contacts->removeColumn('total_rp');
         }
 
-        return $contacts->rawColumns(['action', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name', 'balance', 'supplier_business_name'])
+        return $contacts->rawColumns(['action', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name', 'balance', 'supplier_business_name', 'customer_group'])
                         ->make(true);
     }
 
