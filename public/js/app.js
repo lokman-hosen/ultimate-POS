@@ -390,17 +390,7 @@ $(document).ready(function() {
             { data: 'address', name: 'address', orderable: false },
             { data: 'mobile', name: 'mobile' },
             { data: 'due', searchable: false, orderable: false },
-            { data: 'return_due', searchable: false, orderable: false },
-            { data: 'custom_field1', name: 'custom_field1'},
-            { data: 'custom_field2', name: 'custom_field2'},
-            { data: 'custom_field3', name: 'custom_field3'},
-            { data: 'custom_field4', name: 'custom_field4'},
-            { data: 'custom_field5', name: 'custom_field5'},
-            { data: 'custom_field6', name: 'custom_field6'},
-            { data: 'custom_field7', name: 'custom_field7'},
-            { data: 'custom_field8', name: 'custom_field8'},
-            { data: 'custom_field9', name: 'custom_field9'},
-            { data: 'custom_field10', name: 'custom_field10'},
+            { data: 'return_due', searchable: false, orderable: false }
         ];
     } else if (contact_table_type == 'customer') {
         var columns = [
@@ -424,18 +414,8 @@ $(document).ready(function() {
             { data: 'address', name: 'address', orderable: false },
             { data: 'mobile', name: 'mobile' },
             { data: 'due', searchable: false, orderable: false },
-            { data: 'return_due', searchable: false, orderable: false },
-            { data: 'custom_field1', name: 'custom_field1'},
-            { data: 'custom_field2', name: 'custom_field2'},
-            { data: 'custom_field3', name: 'custom_field3'},
-            { data: 'custom_field4', name: 'custom_field4'},
-            { data: 'custom_field5', name: 'custom_field5'},
-            { data: 'custom_field6', name: 'custom_field6'},
-            { data: 'custom_field7', name: 'custom_field7'},
-            { data: 'custom_field8', name: 'custom_field8'},
-            { data: 'custom_field9', name: 'custom_field9'},
-            { data: 'custom_field10', name: 'custom_field10'},
-            ]);
+            { data: 'return_due', searchable: false, orderable: false }
+        ]);
     }
     
     contact_table = $('#contact_table').DataTable({
