@@ -434,7 +434,7 @@
                                                         <div class="tw-w-full tw-bg-gray-100 tw-h-px tw-my-3"></div>
                                                         
                                                         <div class="tw-flex tw-flex-col tw-gap-3 tw-mt-3">
-                                                            <div class="tw-flex tw-justify-between tw-items-center">
+                                                                <div class="tw-flex tw-justify-between tw-items-center">
                                                                 <div class="tw-flex tw-items-center tw-gap-3 tw-w-1/3">
                                                                     <svg class="tw-w-7 tw-h-7 tw-text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 6v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h2"/><path d="M8 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2z"/><path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/></svg>
                                                                     <span class="tw-text-gray-600 tw-text-lg">Cash</span>
