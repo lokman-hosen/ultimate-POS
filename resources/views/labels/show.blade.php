@@ -128,6 +128,40 @@
         background: #0f172a;
         height: 100%;
     }
+    #product_table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100% !important;
+    }
+    #product_table thead th {
+        background: #f8fafc;
+        color: #475569;
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 12px 14px;
+        border-bottom: 2px solid #e2e8f0;
+        vertical-align: middle !important;
+    }
+    #product_table tbody td {
+        padding: 12px 14px;
+        vertical-align: middle !important;
+        border-bottom: 1px solid #f1f5f9;
+        background: #ffffff;
+    }
+    #product_table tbody tr:hover td {
+        background-color: #fafbfd;
+    }
+    #product_table .form-control {
+        border: 1px solid #cbd5e1;
+        box-shadow: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    #product_table .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
 </style>
 @endsection
 
@@ -187,16 +221,17 @@
                     <table class="table table-bordered table-striped table-hover tw-mb-0" id="product_table">
                         <thead class="tw-bg-slate-50">
                             <tr>
-                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3">@lang( 'barcode.products' )</th>
-                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 130px;">@lang( 'barcode.no_of_labels' )</th>
+                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 30%;">@lang( 'barcode.products' )</th>
+                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 14%; min-width: 110px;">@lang( 'barcode.no_of_labels' )</th>
                                 @if(request()->session()->get('business.enable_lot_number') == 1)
-                                    <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3">@lang( 'lang_v1.lot_number' )</th>
+                                    <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 14%; min-width: 120px;">@lang( 'lang_v1.lot_number' )</th>
                                 @endif
                                 @if(request()->session()->get('business.enable_product_expiry') == 1)
-                                    <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3">@lang( 'product.exp_date' )</th>
+                                    <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 15%; min-width: 130px;">@lang( 'product.exp_date' )</th>
                                 @endif
-                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3">@lang('lang_v1.packing_date')</th>
-                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3">@lang('lang_v1.selling_price_group')</th>
+                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 18%; min-width: 150px;">@lang('lang_v1.packing_date')</th>
+                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 18%; min-width: 160px;">@lang('lang_v1.selling_price_group')</th>
+                                <th class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-py-3" style="width: 50px; text-align: center;"><i class="fa fa-trash"></i></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -609,6 +644,12 @@
 
             $('.preview-trigger').on('change input', function() {
                 updateBarcodeInstantPreview();
+            });
+
+            $(document).on('click', '.remove_label_product_row', function() {
+                $(this).closest('tr').fadeOut(150, function() {
+                    $(this).remove();
+                });
             });
 
             // Initial render
