@@ -298,6 +298,47 @@ class HomeController extends Controller
             //NET = TOTAL SALES - INVOICE DUE - EXPENSE
             $output['net'] = $output['total_sell'] - $output['invoice_due'] - $output['total_expense'];
 
+            // Calculate payment summary for total sell
+            $payment_summary_query = DB::table('transaction_payments')
+                ->join('transactions as t', 'transaction_payments.transaction_id', '=', 't.id')
+                ->where('t.business_id', $business_id)
+                ->where('t.type', 'sell')
+                ->where('t.status', 'final');
+
+            if (!empty($start) && !empty($end)) {
+                $payment_summary_query->whereDate('t.transaction_date', '>=', $start)
+                    ->whereDate('t.transaction_date', '<=', $end);
+            }
+
+            if (empty($start) && !empty($end)) {
+                $payment_summary_query->whereDate('t.transaction_date', '<=', $end);
+            }
+
+            if (!empty($location_id)) {
+                $payment_summary_query->where('t.location_id', $location_id);
+            }
+
+            if (!empty($created_by)) {
+                $payment_summary_query->where('t.created_by', $created_by);
+            }
+
+            $payment_summary_result = $payment_summary_query->select(
+                'transaction_payments.method',
+                DB::raw('SUM(IF(transaction_payments.is_return = 1, -1*transaction_payments.amount, transaction_payments.amount)) as total_amount')
+            )
+            ->groupBy('transaction_payments.method')
+            ->pluck('total_amount', 'method');
+
+            $output['total_sell_by_cash'] = $payment_summary_result['cash'] ?? 0;
+            $output['total_sell_by_card'] = $payment_summary_result['card'] ?? 0;
+
+            $output['total_sell_by_other'] = 0;
+            foreach ($payment_summary_result as $method => $amount) {
+                if (!in_array($method, ['cash', 'card'])) {
+                    $output['total_sell_by_other'] += (float)$amount;
+                }
+            }
+
             return $output;
         }
     }
