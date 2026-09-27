@@ -1694,4 +1694,5 @@ return [
     'username_or_email' => 'Username or email',
     'send_password_reset_link_help' => 'Enter your email address and we will send you a link to reset your password.',
     'back_to_login' => 'Back to login',
+    'pricing' => 'Pricing',
 ];
