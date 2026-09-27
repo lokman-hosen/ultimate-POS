@@ -172,8 +172,7 @@
                             <th>@lang('contact.total_purchase_due')</th>
                             <th>@lang('lang_v1.total_purchase_return_due')</th>
                         @elseif($type == 'customer')
-                            <th style="min-width: 200px;">@lang('business.business_name')</th>
-                            <th style="min-width: 160px;">@lang('user.name')</th>
+                            <th style="min-width: 180px;">@lang('user.name')</th>
                             <th>@lang('business.email')</th>
                             <th>@lang('contact.tax_no')</th>
                             <th>@lang('lang_v1.credit_limit')</th>
@@ -200,8 +199,8 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td @if ($type == 'supplier') colspan="6" @elseif($type == 'customer') @if ($reward_enabled) colspan="9"
-                        @else colspan="8" @endif @endif>
+                        <td @if ($type == 'supplier') colspan="6" @elseif($type == 'customer') @if ($reward_enabled) colspan="8"
+                        @else colspan="7" @endif @endif>
                             <strong>
                                 @lang('sale.total'):
                             </strong>

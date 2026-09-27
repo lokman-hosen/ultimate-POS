@@ -396,7 +396,6 @@ $(document).ready(function() {
         var columns = [
             { data: 'action', searchable: false, orderable: false },
             { data: 'contact_id', name: 'contact_id' },
-            { data: 'supplier_business_name', name: 'supplier_business_name' },
             { data: 'name', name: 'name' },
             { data: 'email', name: 'email' },
             { data: 'tax_number', name: 'tax_number' },

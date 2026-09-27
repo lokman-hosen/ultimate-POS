@@ -569,13 +569,13 @@ class ContactController extends Controller
                 @endif
             ')
             ->editColumn('name', function ($row) {
-                $name = e($row->name);
+                $name = $this->formatBusinessNameAvatar($row->name);
                 if ($row->contact_status == 'inactive') {
-                    $name = e($row->name).' <small class="label pull-right bg-red no-print">'.__('lang_v1.inactive').'</small>';
+                    $name .= ' <small class="label pull-right bg-red no-print">'.__('lang_v1.inactive').'</small>';
                 }
 
                 if (! empty($row->converted_by)) {
-                    $name .= '<span class="label bg-info label-round no-print" data-toggle="tooltip" title="Converted from leads"><i class="fas fa-sync-alt"></i></span>';
+                    $name .= ' <span class="label bg-info label-round no-print" data-toggle="tooltip" title="Converted from leads"><i class="fas fa-sync-alt"></i></span>';
                 }
 
                 return $name;
