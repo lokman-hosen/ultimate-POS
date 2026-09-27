@@ -120,6 +120,20 @@
                                 @media (min-width: 1024px) {
                                     .chart-wrapper-70 { flex: 0 0 calc(70% - 10px) !important; max-width: calc(70% - 10px) !important; }
                                     .summary-wrapper-30 { flex: 0 0 calc(30% - 10px) !important; max-width: calc(30% - 10px) !important; }
+                                    .recent-transactions-grid {
+                                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                                    }
+                                }
+                                @media (min-width: 768px) and (max-width: 1023px) {
+                                    .recent-transactions-grid {
+                                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                                    }
+                                }
+                                .recent-transactions-grid {
+                                    display: grid !important;
+                                    grid-template-columns: repeat(1, minmax(0, 1fr));
+                                    gap: 1.25rem !important;
+                                    width: 100% !important;
                                 }
                                 .custom-chart-h { height: 285px !important; }
                             </style>
@@ -463,6 +477,11 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <!-- Recent Transactions Row (Sales, Purchases, Expenses) -->
+                                    <div class="tw-transition-all lg:tw-col-span-2 xl:tw-col-span-2" id="recent_transactions_wrapper">
+                                        @include('home.partials.recent_transactions_content')
                                     </div>
                                 @endif
 

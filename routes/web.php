@@ -123,6 +123,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
 
     Route::get('/home/get-totals', [HomeController::class, 'getTotals']);
+    Route::get('/home/get-recent-transactions', [HomeController::class, 'getRecentTransactions']);
     Route::get('/home/product-stock-alert', [HomeController::class, 'getProductStockAlert']);
     Route::get('/home/purchase-payment-dues', [HomeController::class, 'getPurchasePaymentDues']);
     Route::get('/home/sales-payment-dues', [HomeController::class, 'getSalesPaymentDues']);

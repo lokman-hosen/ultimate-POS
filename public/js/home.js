@@ -25,6 +25,9 @@ $(document).ready(function() {
                     .endDate.format('YYYY-MM-DD');
 
         update_statistics(start, end);
+        if (typeof update_recent_transactions === 'function') {
+            update_recent_transactions($(this).val());
+        }
     });
 
     //atock alert datatables
@@ -245,4 +248,19 @@ function update_statistics(start, end) {
 
         },
     });
+}
+
+function update_recent_transactions(location_id) {
+    if ($('#recent_transactions_wrapper').length > 0) {
+        $.ajax({
+            method: 'get',
+            url: '/home/get-recent-transactions',
+            dataType: 'html',
+            data: { location_id: location_id },
+            success: function(html) {
+                $('#recent_transactions_wrapper').html(html);
+                __currency_convert_recursively($('#recent_transactions_wrapper'));
+            }
+        });
+    }
 }
