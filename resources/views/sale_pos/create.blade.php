@@ -22,47 +22,43 @@
         ]) !!}
         <div class="row" style="margin:0;">
             <div class="col-md-12" style="padding:0;">
-                <div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch" style="gap: 4px; margin: 0; padding: 0;">
-                    {{-- <div class="@if (empty($pos_settings['hide_product_suggestion'])) col-md-7 @else col-md-10 col-md-offset-1 @endif no-padding pr-12"> --}}
-                    <div class="tw-w-full @if(empty($pos_settings['hide_product_suggestion'])) lg:tw-w-[60%]  @else lg:tw-w-[100%] @endif" style="padding:0;">
-
-                        <div class="tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-rounded-2xl tw-bg-white" style="padding:0;overflow:hidden;height:100%;">
-
-                            {{-- <div class="box box-solid mb-12 @if (!isMobile()) mb-40 @endif"> --}}
-                                <div class="box-body pb-0">
-                                    {!! Form::hidden('location_id', $default_location->id ?? null, [
-                                        'id' => 'location_id',
-                                        'data-receipt_printer_type' => !empty($default_location->receipt_printer_type)
-                                            ? $default_location->receipt_printer_type
-                                            : 'browser',
-                                        'data-default_payment_accounts' => $default_location->default_payment_accounts ?? '',
-                                    ]) !!}
-                                    <!-- sub_type -->
-                                    {!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
-                                    <input type="hidden" id="item_addition_method"
-                                        value="{{ $business_details->item_addition_method }}">
-                                    @include('sale_pos.partials.pos_form')
-
-                                    @include('sale_pos.partials.pos_form_totals')
-
-                                    @include('sale_pos.partials.payment_modal')
-
-                                    @if (empty($pos_settings['disable_suspend']))
-                                        @include('sale_pos.partials.suspend_note_modal')
-                                    @endif
-
-                                    @if (empty($pos_settings['disable_recurring_invoice']))
-                                        @include('sale_pos.partials.recurring_invoice_modal')
-                                    @endif
-                                </div>
-                            {{-- </div> --}}
-                        </div>
-                    </div>
+                <div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch" style="gap: 6px; margin: 0; padding: 0;">
                     @if (empty($pos_settings['hide_product_suggestion']))
-                        <div class="tw-w-full lg:tw-w-[40%]" style="padding:0;" id="pos_sidebar_wrap">
+                        <div class="pos-left-product-section tw-w-full" style="padding:0; min-width:0;" id="pos_sidebar_wrap">
                             @include('sale_pos.partials.pos_sidebar')
                         </div>
                     @endif
+
+                    <div class="pos-right-cart-section tw-w-full @if(!empty($pos_settings['hide_product_suggestion'])) pos-cart-full-width @endif" style="padding:0; min-width:0;">
+                        <div class="tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding:0;overflow:hidden;height:100%;">
+                            <div class="box-body pb-0">
+                                {!! Form::hidden('location_id', $default_location->id ?? null, [
+                                    'id' => 'location_id',
+                                    'data-receipt_printer_type' => !empty($default_location->receipt_printer_type)
+                                        ? $default_location->receipt_printer_type
+                                        : 'browser',
+                                    'data-default_payment_accounts' => $default_location->default_payment_accounts ?? '',
+                                ]) !!}
+                                <!-- sub_type -->
+                                {!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
+                                <input type="hidden" id="item_addition_method"
+                                    value="{{ $business_details->item_addition_method }}">
+                                @include('sale_pos.partials.pos_form')
+
+                                @include('sale_pos.partials.pos_form_totals')
+
+                                @include('sale_pos.partials.payment_modal')
+
+                                @if (empty($pos_settings['disable_suspend']))
+                                    @include('sale_pos.partials.suspend_note_modal')
+                                @endif
+
+                                @if (empty($pos_settings['disable_recurring_invoice']))
+                                    @include('sale_pos.partials.recurring_invoice_modal')
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,6 +96,36 @@
 
 @stop
 @section('css')
+    <style>
+        @media (min-width: 992px) {
+            .pos-left-product-section {
+                width: 70% !important;
+                flex: 0 0 70% !important;
+                max-width: 70% !important;
+                min-width: 0 !important;
+            }
+            .pos-right-cart-section {
+                width: 30% !important;
+                flex: 0 0 30% !important;
+                max-width: 30% !important;
+                min-width: 0 !important;
+            }
+            .pos-right-cart-section.pos-cart-full-width {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+        }
+        @media (max-width: 991px) {
+            .pos-left-product-section,
+            .pos-right-cart-section {
+                width: 100% !important;
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+            }
+        }
+    </style>
     <!-- include module css -->
     @if (!empty($pos_module_data))
         @foreach ($pos_module_data as $key => $value)

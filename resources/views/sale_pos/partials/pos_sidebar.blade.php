@@ -1,4 +1,4 @@
-<div class="pos-sidebar-root tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-rounded-2xl tw-bg-white" style="padding: 6px; overflow: hidden; height: 100%;">
+<div class="pos-sidebar-root tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding: 6px; overflow: hidden; height: 100%;">
 <div class="tw-flex tw-items-start tw-gap-2 tw-flex-wrap" style="margin: 0 0 6px 0; padding: 0 4px;">
     @if (!empty($categories))
         <div class="tw-flex-1 tw-min-w-[140px]" id="product_category_div">

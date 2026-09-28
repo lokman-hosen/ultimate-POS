@@ -92,30 +92,28 @@
                         <i class="fas fa-credit-card tw-text-[#D61B60]" aria-hidden="true"></i> @lang('lang_v1.express_checkout_card')
                     </button>
                 @endif
-
-                {{-- Desktop-only primary CTAs (mobile has these in its own top row) --}}
-                <div class="!tw-hidden md:!tw-flex md:tw-items-center md:tw-gap-3">
-                    <span class="pos-footer-divider tw-inline-block tw-w-px tw-h-7 tw-bg-[#e2e8f0] tw-flex-shrink-0 tw-self-center tw-rounded-[1px] tw-mx-1"></span>
-                    @if (!Gate::check('disable_pay_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
-                        <button type="button"
-                            class="pos-finalize tw-leading-none tw-whitespace-nowrap tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1 tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[#001F3E] tw-rounded-md tw-p-2 tw-w-[8.5rem] no-print @if ($pos_settings['disable_pay_checkout'] != 0) hide @endif"
-                            title="@lang('lang_v1.tooltip_checkout_multi_pay')"><i class="fas fa-money-check-alt"
-                                aria-hidden="true"></i> @lang('lang_v1.checkout_multi_pay') </button>
-                    @endif
-
-                    @if (!Gate::check('disable_express_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
-                        <button type="button"
-                            class="tw-leading-none tw-whitespace-nowrap tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[rgb(40,183,123)] tw-p-2 tw-rounded-md tw-w-[8.5rem] tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1 active:tw-scale-95 tw-transition-transform no-print @if ($pos_settings['disable_express_checkout'] != 0 || !array_key_exists('cash', $payment_types)) hide @endif pos-express-finalize"
-                            data-pay_method="cash" title="@lang('tooltip.express_checkout')"> <i class="fas fa-money-bill-alt"
-                                aria-hidden="true"></i> @lang('lang_v1.express_checkout_cash')</button>
-                    @endif
-                </div>
             </div>
 
-            <div class="tw-w-full md:tw-w-fit tw-flex tw-flex-col tw-items-end tw-gap-3 tw-hidden md:tw-block">
-                @if (!isset($pos_settings['hide_recent_trans']) || $pos_settings['hide_recent_trans'] == 0)
+            {{-- Desktop-only right CTAs: Pay Checkout + Cash Pay + Recent Transactions (aligned with right-side cart) --}}
+            <div class="!tw-hidden md:!tw-flex md:tw-items-center md:tw-gap-2">
+                @if (!Gate::check('disable_pay_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
                     <button type="button"
-                        class="tw-font-bold tw-bg-[#646EE4] hover:tw-bg-[#414aac] tw-rounded-full tw-text-white tw-w-full md:tw-w-fit tw-px-5 tw-h-9 tw-cursor-pointer tw-text-xs md:tw-text-sm tw-inline-flex tw-items-center tw-justify-center tw-gap-1"
+                        class="pos-finalize tw-leading-none tw-whitespace-nowrap tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1 tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[#001F3E] hover:tw-bg-[#001730] tw-rounded-md tw-p-2 tw-w-[8.5rem] no-print active:tw-scale-95 tw-transition-transform @if ($pos_settings['disable_pay_checkout'] != 0) hide @endif"
+                        title="@lang('lang_v1.tooltip_checkout_multi_pay')"><i class="fas fa-money-check-alt"
+                            aria-hidden="true"></i> @lang('lang_v1.checkout_multi_pay') </button>
+                @endif
+
+                @if (!Gate::check('disable_express_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
+                    <button type="button"
+                        class="tw-leading-none tw-whitespace-nowrap tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[rgb(40,183,123)] hover:tw-bg-[rgb(32,158,105)] tw-p-2 tw-rounded-md tw-w-[8.5rem] tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1 active:tw-scale-95 tw-transition-transform no-print @if ($pos_settings['disable_express_checkout'] != 0 || !array_key_exists('cash', $payment_types)) hide @endif pos-express-finalize"
+                        data-pay_method="cash" title="@lang('tooltip.express_checkout')"> <i class="fas fa-money-bill-alt"
+                            aria-hidden="true"></i> @lang('lang_v1.express_checkout_cash')</button>
+                @endif
+
+                @if (!isset($pos_settings['hide_recent_trans']) || $pos_settings['hide_recent_trans'] == 0)
+                    <span class="pos-footer-divider tw-inline-block tw-w-px tw-h-7 tw-bg-[#e2e8f0] tw-flex-shrink-0 tw-self-center tw-rounded-[1px] tw-mx-1"></span>
+                    <button type="button"
+                        class="tw-font-bold tw-bg-[#646EE4] hover:tw-bg-[#414aac] tw-rounded-full tw-text-white tw-px-4 tw-h-9 tw-cursor-pointer tw-text-xs md:tw-text-sm tw-inline-flex tw-items-center tw-justify-center tw-gap-1 active:tw-scale-95 tw-transition-transform"
                         data-toggle="modal" data-target="#recent_transactions_modal" id="recent-transactions"><i
                             class="fas fa-clock"></i> @lang('lang_v1.recent_transactions')</button>
                 @endif
