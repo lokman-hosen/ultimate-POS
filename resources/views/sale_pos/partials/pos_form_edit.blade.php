@@ -188,27 +188,37 @@
 				$hide_tax = 'hide';
 			}
 		@endphp
-		<table class="table table-condensed table-responsive" id="pos_table">
+		<table class="table table-condensed" id="pos_table" style="table-layout: fixed !important; width: 100% !important; margin-bottom: 0 !important;">
+			<colgroup>
+				<col style="width: 48% !important;">
+				<col style="width: 17% !important;">
+				@if(!empty($pos_settings['inline_service_staff']))
+					<col style="width: 10% !important;">
+				@endif
+				<col class="{{$hide_tax}}" style="width: 14% !important;">
+				<col style="width: 17% !important;">
+				<col style="width: 34px !important;">
+			</colgroup>
 			<thead>
 				<tr>
-					<th class="tex-center tw-text-sm md:!tw-text-base tw-font-bold @if(!empty($pos_settings['inline_service_staff'])) col-md-3 @else col-md-4 @endif">
+					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 48% !important;">
 						@lang('sale.product') @show_tooltip(__('lang_v1.tooltip_sell_product_column'))
 					</th>
-					<th class="text-center tw-text-sm md:!tw-text-base tw-font-bold col-md-3">
+					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
 						@lang('sale.qty')
 					</th>
 					@if(!empty($pos_settings['inline_service_staff']))
-						<th class="text-center tw-text-sm md:!tw-text-base tw-font-bold col-md-2">
+						<th class="text-center pos-th-staff tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 10% !important;">
 							@lang('restaurant.service_staff')
 						</th>
 					@endif
-					<th class="text-center tw-text-sm md:!tw-text-base tw-font-bold col-md-2 {{$hide_tax}}">
+					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="width: 14% !important; text-overflow: ellipsis;">
 						@lang('sale.price_inc_tax')
 					</th>
-					<th class="text-center tw-text-sm md:!tw-text-base tw-font-bold col-md-2">
+					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
 						@lang('sale.subtotal')
 					</th>
-					<th class="text-center"><i class="fas fa-times tw-text-base" aria-hidden="true"></i></th>
+					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-2 !tw-px-0 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle !tw-text-center" style="width: 34px !important; padding: 0 8px 0 2px !important;"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -224,5 +234,200 @@
 			@endforeach
 			</tbody>
 		</table>
+		<style>
+			#pos_table {
+				table-layout: fixed !important;
+				width: 100% !important;
+				border-collapse: collapse !important;
+			}
+			#pos_table th, #pos_table td {
+				box-sizing: border-box !important;
+			}
+			#pos_table th.pos-th-product, #pos_table td.pos-td-product {
+				width: 48% !important;
+				max-width: 48% !important;
+				overflow: hidden !important;
+			}
+			#pos_table th.pos-th-qty, #pos_table td.pos-td-qty {
+				width: 17% !important;
+				max-width: 17% !important;
+				position: relative !important;
+				overflow: visible !important;
+			}
+			#pos_table th.pos-th-price, #pos_table td.pos-td-price {
+				width: 14% !important;
+				max-width: 14% !important;
+			}
+			#pos_table th.pos-th-subtotal, #pos_table td.pos-td-subtotal {
+				width: 17% !important;
+				max-width: 17% !important;
+			}
+			#pos_table th.pos-th-action, #pos_table td.pos-td-action {
+				width: 34px !important;
+				max-width: 34px !important;
+				padding: 0 8px 0 2px !important;
+				text-align: center !important;
+			}
+
+			#pos_table tbody tr.product_row {
+				background: #ffffff;
+				transition: background-color 0.15s ease;
+			}
+			#pos_table tbody tr.product_row:hover {
+				background: #f8fafc;
+			}
+			#pos_table tbody tr.product_row td {
+				padding: 7px 3px !important;
+				vertical-align: middle !important;
+				border-top: none !important;
+				border-bottom: 1px solid #f1f5f9 !important;
+			}
+
+			.pos-qty-stepper {
+				display: inline-flex !important;
+				align-items: center !important;
+				background: #f8fafc !important;
+				border: 1px solid #e2e8f0 !important;
+				border-radius: 6px !important;
+				padding: 1px !important;
+				width: auto !important;
+				max-width: 76px !important;
+				box-sizing: border-box !important;
+				position: relative !important;
+				overflow: visible !important;
+			}
+
+			.pos-row-qty-error-target {
+				min-height: 0;
+			}
+			.pos-row-qty-error-target label.error,
+			#pos_table label.error {
+				display: inline-flex !important;
+				align-items: center !important;
+				gap: 4px !important;
+				background: #fef2f2 !important;
+				color: #dc2626 !important;
+				border: 1px solid #fecaca !important;
+				border-radius: 4px !important;
+				padding: 2px 7px !important;
+				font-size: 11px !important;
+				font-weight: 600 !important;
+				line-height: 1.3 !important;
+				margin-top: 4px !important;
+				margin-bottom: 0 !important;
+				white-space: normal !important;
+				word-break: break-word !important;
+				box-shadow: none !important;
+				position: static !important;
+				transform: none !important;
+				width: auto !important;
+				max-width: 100% !important;
+				animation: posTooltipFade 0.15s ease-out !important;
+			}
+			.pos-row-qty-error-target label.error::before,
+			#pos_table label.error::before {
+				content: '⚠' !important;
+				font-size: 11px !important;
+				color: #ef4444 !important;
+				line-height: 1 !important;
+			}
+			.pos-row-qty-error-target label.error::after,
+			#pos_table label.error::after {
+				display: none !important;
+			}
+			@keyframes posTooltipFade {
+				from {
+					opacity: 0;
+					transform: translateY(-2px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			.pos-qty-btn {
+				width: 20px !important;
+				height: 20px !important;
+				min-width: 20px !important;
+				border: none !important;
+				background: #2563eb !important;
+				color: #ffffff !important;
+				border-radius: 4px !important;
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				padding: 0 !important;
+				cursor: pointer !important;
+				box-shadow: 0 1px 2px rgba(37,99,235,0.25) !important;
+				transition: all 0.15s ease !important;
+			}
+			.pos-qty-btn svg {
+				stroke: #ffffff !important;
+			}
+			.pos-qty-btn:hover {
+				background: #1d4ed8 !important;
+				color: #ffffff !important;
+			}
+			.pos-qty-btn:hover svg {
+				stroke: #ffffff !important;
+			}
+			.pos-qty-btn.quantity-down:hover {
+				background: #1d4ed8 !important;
+			}
+			.pos-qty-btn.quantity-up:hover {
+				background: #1d4ed8 !important;
+			}
+			.pos-qty-input {
+				width: 30px !important;
+				min-width: 24px !important;
+				height: 20px !important;
+				padding: 0 1px !important;
+				background: transparent !important;
+				border: none !important;
+				box-shadow: none !important;
+				text-align: center !important;
+				font-size: 13px !important;
+				font-weight: 700 !important;
+				color: #0f172a !important;
+			}
+			.pos-qty-input:focus {
+				background: #ffffff !important;
+				border-radius: 4px !important;
+				box-shadow: 0 0 0 1px #2563eb !important;
+				outline: none !important;
+			}
+			.pos-price-input {
+				width: 100% !important;
+				max-width: 60px !important;
+				height: 25px !important;
+				padding: 1px 4px !important;
+				font-size: 13px !important;
+				font-weight: 600 !important;
+				color: #334155 !important;
+				text-align: right !important;
+				background: #f8fafc !important;
+				border: 1px solid #e2e8f0 !important;
+				border-radius: 4px !important;
+				transition: all 0.15s ease !important;
+			}
+			.pos-price-input:hover {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+			}
+			.pos-price-input:focus {
+				background: #ffffff !important;
+				border-color: #2563eb !important;
+				box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+				outline: none !important;
+			}
+			.pos-price-input[readonly] {
+				background: transparent !important;
+				border-color: transparent !important;
+				box-shadow: none !important;
+				cursor: default !important;
+				color: #475569 !important;
+				font-weight: 600 !important;
+			}
+		</style>
 	</div>
 </div>

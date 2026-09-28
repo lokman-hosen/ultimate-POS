@@ -87,10 +87,52 @@
         }, 80);
     }
 
+    function setupPosValidatorErrorPlacement() {
+        if (typeof $.validator !== 'undefined') {
+            $.validator.setDefaults({
+                errorPlacement: function(error, element) {
+                    if (element.hasClass('pos_quantity')) {
+                        var row = element.closest('tr.product_row');
+                        var target = row.find('.pos-row-qty-error-target');
+                        if (target.length) {
+                            target.empty().append(error);
+                            return;
+                        }
+                    }
+                    error.insertAfter(element);
+                }
+            });
+        }
+        $('form#add_pos_sell_form, form#edit_pos_sell_form').each(function() {
+            var validator = $(this).data('validator');
+            if (validator) {
+                validator.settings.errorPlacement = function(error, element) {
+                    if (element.hasClass('pos_quantity')) {
+                        var row = element.closest('tr.product_row');
+                        var target = row.find('.pos-row-qty-error-target');
+                        if (target.length) {
+                            target.empty().append(error);
+                            return;
+                        }
+                    }
+                    error.insertAfter(element);
+                };
+            }
+        });
+    }
+
     $(document).ready(function() {
-        setTimeout(function() { collapseHiddenFormRows(); adjustPosHeights(); }, 300);
-        setTimeout(function() { collapseHiddenFormRows(); adjustPosHeights(); }, 800);
+        setupPosValidatorErrorPlacement();
+        setTimeout(function() { collapseHiddenFormRows(); adjustPosHeights(); setupPosValidatorErrorPlacement(); }, 300);
+        setTimeout(function() { collapseHiddenFormRows(); adjustPosHeights(); setupPosValidatorErrorPlacement(); }, 800);
         $(window).on('resize', adjustPosHeightsDebounced);
+
+        $(document).on('input change', 'input.pos_quantity', function() {
+            var input = $(this);
+            if (typeof input.valid === 'function') {
+                input.valid();
+            }
+        });
 
         var formArea = document.getElementById(POS_FORM_ID);
         if (formArea) {
