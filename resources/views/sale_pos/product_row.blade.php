@@ -17,7 +17,7 @@
 	@if(!empty($is_serial_no))
 		<td class="serial_no" ></td>
 	@endif
-	<td class="pos-td-product" style="width: 48% !important;">
+	<td class="pos-td-product" style="width: 46% !important;">
 		@if(!empty($so_line))
 			<input type="hidden" 
 			name="products[{{$row_count}}][so_line_id]" 
@@ -199,7 +199,7 @@
 	@endif
 	</td>
 
-	<td class="v-center pos-td-qty" style="width: 17% !important; position: relative !important; overflow: visible !important;">
+	<td class="v-center pos-td-qty" style="width: 19% !important; position: relative !important; overflow: visible !important;">
 		{{-- If edit then transaction sell lines will be present --}}
 		@if(!empty($product->transaction_sell_lines_id))
 			<input type="hidden" name="products[{{$row_count}}][transaction_sell_lines_id]" class="form-control" value="{{$product->transaction_sell_lines_id}}">

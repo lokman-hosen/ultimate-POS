@@ -1,3 +1,4 @@
+<div class="pos-cart-top-fields">
 <div class="row" style="margin: 0 -4px;">
 	<div class="col-xs-12 col-md-12" style="padding: 0 4px;">
 		<div class="form-group" style="margin-bottom: 6px;">
@@ -204,7 +205,8 @@
         @endif
     @endforeach
 @endif
-<div class="row" style="margin:0;">
+</div>
+<div class="row pos-cart-table-row" style="margin:0;">
 	<div class="col-sm-12 pos_product_div" style="padding:4px 0 0 0;">
 		<input type="hidden" name="sell_price_tax" id="sell_price_tax" value="{{$business_details->sell_price_tax}}">
 
@@ -219,8 +221,8 @@
 		@endphp
 		<table class="table table-condensed" id="pos_table" style="table-layout: fixed !important; width: 100% !important; margin-bottom: 0 !important;">
 			<colgroup>
-				<col style="width: 48% !important;">
-				<col style="width: 17% !important;">
+				<col style="width: 46% !important;">
+				<col style="width: 19% !important;">
 				@if(!empty($pos_settings['inline_service_staff']))
 					<col style="width: 10% !important;">
 				@endif
@@ -230,24 +232,24 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 48% !important;">
+					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 46% !important;">
 						@lang('sale.product') @show_tooltip(__('lang_v1.tooltip_sell_product_column'))
 					</th>
-					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
+					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 19% !important;">
 						@lang('sale.qty')
 					</th>
 					@if(!empty($pos_settings['inline_service_staff']))
-						<th class="text-center pos-th-staff tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 10% !important;">
+						<th class="text-center pos-th-staff tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 10% !important;">
 							@lang('restaurant.service_staff')
 						</th>
 					@endif
-					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="width: 14% !important; text-overflow: ellipsis;">
+					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="width: 14% !important; text-overflow: ellipsis;">
 						@lang('sale.price_inc_tax')
 					</th>
-					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
+					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
 						@lang('sale.subtotal')
 					</th>
-					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-2 !tw-px-0 !tw-text-[12px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle !tw-text-center" style="width: 34px !important; padding: 0 8px 0 2px !important;"></th>
+					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-2 !tw-px-0 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle !tw-text-center" style="width: 34px !important; padding: 0 8px 0 2px !important;"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -265,6 +267,12 @@
 			</tbody>
 		</table>
 		<style>
+			.pos_product_div {
+				overflow-y: auto !important;
+				overflow-x: hidden !important;
+				max-height: calc(100vh - 280px) !important;
+				min-height: 140px;
+			}
 			#pos_table {
 				table-layout: fixed !important;
 				width: 100% !important;
@@ -273,14 +281,17 @@
 			#pos_table th, #pos_table td {
 				box-sizing: border-box !important;
 			}
+			#pos_table th {
+				font-size: 10px !important;
+			}
 			#pos_table th.pos-th-product, #pos_table td.pos-td-product {
-				width: 48% !important;
-				max-width: 48% !important;
+				width: 46% !important;
+				max-width: 46% !important;
 				overflow: hidden !important;
 			}
 			#pos_table th.pos-th-qty, #pos_table td.pos-td-qty {
-				width: 17% !important;
-				max-width: 17% !important;
+				width: 19% !important;
+				max-width: 19% !important;
 				position: relative !important;
 				overflow: visible !important;
 			}
@@ -326,7 +337,7 @@
 				border-radius: 6px !important;
 				padding: 1px !important;
 				width: auto !important;
-				max-width: 76px !important;
+				max-width: 96px !important;
 				box-sizing: border-box !important;
 				position: relative !important;
 				overflow: visible !important;
@@ -365,6 +376,31 @@
 				font-size: 11px !important;
 				color: #ef4444 !important;
 				line-height: 1 !important;
+			}
+			.pos-row-qty-error-target label.error:empty,
+			.pos-row-qty-error-target label.error.valid,
+			.pos-row-qty-error-target label.error[style*="display: none"],
+			.pos-row-qty-error-target label.error[style*="display:none"],
+			#pos_table label.error:empty,
+			#pos_table label.error.valid,
+			#pos_table label.error[style*="display: none"],
+			#pos_table label.error[style*="display:none"] {
+				display: none !important;
+				visibility: hidden !important;
+				padding: 0 !important;
+				margin: 0 !important;
+				border: none !important;
+			}
+			.pos-row-qty-error-target label.error:empty::before,
+			.pos-row-qty-error-target label.error.valid::before,
+			.pos-row-qty-error-target label.error[style*="display: none"]::before,
+			.pos-row-qty-error-target label.error[style*="display:none"]::before,
+			#pos_table label.error:empty::before,
+			#pos_table label.error.valid::before,
+			#pos_table label.error[style*="display: none"]::before,
+			#pos_table label.error[style*="display:none"]::before {
+				content: '' !important;
+				display: none !important;
 			}
 			.pos-row-qty-error-target label.error::after,
 			#pos_table label.error::after {
@@ -413,9 +449,9 @@
 				background: #1d4ed8 !important;
 			}
 			.pos-qty-input {
-				width: 30px !important;
-				min-width: 24px !important;
-				height: 20px !important;
+				width: 38px !important;
+				min-width: 34px !important;
+				height: 22px !important;
 				padding: 0 1px !important;
 				background: transparent !important;
 				border: none !important;

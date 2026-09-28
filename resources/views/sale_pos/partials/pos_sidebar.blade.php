@@ -1,5 +1,5 @@
-<div class="pos-sidebar-root tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding: 6px; overflow: hidden; height: 100%;">
-<div class="tw-flex tw-items-start tw-gap-2 tw-flex-wrap" style="margin: 0 0 6px 0; padding: 0 4px;">
+<div class="pos-sidebar-root tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding: 6px; overflow: hidden; height: 100%; display: flex; flex-direction: column;">
+<div class="tw-flex tw-items-start tw-gap-2 tw-flex-wrap" style="margin: 0 0 6px 0; padding: 0 4px; flex-shrink: 0;">
     @if (!empty($categories))
         <div class="tw-flex-1 tw-min-w-[140px]" id="product_category_div">
             <div class="tw-dw-drawer tw-dw-drawer-end">
@@ -178,10 +178,10 @@
         </button>
     </div>
 </div>
-<div class="row" style="margin: 0;">
+<div class="row" style="margin: 0; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
     <input type="hidden" id="suggestion_page" value="1">
-    <div class="col-md-12" style="padding: 0;">
-        <div id="product_list_body" class="eq-height-row tw-max-h-[calc(100vh_-_229px)] tw-overflow-y-auto tw-overflow-x-hidden" style="padding-right: 4px;">
+    <div class="col-md-12" style="padding: 0; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; height: 100%;">
+        <div id="product_list_body" class="eq-height-row tw-overflow-y-auto tw-overflow-x-hidden" style="padding-right: 4px; flex: 1 1 0; height: 100%; max-height: 100%;">
             <div id="featured_products_box" style="display: none;">
                 @if (!empty($featured_products))
                     @include('sale_pos.partials.featured_products')

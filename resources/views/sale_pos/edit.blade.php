@@ -119,17 +119,59 @@
 				flex: 0 0 70% !important;
 				max-width: 70% !important;
 				min-width: 0 !important;
+				height: calc(100vh - 116px) !important;
 			}
 			.pos-right-cart-section {
 				width: 30% !important;
 				flex: 0 0 30% !important;
 				max-width: 30% !important;
 				min-width: 0 !important;
+				height: calc(100vh - 116px) !important;
 			}
 			.pos-right-cart-section.pos-cart-full-width {
 				width: 100% !important;
 				flex: 0 0 100% !important;
 				max-width: 100% !important;
+			}
+			.pos-right-cart-section > div {
+				height: 100% !important;
+				display: flex !important;
+				flex-direction: column !important;
+			}
+			.pos-right-cart-section .box-body {
+				height: 100% !important;
+				display: flex !important;
+				flex-direction: column !important;
+				padding: 0 !important;
+				flex: 1 1 auto !important;
+				min-height: 0 !important;
+				overflow: hidden !important;
+			}
+			.pos-cart-top-fields {
+				flex-shrink: 0 !important;
+				padding: 6px 6px 0 6px !important;
+			}
+			.pos-cart-table-row {
+				flex: 1 1 0 !important;
+				min-height: 0 !important;
+				overflow: hidden !important;
+				margin: 0 !important;
+				display: flex !important;
+				flex-direction: column !important;
+			}
+			.pos_product_div {
+				flex: 1 1 0 !important;
+				height: 100% !important;
+				max-height: 100% !important;
+				min-height: 80px !important;
+				overflow-y: auto !important;
+				overflow-x: hidden !important;
+				padding: 0 4px !important;
+			}
+			.pos_form_totals {
+				flex-shrink: 0 !important;
+				margin-top: auto !important;
+				width: 100% !important;
 			}
 		}
 		@media (max-width: 991px) {
@@ -139,6 +181,10 @@
 				flex: 0 0 100% !important;
 				max-width: 100% !important;
 				min-width: 0 !important;
+			}
+			.pos_product_div {
+				max-height: 320px !important;
+				overflow-y: auto !important;
 			}
 		}
 		/*CSS to print receipts*/
