@@ -8,6 +8,8 @@
 			<span class="pos_totals_value total_quantity">0</span>
 		</div>
 
+
+
 		{{-- Subtotal --}}
 		<div class="pos_totals_cell">
 			<span class="pos_totals_label">
@@ -15,22 +17,6 @@
 				<span class="desktop-only">@lang('sale.subtotal')</span>
 			</span>
 			<span class="pos_totals_value price_total">0</span>
-		</div>
-
-		{{-- Discount --}}
-		<div class="pos_totals_cell @if(!$is_discount_enabled || (Gate::check('disable_discount') && !auth()->user()->can('superadmin') && !auth()->user()->can('admin'))) hide @endif">
-			<span class="pos_totals_label">
-				@if($is_discount_enabled)
-					<span class="mobile-only">DISC(-)</span>
-					<span class="desktop-only">@lang('sale.discount')(-) @show_tooltip(__('tooltip.sale_discount'))</span>
-					@if($edit_discount)
-						<i class="fas fa-edit pos_totals_edit" id="pos-edit-discount" title="@lang('sale.edit_discount')" aria-hidden="true" data-toggle="modal" data-target="#posEditDiscountModal"></i>
-					@endif
-				@endif
-			</span>
-			<span class="pos_totals_value pos_totals_value--danger" id="total_discount">0</span>
-			<input type="hidden" name="discount_type" id="discount_type" value="@if(empty($edit)){{'percentage'}}@else{{$transaction->discount_type}}@endif" data-default="percentage">
-			<input type="hidden" name="discount_amount" id="discount_amount" value="@if(empty($edit)) {{@num_format($business_details->default_sales_discount)}} @else {{@num_format($transaction->discount_amount)}} @endif" data-default="{{$business_details->default_sales_discount}}">
 		</div>
 
 		{{-- Loyalty --}}
@@ -54,6 +40,22 @@
 			<span class="pos_totals_value" id="order_tax">@if(empty($edit)) 0 @else {{$transaction->tax_amount}} @endif</span>
 			<input type="hidden" name="tax_rate_id" id="tax_rate_id" value="@if(empty($edit)) {{$business_details->default_sales_tax}} @else {{$transaction->tax_id}} @endif" data-default="{{$business_details->default_sales_tax}}">
 			<input type="hidden" name="tax_calculation_amount" id="tax_calculation_amount" value="@if(empty($edit)) {{@num_format($business_details->tax_calculation_amount)}} @else {{@num_format($transaction->tax?->amount)}} @endif" data-default="{{$business_details->tax_calculation_amount}}">
+		</div>
+
+		{{-- Discount --}}
+		<div class="pos_totals_cell @if(!$is_discount_enabled || (Gate::check('disable_discount') && !auth()->user()->can('superadmin') && !auth()->user()->can('admin'))) hide @endif">
+			<span class="pos_totals_label">
+				@if($is_discount_enabled)
+					<span class="mobile-only">DISC(-)</span>
+					<span class="desktop-only">@lang('sale.discount')(-) @show_tooltip(__('tooltip.sale_discount'))</span>
+					@if($edit_discount)
+						<i class="fas fa-edit pos_totals_edit" id="pos-edit-discount" title="@lang('sale.edit_discount')" aria-hidden="true" data-toggle="modal" data-target="#posEditDiscountModal"></i>
+					@endif
+				@endif
+			</span>
+			<span class="pos_totals_value pos_totals_value--danger" id="total_discount">0</span>
+			<input type="hidden" name="discount_type" id="discount_type" value="@if(empty($edit)){{'percentage'}}@else{{$transaction->discount_type}}@endif" data-default="percentage">
+			<input type="hidden" name="discount_amount" id="discount_amount" value="@if(empty($edit)) {{@num_format($business_details->default_sales_discount)}} @else {{@num_format($transaction->discount_amount)}} @endif" data-default="{{$business_details->default_sales_discount}}">
 		</div>
 
 		{{-- Shipping --}}
@@ -265,8 +267,8 @@
 		min-width: 0;
 	}
 	.pos_form_totals .pos_totals_cell {
-		flex: 1 1 calc(25% - 1px);
-		min-width: calc(25% - 1px);
+		flex: 1 1 calc(33.333% - 1px);
+		min-width: calc(33.333% - 1px);
 		max-width: 100%;
 		background: #f8fafc;
 		display: flex;
