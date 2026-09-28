@@ -386,7 +386,7 @@
     <!-- Middle Row: Section 3 (Pricing & Cost on left) & Sections 4 & 6 (Stock & Locations stacked on right) -->
     <div class="row">
         <!-- Section 3: Pricing & Tax (Left Column) -->
-        <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="col-lg-8 col-md-7 col-sm-12">
             <div class="product-section-card">
                 <div class="product-section-header">
                     <div class="product-section-badge">3</div>
@@ -431,7 +431,7 @@
         </div>
 
         <!-- Right Column: Section 4 (Stock & Inventory) + Section 6 (Locations & Storage) -->
-        <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="col-lg-4 col-md-5 col-sm-12">
             <!-- Section 4: Stock & Inventory -->
             <div class="product-section-card">
                 <div class="product-section-header">
