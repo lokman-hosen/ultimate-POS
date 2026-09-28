@@ -104,6 +104,69 @@
 		<input type="hidden" name="final_total" id="final_total_input" value="0.00">
 	</div>
 </div>
+</div>
+
+<div class="pos_secondary_actions">
+	@if (empty($edit))
+		<button type="button" class="pos_secondary_btn btn_cancel js-pos-cancel"> 
+			<i class="fas fa-window-close" style="font-size: 18px;"></i> 
+			<span>@lang('sale.cancel')</span>
+		</button>
+	@else
+		<button type="button" class="pos_secondary_btn btn_cancel hide js-pos-delete"
+			@if (!empty($only_payment)) disabled @endif> 
+			<i class="fas fa-trash-alt" style="font-size: 18px;"></i> 
+			<span>@lang('messages.delete')</span>
+		</button>
+	@endif
+
+	@if (!Gate::check('disable_draft') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
+		<button type="button" class="pos_secondary_btn @if ($pos_settings['disable_draft'] != 0) hide @endif"
+			id="pos-draft" @if (!empty($only_payment)) disabled @endif>
+			<i class="fas fa-edit" style="color: #009ce4; font-size: 18px;"></i> 
+			<span>@lang('sale.draft')</span>
+		</button>
+	@endif
+
+	@if (!Gate::check('disable_quotation') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
+		<button type="button" class="pos_secondary_btn"
+			id="pos-quotation" @if (!empty($only_payment)) disabled @endif>
+			<i class="fas fa-edit" style="color: #E7A500; font-size: 18px;"></i> 
+			<span>@lang('lang_v1.quotation')</span>
+		</button>
+	@endif
+
+	@if (!Gate::check('disable_suspend_sale') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
+		@if (empty($pos_settings['disable_suspend']))
+			<button type="button" class="pos_secondary_btn no-print pos-express-finalize"
+				data-pay_method="suspend" title="@lang('lang_v1.tooltip_suspend')"
+				@if (!empty($only_payment)) disabled @endif>
+				<i class="fas fa-pause" style="color: #EF4B51; font-size: 18px;" aria-hidden="true"></i>
+				<span>@lang('lang_v1.suspend')</span>
+			</button>
+		@endif
+	@endif
+
+	@if (!Gate::check('disable_credit_sale') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
+		@if (empty($pos_settings['disable_credit_sale_button']))
+			<input type="hidden" name="is_credit_sale" value="0" id="is_credit_sale">
+			<button type="button" class="pos_secondary_btn no-print pos-express-finalize"
+				data-pay_method="credit_sale" title="@lang('lang_v1.tooltip_credit_sale')"
+				@if (!empty($only_payment)) disabled @endif>
+				<i class="fas fa-check" style="color: #5E5CA8; font-size: 18px;" aria-hidden="true"></i> 
+				<span>@lang('lang_v1.credit_sale')</span>
+			</button>
+		@endif
+	@endif
+	
+	@if (!Gate::check('disable_card') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
+		<button type="button" class="pos_secondary_btn no-print pos-express-finalize @if (!array_key_exists('card', $payment_types)) hide @endif"
+			data-pay_method="card" title="@lang('lang_v1.tooltip_express_checkout_card')">
+			<i class="fas fa-credit-card" style="color: #D61B60; font-size: 18px;" aria-hidden="true"></i> 
+			<span>@lang('lang_v1.express_checkout_card')</span>
+		</button>
+	@endif
+</div>
 
 <div class="pos_cart_action_buttons tw-flex tw-items-stretch tw-gap-2 tw-p-2 tw-bg-white tw-border-t tw-border-slate-200">
 	@if (!Gate::check('disable_pay_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
@@ -129,6 +192,63 @@
 </div>
 
 <style>
+	.pos_secondary_actions {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		gap: 4px;
+		padding: 8px;
+		background-color: #f8fafc;
+		border-top: 1px solid #e2e8f0;
+	}
+	/* Hide scrollbar for a cleaner look */
+	.pos_secondary_actions::-webkit-scrollbar {
+		height: 4px;
+	}
+	.pos_secondary_actions::-webkit-scrollbar-thumb {
+		background-color: #cbd5e1;
+		border-radius: 4px;
+	}
+	.pos_secondary_btn {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 3px;
+		padding: 6px 2px;
+		background-color: #ffffff;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		color: #475569;
+		font-size: 9.5px;
+		font-weight: 600;
+		cursor: pointer;
+		text-align: center;
+		transition: all 0.15s ease;
+		box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+		flex: 1 1 0;
+		min-width: 56px;
+		line-height: 1.1;
+		white-space: normal;
+	}
+	.pos_secondary_btn:hover {
+		border-color: #cbd5e1;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+		color: #0f172a;
+	}
+	.pos_secondary_btn:active {
+		transform: scale(0.96);
+	}
+	.pos_secondary_btn.btn_cancel {
+		border-color: #fecaca;
+		color: #ef4444;
+	}
+	.pos_secondary_btn.btn_cancel:hover {
+		border-color: #fca5a5;
+		background-color: #fef2f2;
+	}
+
 	.pos_form_totals {
 		display: flex;
 		flex-direction: column;
