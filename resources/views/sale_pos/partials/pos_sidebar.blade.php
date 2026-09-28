@@ -1,3 +1,37 @@
+<style>
+    .pos-header-btn-cat {
+        background-color: #4f46e5 !important;
+        border-color: #4338ca !important;
+        color: white !important;
+    }
+    .pos-header-btn-cat:hover {
+        background-color: #4338ca !important;
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3) !important;
+    }
+    .pos-header-btn-cat svg { color: white !important; }
+
+    .pos-header-btn-brand {
+        background-color: #7c3aed !important;
+        border-color: #6d28d9 !important;
+        color: white !important;
+    }
+    .pos-header-btn-brand:hover {
+        background-color: #6d28d9 !important;
+        box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3) !important;
+    }
+    .pos-header-btn-brand svg { color: white !important; }
+
+    .pos-header-btn-featured {
+        background-color: #f59e0b !important;
+        border-color: #d97706 !important;
+        color: white !important;
+    }
+    .pos-header-btn-featured:hover {
+        background-color: #d97706 !important;
+        box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3) !important;
+    }
+    .pos-header-btn-featured svg { color: white !important; }
+</style>
 <div class="pos-sidebar-root tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding: 6px; overflow: hidden; height: 100%; display: flex; flex-direction: column;">
 <div class="tw-flex tw-items-start tw-gap-2 tw-flex-wrap" style="margin: 0 0 6px 0; padding: 0 4px; flex-shrink: 0;">
     @if (!empty($categories))
@@ -7,7 +41,7 @@
                 <div class="tw-dw-drawer-content">
                     <!-- Page content here -->
                     <label for="my-drawer-4{{ $drawer_id_suffix ?? '' }}"
-                        class="tw-dw-btn tw-dw-btn-sm tw-group tw-w-full tw-h-9 tw-min-h-[2.25rem] tw-rounded-full tw-flex tw-flex-row tw-items-center tw-flex-nowrap tw-gap-1.5 tw-px-3 tw-text-sm tw-font-semibold tw-normal-case tw-bg-white tw-border-slate-200 tw-text-slate-700 tw-shadow-sm tw-transition-all tw-duration-200 hover:tw-bg-indigo-50 hover:tw-border-indigo-300 hover:tw-text-slate-900 hover:tw-shadow-md hover:tw-shadow-indigo-500/15 hover:-tw-translate-y-0.5 focus:tw-ring-2 focus:tw-ring-indigo-400 focus:tw-ring-offset-1">
+                        class="pos-header-btn-cat tw-dw-btn tw-dw-btn-sm tw-group tw-w-full tw-h-9 tw-min-h-[2.25rem] tw-rounded-full tw-flex tw-flex-row tw-items-center tw-flex-nowrap tw-gap-1.5 tw-px-3 tw-text-sm tw-font-semibold tw-normal-case tw-shadow-sm tw-transition-all tw-duration-200 hover:-tw-translate-y-0.5 focus:tw-ring-2 focus:tw-ring-indigo-400 focus:tw-ring-offset-1">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="tw-w-4 md:tw-w-5 tw-flex-shrink-0 tw-text-indigo-600 tw-transition-transform tw-duration-200 group-hover:tw-scale-110 icon icon-tabler icon-tabler-category-plus" width="44" height="44"
                             viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none"
@@ -96,7 +130,7 @@
                 <div class="tw-dw-drawer-content">
                     <!-- Page content here -->
                     <label for="my-drawer-brand{{ $drawer_id_suffix ?? '' }}"
-                        class="tw-dw-btn tw-dw-btn-sm tw-group tw-w-full tw-h-9 tw-min-h-[2.25rem] tw-rounded-full tw-flex tw-flex-row tw-items-center tw-flex-nowrap tw-gap-1.5 tw-px-3 tw-text-sm tw-font-semibold tw-normal-case tw-bg-white tw-border-slate-200 tw-text-slate-700 tw-shadow-sm tw-transition-all tw-duration-200 hover:tw-bg-violet-50 hover:tw-border-violet-300 hover:tw-text-slate-900 hover:tw-shadow-md hover:tw-shadow-violet-500/15 hover:-tw-translate-y-0.5 focus:tw-ring-2 focus:tw-ring-violet-400 focus:tw-ring-offset-1">
+                        class="pos-header-btn-brand tw-dw-btn tw-dw-btn-sm tw-group tw-w-full tw-h-9 tw-min-h-[2.25rem] tw-rounded-full tw-flex tw-flex-row tw-items-center tw-flex-nowrap tw-gap-1.5 tw-px-3 tw-text-sm tw-font-semibold tw-normal-case tw-shadow-sm tw-transition-all tw-duration-200 hover:-tw-translate-y-0.5 focus:tw-ring-2 focus:tw-ring-violet-400 focus:tw-ring-offset-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="tw-w-4 md:tw-w-5 tw-flex-shrink-0 tw-text-violet-600 tw-transition-transform tw-duration-200 group-hover:tw-scale-110 icon icon-tabler icon-tabler-brand-beats"
                             width="44" height="44" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"
                             fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -163,7 +197,7 @@
 
     <div class="tw-flex-1 tw-min-w-[140px]" id="feature_product_div">
         <button type="button" id="show_featured_products"
-            class="tw-dw-btn tw-dw-btn-sm tw-group tw-w-full tw-h-9 tw-min-h-[2.25rem] tw-rounded-full tw-flex-nowrap tw-gap-2 tw-px-3 tw-text-sm tw-font-semibold tw-normal-case tw-bg-white tw-border-slate-200 tw-text-slate-700 tw-shadow-sm tw-transition-all tw-duration-200 hover:tw-bg-amber-50 hover:tw-border-amber-300 hover:tw-text-slate-900 hover:tw-shadow-md hover:tw-shadow-amber-500/15 hover:-tw-translate-y-0.5 focus:tw-ring-2 focus:tw-ring-amber-400 focus:tw-ring-offset-1">
+            class="pos-header-btn-featured tw-dw-btn tw-dw-btn-sm tw-group tw-w-full tw-h-9 tw-min-h-[2.25rem] tw-rounded-full tw-flex-nowrap tw-gap-2 tw-px-3 tw-text-sm tw-font-semibold tw-normal-case tw-shadow-sm tw-transition-all tw-duration-200 hover:-tw-translate-y-0.5 focus:tw-ring-2 focus:tw-ring-amber-400 focus:tw-ring-offset-1">
             <svg xmlns="http://www.w3.org/2000/svg"
                 class="tw-w-4 md:tw-w-5 tw-flex-shrink-0 tw-text-amber-500 tw-transition-transform tw-duration-200 group-hover:tw-scale-110 group-hover:tw-rotate-12 icon icon-tabler icon-tabler-star" width="44" height="44"
                 viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none"
