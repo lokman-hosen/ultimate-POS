@@ -6,18 +6,28 @@
 
 			@php
 				$image_url = null;
-				if(count($product->media) > 0) {
+				if (count($product->media) > 0) {
 					$image_url = $product->media->first()->display_url;
-				} elseif(!empty($product->product_image)) {
+				} elseif (!empty($product->product_image)) {
 					$image_url = asset('/uploads/img/' . rawurlencode($product->product_image));
 				}
 			@endphp
 
 			@if($image_url)
-				<div class="image-container tw-h-[58px] tw-mx-auto tw-w-full tw-mb-[3px]" style="background-image: url('{{$image_url}}'); background-repeat: no-repeat; background-position: center; background-size: contain;"></div>
+				<div class="image-container tw-h-[58px] tw-mx-auto tw-w-full tw-mb-[3px]"
+					style="background-image: url('{{$image_url}}'); background-repeat: no-repeat; background-position: center; background-size: contain;">
+				</div>
 			@else
-				<div class="image-container tw-h-[58px] tw-mx-auto tw-w-full tw-mb-[3px]" style="background-color: #f8fafc; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-					<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+				<div class="image-container tw-h-[58px] tw-mx-auto tw-w-full tw-mb-[3px]"
+					style="background-color: #f8fafc; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+					<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+						stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+						<path
+							d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+						</path>
+						<polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+						<line x1="12" y1="22.08" x2="12" y2="12"></line>
+					</svg>
 				</div>
 			@endif
 

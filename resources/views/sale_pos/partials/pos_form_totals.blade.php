@@ -170,7 +170,7 @@
 	@endif
 </div>
 
-<div class="pos_cart_action_buttons tw-flex tw-items-stretch tw-gap-2 tw-p-2 tw-bg-white tw-border-t tw-border-slate-200">
+<div class="pos_cart_action_buttons tw-relative tw-z-[100] tw-flex tw-items-stretch tw-gap-2 tw-p-2 tw-bg-white tw-border-t tw-border-slate-200">
 	@if (!Gate::check('disable_pay_checkout') || auth()->user()->can('superadmin') || auth()->user()->can('admin'))
 		<button type="button"
 			class="pos-finalize tw-flex-1 tw-leading-none tw-whitespace-nowrap tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-1 tw-font-bold tw-text-white tw-cursor-pointer tw-text-xs md:tw-text-sm tw-bg-[#001F3E] hover:tw-bg-[#001730] tw-rounded-md tw-p-2 tw-min-h-[44px] no-print active:tw-scale-95 tw-transition-transform @if ($pos_settings['disable_pay_checkout'] != 0) hide @endif"

@@ -33,7 +33,12 @@
 							<!-- sub_type -->
 							{!! Form::hidden('sub_type', isset($sub_type) ? $sub_type : null) !!}
 							<input type="hidden" id="item_addition_method" value="{{$business_details->item_addition_method}}">
-								@include('sale_pos.partials.pos_form_edit')
+								<div class="tw-relative tw-flex-1 tw-flex tw-flex-col tw-min-h-0">
+									@include('sale_pos.partials.pos_form_edit')
+									@if(!empty($only_payment))
+										<div class="overlay"></div>
+									@endif
+								</div>
 
 								@include('sale_pos.partials.pos_form_totals', ['edit' => true])
 
@@ -47,9 +52,7 @@
 									@include('sale_pos.partials.recurring_invoice_modal')
 								@endif
 							</div>
-							@if(!empty($only_payment))
-								<div class="overlay"></div>
-							@endif
+
 						</div>
 					</div>
 			</div>
