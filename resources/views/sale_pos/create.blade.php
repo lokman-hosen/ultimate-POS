@@ -23,11 +23,21 @@
         <div class="row" style="margin:0;">
             <div class="col-md-12" style="padding:0;">
                 <div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch" style="gap: 6px; margin: 0; padding: 0;">
-                    @if (empty($pos_settings['hide_product_suggestion']))
-                        <div class="pos-left-product-section tw-w-full" style="padding:0; min-width:0;" id="pos_sidebar_wrap">
-                            @include('sale_pos.partials.pos_sidebar')
-                        </div>
-                    @endif
+                @php
+                    $is_restaurant = in_array('tables', $enabled_modules) || in_array('types_of_service', $enabled_modules);
+                @endphp
+
+                @if($is_restaurant)
+                    <div class="pos-restaurant-section tw-w-full" style="padding:0; min-width:0;">
+                        @include('sale_pos.partials.restaurant_sidebar')
+                    </div>
+                @endif
+
+                @if (empty($pos_settings['hide_product_suggestion']))
+                    <div class="pos-left-product-section tw-w-full" style="padding:0; min-width:0;" id="pos_sidebar_wrap">
+                        @include('sale_pos.partials.pos_sidebar')
+                    </div>
+                @endif
 
                     <div class="pos-right-cart-section tw-w-full @if(!empty($pos_settings['hide_product_suggestion'])) pos-cart-full-width @endif" style="padding:0; min-width:0;">
                         <div class="tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding:0;overflow:hidden;height:100%;">
@@ -98,6 +108,27 @@
 @section('css')
     <style>
         @media (min-width: 992px) {
+            @if($is_restaurant)
+            .pos-restaurant-section {
+                width: 22% !important;
+                flex: 0 0 22% !important;
+                max-width: 22% !important;
+                min-width: 0 !important;
+                height: calc(100vh - 65px) !important;
+            }
+            .pos-left-product-section {
+                width: 48% !important;
+                flex: 0 0 48% !important;
+                max-width: 48% !important;
+                min-width: 0 !important;
+                height: calc(100vh - 65px) !important;
+            }
+            /* Force 3 columns for products in restaurant mode */
+            .pos-left-product-section .pos-card-col-5,
+            .pos-left-product-section .col-md-3 {
+                width: 33.333333% !important;
+            }
+            @else
             .pos-left-product-section {
                 width: 70% !important;
                 flex: 0 0 70% !important;
@@ -105,6 +136,7 @@
                 min-width: 0 !important;
                 height: calc(100vh - 65px) !important;
             }
+            @endif
             .pos-right-cart-section {
                 width: 30% !important;
                 flex: 0 0 30% !important;
