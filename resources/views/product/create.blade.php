@@ -430,7 +430,7 @@
             </div>
         </div>
 
-        <!-- Right Column: Section 4 (Stock & Inventory) + Section 6 (Locations & Storage) -->
+        <!-- Right Column: Section 4 (Stock & Inventory) + Section 5 (Locations & Storage) -->
         <div class="col-lg-4 col-md-5 col-sm-12">
             <!-- Section 4: Stock & Inventory -->
             <div class="product-section-card">
@@ -497,10 +497,10 @@
                 </div>
             </div>
 
-            <!-- Section 6: Business Locations & Storage Racks (Under Section 4) -->
+            <!-- Section 5: Business Locations & Storage Racks (Under Section 4) -->
             <div class="product-section-card">
                 <div class="product-section-header">
-                    <div class="product-section-badge">6</div>
+                    <div class="product-section-badge">5</div>
                     <div>
                         <h3 class="product-section-title">@lang('business.business_locations')</h3>
                         <p class="product-section-subtitle">@lang('business.business_locations') & @lang('lang_v1.rack_details')</p>
@@ -544,12 +544,12 @@
         </div>
     </div>
 
-    <!-- Row 3: Section 5 (Product Description - Full Width) -->
+    <!-- Row 3: Section 6 (Product Description - Full Width) -->
     <div class="row">
         <div class="col-sm-12">
             <div class="product-section-card">
                 <div class="product-section-header">
-                    <div class="product-section-badge">5</div>
+                    <div class="product-section-badge">6</div>
                     <div>
                         <h3 class="product-section-title">@lang('lang_v1.product_description')</h3>
                         <p class="product-section-subtitle">@lang('lang_v1.product_description') & @lang('lang_v1.preparation_time_in_minutes')</p>
