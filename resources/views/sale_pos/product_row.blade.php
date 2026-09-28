@@ -246,7 +246,7 @@
 			<button type="button" class="pos-qty-btn quantity-down" aria-label="Decrease quantity">
 				<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"><path d="M5 12h14"/></svg>
 			</button>
-			<input type="text" data-min="1"
+			<input type="text" data-min="0"
 				class="form-control pos_quantity input_number mousetrap input_quantity pos-qty-input"
 				value="{{@format_quantity($product->quantity_ordered)}}" name="products[{{$row_count}}][quantity]" data-allow-overselling="@if(empty($pos_settings['allow_overselling'])){{'false'}}@else{{'true'}}@endif"
 				@if($allow_decimal)

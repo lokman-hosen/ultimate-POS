@@ -77,16 +77,13 @@
                             if (badge.text() !== formattedQty) {
                                 badge.text(formattedQty);
                             }
-                            if (badge.css('display') === 'none') {
-                                badge.show();
-                            }
                         }
                         if (!box.hasClass('pos-card-in-cart')) {
                             box.addClass('pos-card-in-cart');
                         }
                     } else {
-                        if (badge.length > 0 && badge.css('display') !== 'none') {
-                            badge.hide().text('0');
+                        if (badge.length > 0) {
+                            badge.remove();
                         }
                         if (box.hasClass('pos-card-in-cart')) {
                             box.removeClass('pos-card-in-cart');
@@ -107,8 +104,23 @@
         }, 200);
 
         // Quantity input change / keyup handler
-        $(document).on('input change keyup', 'input.pos_quantity', function() {
+        $(document).on('input change keyup', 'input.pos_quantity', function(e) {
             var input = $(this);
+            
+            if (e.type === 'change') {
+                var qty = 0;
+                if (typeof __read_number === 'function') {
+                    qty = __read_number(input);
+                } else {
+                    qty = parseFloat(input.val()) || 0;
+                }
+                if (qty <= 0) {
+                    var row = input.closest('tr.product_row');
+                    row.find('.pos_remove_row').trigger('click');
+                    return;
+                }
+            }
+
             if (typeof input.valid === 'function') {
                 var isValid = input.valid();
                 if (isValid) {
