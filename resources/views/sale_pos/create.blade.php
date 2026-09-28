@@ -103,14 +103,14 @@
                 flex: 0 0 70% !important;
                 max-width: 70% !important;
                 min-width: 0 !important;
-                height: calc(100vh - 116px) !important;
+                height: calc(100vh - 65px) !important;
             }
             .pos-right-cart-section {
                 width: 30% !important;
                 flex: 0 0 30% !important;
                 max-width: 30% !important;
                 min-width: 0 !important;
-                height: calc(100vh - 116px) !important;
+                height: calc(100vh - 65px) !important;
             }
             .pos-right-cart-section.pos-cart-full-width {
                 width: 100% !important;
