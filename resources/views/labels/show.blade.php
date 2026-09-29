@@ -176,7 +176,7 @@
                 @lang('barcode.print_labels') @show_tooltip(__('tooltip.print_label'))
             </h1>
             <p class="tw-text-sm tw-text-gray-500 tw-mt-1">
-                Generate, customize, and print barcode labels for your products
+                @lang('lang_v1.print_labels_header_subtitle')
             </p>
         </div>
     </div>
@@ -249,7 +249,7 @@
             <div class="product-section-badge">2</div>
             <div>
                 <h3 class="product-section-title">@lang( 'barcode.info_in_labels' )</h3>
-                <p class="product-section-subtitle">Select fields to display and adjust their font sizes</p>
+                <p class="product-section-subtitle">@lang('lang_v1.select_fields_to_display_font_sizes')</p>
             </div>
         </div>
 
@@ -411,8 +411,8 @@
         <div class="product-section-header">
             <div class="product-section-badge">3</div>
             <div>
-                <h3 class="product-section-title">@lang( 'barcode.barcode_setting' ) &amp; Instant Preview</h3>
-                <p class="product-section-subtitle">Select layout format and view instant real-time sheet and sticker preview</p>
+                <h3 class="product-section-title">@lang( 'barcode.barcode_setting' ) &amp; @lang('lang_v1.instant_preview')</h3>
+                <p class="product-section-subtitle">@lang('lang_v1.select_layout_view_instant_preview')</p>
             </div>
         </div>
 
@@ -436,33 +436,33 @@
                 <!-- Selected Setting Specification Box -->
                 <div class="tw-bg-slate-50 tw-border tw-border-slate-200 tw-rounded-xl tw-p-4 tw-space-y-2.5">
                     <div class="tw-flex tw-items-center tw-justify-between tw-border-b tw-border-slate-200 tw-pb-2">
-                        <span class="tw-text-xs tw-font-bold tw-text-slate-600 tw-uppercase">Layout Specifications</span>
+                        <span class="tw-text-xs tw-font-bold tw-text-slate-600 tw-uppercase">@lang('lang_v1.layout_specifications')</span>
                         <span id="spec_type_badge" class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-blue-100 tw-text-blue-800">
-                            Sheet
+                            @lang('lang_v1.sheet_paper')
                         </span>
                     </div>
 
                     <div class="tw-grid tw-grid-cols-2 tw-gap-2 tw-text-xs">
                         <div>
-                            <span class="tw-text-gray-500">Label Size:</span>
+                            <span class="tw-text-gray-500">@lang('lang_v1.label_size'):</span>
                             <span id="spec_label_size" class="tw-font-bold tw-text-gray-800 tw-block">-</span>
                         </div>
                         <div>
-                            <span class="tw-text-gray-500">Sheet Size:</span>
+                            <span class="tw-text-gray-500">@lang('lang_v1.sheet_size'):</span>
                             <span id="spec_sheet_size" class="tw-font-bold tw-text-gray-800 tw-block">-</span>
                         </div>
                         <div>
-                            <span class="tw-text-gray-500">Stickers / Row:</span>
+                            <span class="tw-text-gray-500">@lang('lang_v1.stickers_per_row'):</span>
                             <span id="spec_stickers_row" class="tw-font-bold tw-text-gray-800 tw-block">-</span>
                         </div>
                         <div>
-                            <span class="tw-text-gray-500">Total / Sheet:</span>
+                            <span class="tw-text-gray-500">@lang('lang_v1.total_per_sheet'):</span>
                             <span id="spec_stickers_sheet" class="tw-font-bold tw-text-gray-800 tw-block">-</span>
                         </div>
                     </div>
 
                     <div class="tw-pt-2 tw-border-t tw-border-slate-200 tw-flex tw-items-center tw-justify-between tw-text-xs">
-                        <span class="tw-text-gray-500">Margins (Top / Left):</span>
+                        <span class="tw-text-gray-500">@lang('lang_v1.margins_top_left'):</span>
                         <span id="spec_margins" class="tw-font-medium tw-text-gray-700">-</span>
                     </div>
                 </div>
@@ -473,39 +473,39 @@
                 <div class="barcode-preview-container">
                     <div class="tw-flex tw-items-center tw-justify-between tw-mb-3">
                         <span class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase">
-                            <i class="fa fa-eye tw-text-blue-600 tw-mr-1"></i> Instant Live Preview
+                            <i class="fa fa-eye tw-text-blue-600 tw-mr-1"></i> @lang('lang_v1.instant_live_preview')
                         </span>
                         <span id="preview_dimensions_badge" class="tw-text-xs tw-text-slate-500 tw-font-medium">
-                            Auto-rendered
+                            @lang('lang_v1.auto_rendered')
                         </span>
                     </div>
 
                     <div class="row">
                         <!-- Mini Sheet Layout Diagram -->
                         <div class="col-sm-5 tw-mb-3 text-center">
-                            <div class="tw-text-xs tw-font-bold tw-text-gray-700 tw-mb-1.5">Sheet Layout</div>
+                            <div class="tw-text-xs tw-font-bold tw-text-gray-700 tw-mb-1.5">@lang('lang_v1.sheet_layout')</div>
                             <div class="mini-sheet-paper" id="mini_sheet_paper">
                                 <div class="mini-sheet-grid" id="mini_sheet_grid">
                                     <!-- Dynamic stickers injected by JS -->
                                 </div>
                             </div>
                             <div class="tw-text-[11px] tw-text-gray-500 tw-mt-1.5" id="mini_sheet_caption">
-                                Loading layout...
+                                @lang('lang_v1.loading_layout')
                             </div>
                         </div>
 
                         <!-- Zoom Single Label Preview -->
                         <div class="col-sm-7 tw-mb-3">
-                            <div class="tw-text-xs tw-font-bold tw-text-gray-700 tw-mb-1.5 text-center">Sticker Preview</div>
+                            <div class="tw-text-xs tw-font-bold tw-text-gray-700 tw-mb-1.5 text-center">@lang('lang_v1.sticker_preview')</div>
                             <div class="zoom-sticker-card" id="zoom_sticker_card">
                                 <div id="preview_biz_name" class="tw-font-bold tw-text-gray-900 tw-text-xs tw-truncate">
-                                    {{ session('business.name') ?? 'Your Business Name' }}
+                                    {{ session('business.name') ?? __('lang_v1.your_business_name') }}
                                 </div>
                                 <div id="preview_prod_name" class="tw-font-semibold tw-text-gray-800 tw-text-[13px] tw-mt-0.5 tw-truncate">
-                                    Men Polo Shirt
+                                    @lang('lang_v1.sample_product_name')
                                 </div>
                                 <div id="preview_prod_variation" class="tw-text-gray-600 tw-text-[11px] tw-truncate">
-                                    Black - L
+                                    @lang('lang_v1.sample_variation_name')
                                 </div>
 
                                 <!-- Barcode Visual Mock -->
@@ -532,12 +532,12 @@
                                 </div>
 
                                 <div id="preview_price" class="tw-font-bold tw-text-blue-700 tw-text-xs tw-mt-1">
-                                    Price: $ 25.00 <span class="tw-text-[10px] tw-font-normal tw-text-gray-500">(Inc. Tax)</span>
+                                    @lang('sale.price'): $ 25.00 <span class="tw-text-[10px] tw-font-normal tw-text-gray-500">(@lang('product.inc_of_tax'))</span>
                                 </div>
 
                                 <div class="tw-flex tw-justify-between tw-text-[9px] tw-text-gray-500 tw-mt-1.5 tw-pt-1 tw-border-t tw-border-dashed tw-border-gray-200">
-                                    <span id="preview_packing">Pack: {{ @format_date('today') }}</span>
-                                    <span id="preview_exp">Exp: {{ @format_date('today') }}</span>
+                                    <span id="preview_packing">@lang('lang_v1.pack'): {{ @format_date('today') }}</span>
+                                    <span id="preview_exp">@lang('lang_v1.exp'): {{ @format_date('today') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -563,7 +563,7 @@
 
 	<div class="col-sm-8 hide display_label_div">
 		<h3 class="box-title">@lang( 'barcode.preview' )</h3>
-		<button type="button" class="col-sm-offset-2 btn btn-success btn-block" id="print_label">Print</button>
+		<button type="button" class="col-sm-offset-2 btn btn-success btn-block" id="print_label">@lang('messages.print')</button>
 	</div>
 	<div class="clearfix"></div>
 </section>
@@ -591,14 +591,14 @@
 
             // Update specifications
             var isContinuous = (setting.is_continuous == 1);
-            $('#spec_type_badge').text(isContinuous ? 'Continuous Roll' : 'Sheet Paper')
+            $('#spec_type_badge').text(isContinuous ? @json(__('lang_v1.continuous_roll')) : @json(__('lang_v1.sheet_paper')))
                 .toggleClass('tw-bg-amber-100 tw-text-amber-800', isContinuous)
                 .toggleClass('tw-bg-blue-100 tw-text-blue-800', !isContinuous);
 
             $('#spec_label_size').text(setting.width + '" × ' + setting.height + '"');
-            $('#spec_sheet_size').text(isContinuous ? 'Continuous (' + (setting.paper_width || setting.width) + '")' : setting.paper_width + '" × ' + setting.paper_height + '"');
+            $('#spec_sheet_size').text(isContinuous ? @json(__('lang_v1.continuous')) + ' (' + (setting.paper_width || setting.width) + '")' : setting.paper_width + '" × ' + setting.paper_height + '"');
             $('#spec_stickers_row').text(setting.stickers_in_one_row || 1);
-            $('#spec_stickers_sheet').text(isContinuous ? 'Continuous' : (setting.stickers_in_one_sheet || '-'));
+            $('#spec_stickers_sheet').text(isContinuous ? @json(__('lang_v1.continuous')) : (setting.stickers_in_one_sheet || '-'));
             $('#spec_margins').text('T: ' + (setting.top_margin || 0) + '" / L: ' + (setting.left_margin || 0) + '"');
             $('#preview_dimensions_badge').text(setting.width + '" × ' + setting.height + '" (' + (setting.stickers_in_one_row || 1) + '/row)');
 
@@ -615,7 +615,7 @@
                 grid.append('<div class="mini-sticker-cell" title="Sticker #' + (i + 1) + '"></div>');
             }
 
-            $('#mini_sheet_caption').text(cols + ' cols × ' + Math.ceil(totalStickers / cols) + ' rows (' + totalStickers + ' labels shown)');
+            $('#mini_sheet_caption').text(cols + ' ' + @json(__('lang_v1.cols')) + ' × ' + Math.ceil(totalStickers / cols) + ' ' + @json(__('lang_v1.rows')) + ' (' + totalStickers + ' ' + @json(__('lang_v1.labels_shown')) + ')');
 
             // Update zoom sticker card based on checkboxes & font sizes
             var showName = $('input[name="print[name]"]').is(':checked');
@@ -633,8 +633,8 @@
             $('#preview_exp').toggle(showExp);
 
             var priceType = $('select[name="print[price_type]"]').val();
-            var priceTypeText = (priceType === 'exclusive') ? '(Exc. Tax)' : '(Inc. Tax)';
-            $('#preview_price').html('Price: $ 25.00 <span class="tw-text-[10px] tw-font-normal tw-text-gray-500">' + priceTypeText + '</span>');
+            var priceTypeText = (priceType === 'exclusive') ? '(' + @json(__('product.exc_of_tax')) + ')' : '(' + @json(__('product.inc_of_tax')) + ')';
+            $('#preview_price').html(@json(__('sale.price')) + ': $ 25.00 <span class="tw-text-[10px] tw-font-normal tw-text-gray-500">' + priceTypeText + '</span>');
         }
 
         $(document).ready(function() {

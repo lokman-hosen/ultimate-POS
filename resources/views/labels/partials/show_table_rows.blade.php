@@ -67,7 +67,7 @@
             ]); !!}
         </td>
         <td style="vertical-align: middle; text-align: center;">
-            <button type="button" class="tw-dw-btn tw-dw-btn-ghost tw-dw-btn-xs tw-text-rose-500 hover:tw-bg-rose-50 remove_label_product_row" title="Remove" style="height: 34px; width: 34px; padding: 0; border-radius: 6px;">
+            <button type="button" class="tw-dw-btn tw-dw-btn-ghost tw-dw-btn-xs tw-text-rose-500 hover:tw-bg-rose-50 remove_label_product_row" title="{{ __('messages.delete') }}" style="height: 34px; width: 34px; padding: 0; border-radius: 6px;">
                 <i class="fa fa-trash tw-text-base"></i>
             </button>
         </td>
