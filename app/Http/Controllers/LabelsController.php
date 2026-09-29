@@ -59,15 +59,21 @@ class LabelsController extends Controller
                                     ->pluck('name', 'id');
         }
 
-        $barcode_settings = Barcode::where('business_id', $business_id)
+        $barcodes_all = Barcode::where('business_id', $business_id)
                                 ->orWhereNull('business_id')
-                                ->select(DB::raw('CONCAT(name, ", ", COALESCE(description, "")) as name, id, is_default'))
                                 ->get();
-        $default = $barcode_settings->where('is_default', 1)->first();
-        $barcode_settings = $barcode_settings->pluck('name', 'id');
+        $default = $barcodes_all->where('is_default', 1)->first();
+        if (empty($default) && $barcodes_all->isNotEmpty()) {
+            $default = $barcodes_all->first();
+        }
+        $barcode_settings = $barcodes_all->mapWithKeys(function ($item) {
+            $name = $item->name . (!empty($item->description) ? ', ' . $item->description : '');
+            return [$item->id => $name];
+        });
+        $barcode_details_json = $barcodes_all->keyBy('id')->toJson();
 
         return view('labels.show')
-            ->with(compact('products', 'barcode_settings', 'default', 'price_groups'));
+            ->with(compact('products', 'barcode_settings', 'default', 'price_groups', 'barcode_details_json'));
     }
 
     /**

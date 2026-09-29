@@ -228,26 +228,19 @@ class BusinessController extends BaseController
         }
 
         $currencies = $this->businessUtil->allCurrencies();
-        $timezone_list = $this->businessUtil->allTimeZones();
 
-        $accounting_methods = $this->businessUtil->allAccountingMethods();
-
-        $months = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $months[$i] = __('business.months.'.$i);
-        }
-
-        $business_sectors = $this->businessUtil->allBusinessSectors();
+        $business_activities = $this->businessUtil->businessActivitiesDropdown();
+        $phone_prefixes = $this->businessUtil->phonePrefixes();
+        $communities = (new \App\Utils\SpainLocationUtil())->communitiesDropdown();
 
         $is_admin = true;
 
         return view('superadmin::business.create')
             ->with(compact(
                 'currencies',
-                'timezone_list',
-                'accounting_methods',
-                'months',
-                'business_sectors',
+                'business_activities',
+                'phone_prefixes',
+                'communities',
                 'is_admin'
             ));
     }
@@ -266,36 +259,24 @@ class BusinessController extends BaseController
 
         //Admin creates the business with basic details only; tax, package
         //and payment details are completed later by the business owner.
-        $validator = Validator::make($request->all(), [
+        //Derives state/city names, time zone, main activity etc. like the public registration
+        $new_business_activity = $this->businessUtil->normalizeRegistrationInput($request);
+
+        [$rules, $attributes] = $this->businessUtil->registrationValidation($request);
+
+        $validator = Validator::make($request->all(), $rules + [
             'business_type' => 'required|in:self_employed,company',
             'name' => 'required|max:255',
             'legal_name' => 'required_if:business_type,company|nullable|max:255',
-            'business_activity' => 'required|max:255',
-            'business_sector' => ['required', 'in:'.implode(',', array_keys($this->businessUtil->allBusinessSectors()))],
             'currency_id' => 'required|numeric',
-            'country' => 'required|max:255',
-            'state' => 'required|max:255',
-            'city' => 'required|max:255',
-            'zip_code' => 'required|max:255',
-            'landmark' => 'required|max:255',
             'time_zone' => 'required|max:255',
-            'mobile' => 'required|max:255',
             'contact_email' => 'required|email|max:255',
             'first_name' => 'required|max:255',
             'username' => 'required|min:4|max:255|unique:users',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|min:4|max:255',
             'confirm_password' => 'required|same:password',
-        ], [], [
-            'name' => __('business.trading_name'),
-            'legal_name' => __('business.legal_company_name'),
-            'business_type' => __('business.business_type'),
-            'business_sector' => __('business.business_sector'),
-            'contact_email' => __('business.business_email'),
-            'landmark' => __('business.physical_address'),
-            'state' => __('business.province'),
-            'zip_code' => __('business.postal_code'),
-        ]);
+        ], [], $attributes);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
@@ -312,7 +293,7 @@ class BusinessController extends BaseController
 
             $business_details = $request->only(['business_type', 'business_sector', 'legal_name', 'business_activity','name', 'start_date', 'currency_id', 'time_zone', 'accounting_method', 'fy_start_month']);
 
-            $business_location = $request->only(['name', 'country', 'state', 'city', 'zip_code', 'landmark', 'website', 'mobile','contact_email', 'whatsapp_number', 'address_line_2','alternate_number']);
+            $business_location = $this->businessUtil->registrationLocationDetails($request);
 
             //Create the business
             $business_details['owner_id'] = $user->id;
@@ -333,6 +314,8 @@ class BusinessController extends BaseController
             $business_details['created_by'] = $request->session()->get('user.id');
 
             $business = $this->businessUtil->createNewBusiness($business_details);
+
+            $this->businessUtil->saveBusinessActivity($new_business_activity);
 
             //Update user with business id
             $user->business_id = $business->id;

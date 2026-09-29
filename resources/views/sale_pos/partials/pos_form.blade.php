@@ -1,9 +1,10 @@
-<div class="row">
-	<div class="col-md-4">
-		<div class="form-group">
+<div class="pos-cart-top-fields">
+<div class="row" style="margin: 0 -4px;">
+	<div class="col-xs-12 col-md-12" style="padding: 0 4px;">
+		<div class="form-group" style="margin-bottom: 6px;">
 			<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fa fa-user"></i>
+				<span class="input-group-addon !tw-bg-slate-50 !tw-border-slate-200">
+					<i class="fa fa-user tw-text-slate-500"></i>
 				</span>
 				<input type="hidden" id="default_customer_id" 
 				value="{{ $walk_in_customer['id'] ?? ''}}" >
@@ -18,25 +19,25 @@
 				value="{{ $walk_in_customer['selling_price_group_id'] ?? ''}}" >
 				@endif
 				{!! Form::select('contact_id', 
-					[], null, ['class' => 'form-control mousetrap', 'id' => 'customer_id', 'placeholder' => __('lang_v1.enter_customer_name_phone'), 'required']); !!}
+					[], null, ['class' => 'form-control mousetrap !tw-border-slate-200', 'id' => 'customer_id', 'placeholder' => __('lang_v1.enter_customer_name_phone'), 'required']); !!}
 				<span class="input-group-btn">
-					<button type="button" class="btn btn-default bg-white btn-flat add_new_customer" data-name=""  @if(!auth()->user()->can('customer.create')) disabled @endif><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
+					<button type="button" class="btn btn-default bg-white btn-flat !tw-border-slate-200 add_new_customer" data-name=""  @if(!auth()->user()->can('customer.create')) disabled @endif><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
 					@can('sell.payments')
-					<button type="button" id="pos-receive-customer-payment" class="btn btn-default bg-white btn-flat" title="@lang('lang_v1.receive_payment')"><i class="fas fa-hand-holding-usd text-primary fa-lg"></i></button>
+					<button type="button" id="pos-receive-customer-payment" class="btn btn-default bg-white btn-flat !tw-border-slate-200" title="@lang('lang_v1.receive_payment')"><i class="fas fa-hand-holding-usd text-primary fa-lg"></i></button>
 					@endcan
 				</span>
 			</div>
 			<small class="text-danger hide contact_due_text"><strong>@lang('account.customer_due'):</strong> <span></span></small>
 		</div>
 	</div>
-	<div class="col-md-8">
-		<div class="form-group">
+	<div class="col-xs-12 col-md-12" style="padding: 0 4px;">
+		<div class="form-group" style="margin-bottom: 6px;">
 			<div class="input-group">
 				<div class="input-group-btn">
-					<button type="button" class="btn btn-default bg-white btn-flat" data-toggle="modal" data-target="#configure_search_modal" title="{{__('lang_v1.configure_product_search')}}"><i class="fas fa-search-plus"></i></button>
+					<button type="button" class="btn btn-default bg-white btn-flat !tw-border-slate-200" data-toggle="modal" data-target="#configure_search_modal" title="{{__('lang_v1.configure_product_search')}}"><i class="fas fa-search-plus tw-text-slate-500"></i></button>
 				</div>
                 {{-- Removed mousetrap class as it was causing issue with barcode scanning --}}
-				{!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 'placeholder' => __('lang_v1.search_product_placeholder'),
+				{!! Form::text('search_product', null, ['class' => 'form-control !tw-border-slate-200', 'id' => 'search_product', 'placeholder' => __('lang_v1.search_product_placeholder'),
 				'disabled' => is_null($default_location)? true : false,
 				'autofocus' => is_null($default_location)? false : true,
 				]); !!}
@@ -44,12 +45,12 @@
 
 					<!-- Show button for weighing scale modal -->
 					@if(isset($pos_settings['enable_weighing_scale']) && $pos_settings['enable_weighing_scale'] == 1)
-						<button type="button" class="btn btn-default bg-white btn-flat" id="weighing_scale_btn" data-toggle="modal" data-target="#weighing_scale_modal" 
+						<button type="button" class="btn btn-default bg-white btn-flat !tw-border-slate-200" id="weighing_scale_btn" data-toggle="modal" data-target="#weighing_scale_modal" 
 						title="@lang('lang_v1.weighing_scale')"><i class="fa fa-digital-tachograph text-primary fa-lg"></i></button>
 					@endif
 					
 
-					<button type="button" class="btn btn-default bg-white btn-flat pos_add_quick_product" data-href="{{action([\App\Http\Controllers\ProductController::class, 'quickAdd'])}}" data-container=".quick_add_product_modal"><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
+					<button type="button" class="btn btn-default bg-white btn-flat pos_add_quick_product !tw-border-slate-200" data-href="{{action([\App\Http\Controllers\ProductController::class, 'quickAdd'])}}" data-container=".quick_add_product_modal"><i class="fa fa-plus-circle text-primary fa-lg"></i></button>
 				</span>
 			</div>
 		</div>
@@ -177,24 +178,20 @@
 	
 	<!-- Call restaurant module if defined -->
     @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
-    	<span id="restaurant_module_span">
-      		<div class="col-md-3"></div>
+    	<span id="restaurant_module_span" style="display: contents;">
+      		<div class="col-sm-6 col-md-6"></div>
     	</span>
     @endif
 
 	@if(in_array('kitchen' ,$enabled_modules))
-		<div class="col-md-3">
-			<div class="form-group">
-				<div class="checkbox">
-				<label>
-						{!! Form::checkbox('is_kitchen_order', 1, false, ['class' => 'input-icheck status', 'id' => 'is_kitchen_order']); !!} {{ __('lang_v1.kitchen_order') }}
-				</label>
-				@show_tooltip(__('lang_v1.kitchen_order_tooltip'))
-				</div>
-			</div>
+		<div class="col-sm-6 col-md-6 tw-flex tw-items-center" style="min-height: 34px; margin-bottom: 10px;">
+			<label class="tw-inline-flex tw-items-center tw-cursor-pointer tw-font-medium tw-text-sm tw-text-slate-700 tw-mb-0" style="margin-bottom: 0; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; white-space: nowrap;">
+				{!! Form::checkbox('is_kitchen_order', 1, false, ['class' => 'input-icheck status', 'id' => 'is_kitchen_order']); !!}
+				<span style="margin-left: 6px;">{{ __('lang_v1.kitchen_order') }}</span>
+				<span style="margin-left: 4px;">@show_tooltip(__('lang_v1.kitchen_order_tooltip'))</span>
+			</label>
 		</div>
     @endif
-    
 </div>
 <!-- include module fields -->
 @if(!empty($pos_module_data))
@@ -204,7 +201,8 @@
         @endif
     @endforeach
 @endif
-<div class="row" style="margin:0;">
+</div>
+<div class="row pos-cart-table-row" style="margin:0;">
 	<div class="col-sm-12 pos_product_div" style="padding:4px 0 0 0;">
 		<input type="hidden" name="sell_price_tax" id="sell_price_tax" value="{{$business_details->sell_price_tax}}">
 
@@ -217,27 +215,37 @@
 				$hide_tax = 'hide';
 			}
 		@endphp
-		<table class="table table-condensed table-responsive tw-border-0 tw-table-fixed" id="pos_table">
+		<table class="table table-condensed" id="pos_table" style="table-layout: fixed !important; width: 100% !important; margin-bottom: 0 !important;">
+			<colgroup>
+				<col style="width: 46% !important;">
+				<col style="width: 19% !important;">
+				@if(!empty($pos_settings['inline_service_staff']))
+					<col style="width: 10% !important;">
+				@endif
+				<col class="{{$hide_tax}}" style="width: 14% !important;">
+				<col style="width: 17% !important;">
+				<col style="width: 34px !important;">
+			</colgroup>
 			<thead>
 				<tr>
-					<th class="text-center pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-2 !tw-py-1 !tw-text-[11px] tw-font-bold tw-uppercase tw-tracking-[0.4px] !tw-leading-[1.2] tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle tw-w-[30%]">
+					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 46% !important;">
 						@lang('sale.product') @show_tooltip(__('lang_v1.tooltip_sell_product_column'))
 					</th>
-					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-2 !tw-py-1 !tw-text-[11px] tw-font-bold tw-uppercase tw-tracking-[0.4px] !tw-leading-[1.2] tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle tw-w-[19%]">
+					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 19% !important;">
 						@lang('sale.qty')
 					</th>
 					@if(!empty($pos_settings['inline_service_staff']))
-						<th class="text-center pos-th-staff tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-2 !tw-py-1 !tw-text-[11px] tw-font-bold tw-uppercase tw-tracking-[0.4px] !tw-leading-[1.2] tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle">
+						<th class="text-center pos-th-staff tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 10% !important;">
 							@lang('restaurant.service_staff')
 						</th>
 					@endif
-					<th class="text-center pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-2 !tw-py-1 !tw-text-[11px] tw-font-bold tw-uppercase tw-tracking-[0.4px] !tw-leading-[1.2] tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle tw-w-auto tw-min-w-[13%] {{$hide_tax}}">
+					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="width: 14% !important; text-overflow: ellipsis;">
 						@lang('sale.price_inc_tax')
 					</th>
-					<th class="text-center pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-2 !tw-py-1 !tw-text-[11px] tw-font-bold tw-uppercase tw-tracking-[0.4px] !tw-leading-[1.2] tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle tw-w-auto tw-min-w-[14%]">
+					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
 						@lang('sale.subtotal')
 					</th>
-					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-1 !tw-pr-2 !tw-pl-0 !tw-text-[11px] tw-font-bold tw-uppercase tw-tracking-[0.4px] !tw-leading-[1.2] tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle tw-w-[52px] !tw-text-center"></th>
+					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-2 !tw-px-0 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle !tw-text-center" style="width: 34px !important; padding: 0 8px 0 2px !important;"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -255,10 +263,238 @@
 			</tbody>
 		</table>
 		<style>
+			.pos_product_div {
+				overflow-y: auto !important;
+				overflow-x: hidden !important;
+				max-height: calc(100vh - 280px) !important;
+				min-height: 140px;
+			}
+			#pos_table {
+				table-layout: fixed !important;
+				width: 100% !important;
+				border-collapse: collapse !important;
+			}
+			#pos_table th, #pos_table td {
+				box-sizing: border-box !important;
+			}
+			#pos_table th {
+				font-size: 10px !important;
+			}
+			#pos_table th.pos-th-product, #pos_table td.pos-td-product {
+				width: 46% !important;
+				max-width: 46% !important;
+				overflow: hidden !important;
+			}
+			#pos_table th.pos-th-qty, #pos_table td.pos-td-qty {
+				width: 19% !important;
+				max-width: 19% !important;
+				position: relative !important;
+				overflow: visible !important;
+			}
+			#pos_table th.pos-th-price, #pos_table td.pos-td-price {
+				width: 14% !important;
+				max-width: 14% !important;
+			}
+			#pos_table th.pos-th-subtotal, #pos_table td.pos-td-subtotal {
+				width: 17% !important;
+				max-width: 17% !important;
+			}
+			#pos_table th.pos-th-action, #pos_table td.pos-td-action {
+				width: 34px !important;
+				max-width: 34px !important;
+				padding: 0 8px 0 2px !important;
+				text-align: center !important;
+			}
+
 			#pos_table:not(.pos-has-rows) thead { display: none !important; }
 			#pos_table.pos-has-rows .pos-empty-state-row { display: none !important; }
 			#add_pos_sell_form:not(.pos-has-rows) .pos_form_totals,
 			#edit_pos_sell_form:not(.pos-has-rows) .pos_form_totals { display: none !important; }
+
+			#pos_table tbody tr.product_row {
+				background: #ffffff;
+				transition: background-color 0.15s ease;
+			}
+			#pos_table tbody tr.product_row:hover {
+				background: #f8fafc;
+			}
+			#pos_table tbody tr.product_row td {
+				padding: 7px 3px !important;
+				vertical-align: middle !important;
+				border-top: none !important;
+				border-bottom: 1px solid #f1f5f9 !important;
+			}
+
+			.pos-qty-stepper {
+				display: inline-flex !important;
+				align-items: center !important;
+				background: #f8fafc !important;
+				border: 1px solid #e2e8f0 !important;
+				border-radius: 6px !important;
+				padding: 1px !important;
+				width: auto !important;
+				max-width: 96px !important;
+				box-sizing: border-box !important;
+				position: relative !important;
+				overflow: visible !important;
+			}
+
+			.pos-row-qty-error-target {
+				min-height: 0;
+			}
+			.pos-row-qty-error-target label.error,
+			#pos_table label.error {
+				display: inline-flex !important;
+				align-items: center !important;
+				gap: 4px !important;
+				background: #fef2f2 !important;
+				color: #dc2626 !important;
+				border: 1px solid #fecaca !important;
+				border-radius: 4px !important;
+				padding: 2px 7px !important;
+				font-size: 11px !important;
+				font-weight: 600 !important;
+				line-height: 1.3 !important;
+				margin-top: 4px !important;
+				margin-bottom: 0 !important;
+				white-space: normal !important;
+				word-break: break-word !important;
+				box-shadow: none !important;
+				position: static !important;
+				transform: none !important;
+				width: auto !important;
+				max-width: 100% !important;
+				animation: posTooltipFade 0.15s ease-out !important;
+			}
+			.pos-row-qty-error-target label.error::before,
+			#pos_table label.error::before {
+				content: '⚠' !important;
+				font-size: 11px !important;
+				color: #ef4444 !important;
+				line-height: 1 !important;
+			}
+			.pos-row-qty-error-target label.error:empty,
+			.pos-row-qty-error-target label.error.valid,
+			.pos-row-qty-error-target label.error[style*="display: none"],
+			.pos-row-qty-error-target label.error[style*="display:none"],
+			#pos_table label.error:empty,
+			#pos_table label.error.valid,
+			#pos_table label.error[style*="display: none"],
+			#pos_table label.error[style*="display:none"] {
+				display: none !important;
+				visibility: hidden !important;
+				padding: 0 !important;
+				margin: 0 !important;
+				border: none !important;
+			}
+			.pos-row-qty-error-target label.error:empty::before,
+			.pos-row-qty-error-target label.error.valid::before,
+			.pos-row-qty-error-target label.error[style*="display: none"]::before,
+			.pos-row-qty-error-target label.error[style*="display:none"]::before,
+			#pos_table label.error:empty::before,
+			#pos_table label.error.valid::before,
+			#pos_table label.error[style*="display: none"]::before,
+			#pos_table label.error[style*="display:none"]::before {
+				content: '' !important;
+				display: none !important;
+			}
+			.pos-row-qty-error-target label.error::after,
+			#pos_table label.error::after {
+				display: none !important;
+			}
+			@keyframes posTooltipFade {
+				from {
+					opacity: 0;
+					transform: translateY(-2px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			.pos-qty-btn {
+				width: 20px !important;
+				height: 20px !important;
+				min-width: 20px !important;
+				border: none !important;
+				background: #2563eb !important;
+				color: #ffffff !important;
+				border-radius: 4px !important;
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				padding: 0 !important;
+				cursor: pointer !important;
+				box-shadow: 0 1px 2px rgba(37,99,235,0.25) !important;
+				transition: all 0.15s ease !important;
+			}
+			.pos-qty-btn svg {
+				stroke: #ffffff !important;
+			}
+			.pos-qty-btn:hover {
+				background: #1d4ed8 !important;
+				color: #ffffff !important;
+			}
+			.pos-qty-btn:hover svg {
+				stroke: #ffffff !important;
+			}
+			.pos-qty-btn.quantity-down:hover {
+				background: #1d4ed8 !important;
+			}
+			.pos-qty-btn.quantity-up:hover {
+				background: #1d4ed8 !important;
+			}
+			.pos-qty-input {
+				width: 38px !important;
+				min-width: 34px !important;
+				height: 22px !important;
+				padding: 0 1px !important;
+				background: transparent !important;
+				border: none !important;
+				box-shadow: none !important;
+				text-align: center !important;
+				font-size: 13px !important;
+				font-weight: 700 !important;
+				color: #0f172a !important;
+			}
+			.pos-qty-input:focus {
+				background: #ffffff !important;
+				border-radius: 4px !important;
+				box-shadow: 0 0 0 1px #2563eb !important;
+				outline: none !important;
+			}
+			.pos-price-input {
+				width: 100% !important;
+				max-width: 60px !important;
+				height: 25px !important;
+				padding: 1px 4px !important;
+				font-size: 13px !important;
+				font-weight: 600 !important;
+				color: #334155 !important;
+				text-align: right !important;
+				background: #f8fafc !important;
+				border: 1px solid #e2e8f0 !important;
+				border-radius: 4px !important;
+				transition: all 0.15s ease !important;
+			}
+			.pos-price-input:hover {
+				background: #ffffff !important;
+				border-color: #cbd5e1 !important;
+			}
+			.pos-price-input:focus {
+				background: #ffffff !important;
+				border-color: #2563eb !important;
+				box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+				outline: none !important;
+			}
+			.pos-price-input[readonly] {
+				background: transparent !important;
+				border-color: transparent !important;
+				box-shadow: none !important;
+				cursor: default !important;
+				color: #475569 !important;
+				font-weight: 600 !important;
+			}
 		</style>
 	</div>
 </div>

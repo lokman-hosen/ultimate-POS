@@ -1,247 +1,139 @@
+@php
+    $business_type_options = [
+        '' => __('business.select_business_type'),
+        'self_employed' => __('business.self_employed'),
+        'company' => __('business.company_legal_entity'),
+    ];
+
+    //The business operates in Spain only: show the Spain / Euro entry translated
+    $spain_currency_id = null;
+    foreach ($currencies as $currency_id => $currency_info) {
+        if (strpos($currency_info, 'Spain - ') === 0) {
+            $spain_currency_id = $currency_id;
+            $currencies[$currency_id] = __('business.spain_euro');
+        }
+    }
+
+    $is_company = old('business_type') == 'company';
+    $activity_choice = old('business_activity_choice', old('business_sector'));
+    $tax_label_1_options = $is_company ? ['CIF' => 'CIF'] : ['DNI' => 'DNI', 'NIE' => 'NIE'];
+    $phone_prefixes = $phone_prefixes ?? [];
+@endphp
+
 @if(empty($is_admin))
     <h3>@lang('business.business')</h3>
 @endif
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-{!! Form::hidden('language', request()->lang); !!}
+{!! Form::hidden('language', app()->getLocale()) !!}
+{{-- keeps the chosen language on the POST request (validation messages) --}}
+{!! Form::hidden('lang', app()->getLocale()) !!}
 
 <fieldset>
-    <div class="col-md-12">
-        <div class="form-group">
-            {!! Form::label('business_type', __('business.business_type') . ':*') !!}
-            {!! Form::select('business_type',
-                [
-                    '' => __('business.select_business_type'),
-                    'self_employed' => __('business.self_employed') . ' (Autónomo)',
-                    'company' => __('business.company_legal_entity') . ' (Empresa)'
-                ],
-                old('business_type'),
-                [
-                    'class' => 'form-control select2_register business-type-select',
-                    'required',
-                    'style' => 'width:100%;',
-                    'id' => 'business_type'
-                ]
-            ) !!}
-            @if ($errors->has('business_type'))
-                <span class="text-danger">{{ $errors->first('business_type') }}</span>
-            @endif
-        </div>
-    </div>
-
-    <legend>@lang('business.business_details'):</legend>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('name', __('business.trading_name') . ':*' ) !!}
-            {!! Form::text('name', null, ['class' => 'form-control','placeholder' => __('business.trading_name'), 'required']); !!}
-        </div>
-    </div>
-
-    <!--individual -->
-    <div class="col-md-12 col-lg-6 col-xl-4 company-only" style="display: none;">
-        <div class="form-group">
-            {!! Form::label('legal_name', __('business.legal_company_name')) !!}
-            {!! Form::text('legal_name', null, ['class' => 'form-control','placeholder' => __('business.legal_company_name')]); !!}
-        </div>
-    </div>
-
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('business_activity', __('business.main_activity') . ':*') !!}
-            {!! Form::text('business_activity', null, ['class' => 'form-control', 'placeholder' => __('business.activity_placeholder'), 'required']) !!}
-        </div>
-    </div>
-
-    @if(!empty($is_admin))
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div class="form-group">
-                {!! Form::label('business_sector', __('business.business_sector') . ':*') !!}
-                {!! Form::select('business_sector', ['' => __('business.select_sector')] + $business_sectors, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']) !!}
-            </div>
+    @if ($errors->any())
+        <div class="col-md-12">
+            <div class="alert alert-danger">@lang('business.fix_errors_below')</div>
         </div>
     @endif
+
+    <legend>@lang('business.business_details'):</legend>
+
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('business_type', __('business.business_type') . ':*') !!}
+            {!! Form::select('business_type', $business_type_options, old('business_type'), ['class' => 'form-control', 'required', 'id' => 'business_type']) !!}
+            @include('business.partials.register_field_error', ['field' => 'business_type'])
+        </div>
+    </div>
+
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('name', __('business.trading_name') . ':*') !!}
+            {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => __('business.trading_name'), 'required', 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'name'])
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+    @if(empty($is_admin))
+        {{-- Self-employed: DNI / NIE; company (SL): CIF --}}
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group">
+                {!! Form::label('tax_label_1', __('business.document_type') . ':*') !!}
+                {!! Form::select('tax_label_1', $tax_label_1_options, old('tax_label_1'), ['class' => 'form-control', 'required', 'id' => 'tax_label_1']) !!}
+                @include('business.partials.register_field_error', ['field' => 'tax_label_1'])
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group">
+                {!! Form::label('tax_number_1', __('business.document_number') . ':*') !!}
+                {!! Form::text('tax_number_1', null, ['class' => 'form-control spanish-tax-id', 'placeholder' => \App\Rules\SpanishTaxId::EXAMPLES[array_key_first($tax_label_1_options)], 'required', 'data-type-field' => '#tax_label_1', 'autocomplete' => 'off', 'maxlength' => 9]) !!}
+                <small class="help-block tax-id-hint" data-for="#tax_label_1"></small>
+                @include('business.partials.register_field_error', ['field' => 'tax_number_1'])
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    @endif
+
+    <div class="col-md-12 col-lg-6 col-xl-4 company-only" @if(!$is_company) style="display: none;" @endif>
+        <div class="form-group">
+            {!! Form::label('legal_name', __('business.legal_company_name') . ':*') !!}
+            {!! Form::text('legal_name', null, ['class' => 'form-control', 'placeholder' => __('business.legal_company_name'), 'required', 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'legal_name'])
+        </div>
+    </div>
+
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('business_sector', __('business.main_activity') . ':*') !!}
+            {!! Form::select('business_sector', ['' => __('business.select_main_activity')] + $business_activities, $activity_choice, ['class' => 'form-control', 'required', 'id' => 'business_sector']) !!}
+            @include('business.partials.register_field_error', ['field' => 'business_sector'])
+            @include('business.partials.register_field_error', ['field' => 'business_activity'])
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-4 business-activity-other" @if($activity_choice != 'other') style="display: none;" @endif>
+        <div class="form-group">
+            {!! Form::label('business_activity_other', __('business.specify_activity') . ':*') !!}
+            {!! Form::text('business_activity_other', null, ['class' => 'form-control', 'placeholder' => __('business.specify_activity_placeholder'), 'required', 'maxlength' => 100]) !!}
+        </div>
+    </div>
+    <div class="clearfix"></div>
 
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('start_date', __('business.activity_start_date') . ':') !!}
-            {!! Form::text('start_date', null, ['class' => 'form-control start-date-picker','placeholder' => __('business.activity_start_date'), 'readonly']); !!}
+            {!! Form::text('start_date', null, ['class' => 'form-control start-date-picker', 'placeholder' => __('business.activity_start_date'), 'readonly']) !!}
         </div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('currency_id', __('business.currency') . ':*') !!}
-            {!! Form::select('currency_id', $currencies, '110', ['class' => 'form-control select2_register','placeholder' => __('business.currency_placeholder'), 'required']); !!}
+            {!! Form::select('currency_id', $currencies, old('currency_id', $spain_currency_id), ['class' => 'form-control', 'placeholder' => __('business.currency_placeholder'), 'required']) !!}
+            @include('business.partials.register_field_error', ['field' => 'currency_id'])
         </div>
     </div>
     <div class="clearfix"></div>
+
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('business_logo', __('business.upload_logo') . ':') !!}
-            {!! Form::file('business_logo', ['accept' => 'image/*']); !!}
+            {!! Form::file('business_logo', ['accept' => 'image/*']) !!}
         </div>
     </div>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('website', __('lang_v1.website') . ':') !!}
-            {!! Form::text('website', null, ['class' => 'form-control','placeholder' => __('lang_v1.website')]); !!}
+            {!! Form::text('website', null, ['class' => 'form-control', 'placeholder' => __('business.website_placeholder'), 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'website'])
         </div>
     </div>
     <div class="clearfix"></div>
-    <legend>Contact Information:</legend>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('contact_person', __('business.contact_person_name') . ':*') !!}
-            {!! Form::text('contact_person', null, ['class' => 'form-control', 'placeholder' => __('business.contact_person_placeholder'), 'required']) !!}
-        </div>
-    </div>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('mobile', __('lang_v1.business_telephone') . ':') !!}
-            {!! Form::text('mobile', null, ['class' => 'form-control','placeholder' => __('lang_v1.business_telephone'), 'required']); !!}
-        </div>
-    </div>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('contact_email', __('business.business_email') . ':*') !!}
-            {!! Form::email('contact_email', null, ['class' => 'form-control', 'placeholder' => __('business.email'), 'required']) !!}
-        </div>
-    </div>
 
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('whatsapp_number', __('business.whatsapp_number') . ':') !!}
-            {!! Form::text('whatsapp_number', null, ['class' => 'form-control', 'placeholder' => __('business.whatsapp_placeholder')]) !!}
-        </div>
-    </div>
-
-    <div class="clearfix"></div>
-
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('country', __('business.country') . ':*') !!}
-            {!! Form::text('country', 'Spain', ['class' => 'form-control','placeholder' => __('business.country'), 'required']); !!}
-        </div>
-    </div>
-
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('state',__('business.province') . ':*') !!}
-            {!! Form::text('state', null, ['class' => 'form-control','placeholder' => __('business.province'), 'required']); !!}
-        </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('city',__('business.city'). ':*') !!}
-            {!! Form::text('city', null, ['class' => 'form-control','placeholder' => __('business.city'), 'required']); !!}
-        </div>
-    </div>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('zip_code', __('business.postal_code') . ':*') !!}
-            {!! Form::text('zip_code', null, ['class' => 'form-control','placeholder' => __('business.postal_code'), 'required']); !!}
-        </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('landmark', __('business.physical_address') . ':*') !!}
-            {!! Form::text('landmark', null, ['class' => 'form-control','placeholder' => __('business.physical_address'), 'required']); !!}
-        </div>
-    </div>
-
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('address_line_2', __('business.address_line_2') . ':') !!}
-            {!! Form::text('address_line_2', null, ['class' => 'form-control', 'placeholder' => __('business.address_line2_placeholder')]) !!}
-        </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="col-md-12 col-lg-6 col-xl-4">
-        <div class="form-group">
-            {!! Form::label('time_zone', __('business.time_zone') . ':*') !!}
-            {!! Form::select('time_zone', $timezone_list, config('app.timezone'), ['class' => 'form-control select2_register','placeholder' => __('business.time_zone'), 'required']); !!}
-        </div>
-    </div>
-</fieldset>
-
-<!-- tax details -->
-@if(empty($is_admin))
-    <h3>@lang('business.business_settings')</h3>
-
-    <fieldset>
-        <legend>@lang('business.business_settings'):</legend>
-        <!-- when business_type is self_employed:start -->
+    @if(empty($is_admin))
         <div class="col-md-12 col-lg-6 col-xl-4">
             <div class="form-group">
-                {!! Form::label('tax_label_1', __('business.nif_cif') . ':') !!}
-                {!! Form::select('tax_label_1', ['NIF' => 'NIF', 'CIF'=>'CIF'], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
-            </div>
-        </div>
-
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div class="form-group">
-                {!! Form::label('tax_number_1', __('business.nif_cif') . ':') !!}
-                {!! Form::text('tax_number_1', null, ['class' => 'form-control', 'placeholder' => __('business.nif_cif_placeholder')]); !!}
-                <small class="help-block">@lang('business.nif_cif_help')</small>
-            </div>
-        </div>
-        <!-- when business_type is self_employed:end -->
-
-        <div class="clearfix"></div>
-        <!-- when business_type is company:start -->
-        <div class="col-md-12 col-lg-6 col-xl-4 company-only" style="display: none;">
-            <div class="form-group">
-                {!! Form::label('tax_label_2',__('business.representative_dni_nie') . ':') !!}
-                {!! Form::select('tax_label_2', ['DNI' => 'DNI', 'NIE'=>'NIE'], null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
-            </div>
-        </div>
-
-        <div class="col-md-12 col-lg-6 col-xl-4 company-only" style="display: none;">
-            <div class="form-group">
-                {!! Form::label('tax_number_2',__('business.representative_dni_nie') . ':') !!}
-                {!! Form::text('tax_number_2', null, ['class' => 'form-control', 'placeholder' => __('business.representative_dni_nie')]); !!}
-                <small class="help-block">12345678Z,X1234567L,12345678Z</small>
-            </div>
-        </div>
-        <!-- when business_type is company:end -->
-        <div class="clearfix"></div>
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div class="form-group">
-                {!! Form::label('business_sector', 'Business Category') !!}
-                {!! Form::select('business_sector', ['' => __('business.select_sector')] + $business_sectors, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']) !!}
-            </div>
-        </div>
-
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div class="form-group">
-                {!! Form::label('fy_start_month', __('business.fy_start_month') . ':*') !!} @show_tooltip(__('tooltip.fy_start_month'))
-                {!! Form::select('fy_start_month', $months, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
-            </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div class="form-group">
-                {!! Form::label('accounting_method', __('business.accounting_method') . ':*') !!}
-                {!! Form::select('accounting_method', $accounting_methods, null, ['class' => 'form-control select2_register', 'required', 'style' => 'width:100%;']); !!}
-            </div>
-        </div>
-
-        <div class="col-md-12 col-lg-6 col-xl-4">
-            <div class="form-group">
-                {!! Form::label('referred_by', 'Referred By') !!}
-
+                {!! Form::label('referred_by', __('business.referred_by') . ':') !!}
                 {!! Form::select('referred_by', [
-                    '' => 'Select Referred By',
+                    '' => __('business.select_referred_by'),
                     'Lokman Hosen'   => 'Lokman Hosen',
                     'Abdul Karim'    => 'Abdul Karim',
                     'Rahim Uddin'    => 'Rahim Uddin',
@@ -252,14 +144,147 @@
                     'Imran Hossain'  => 'Imran Hossain',
                     'Sakib Khan'     => 'Sakib Khan',
                     'Jahid Hasan'    => 'Jahid Hasan',
-                ], null, [
-                    'class' => 'form-control select2_register',
-                    'style' => 'width:100%;'
-                ]) !!}
+                ], null, ['class' => 'form-control']) !!}
             </div>
         </div>
-    </fieldset>
-@endif
+        <div class="clearfix"></div>
+
+        {{-- Legal representative (SL only) --}}
+        <div class="company-only" @if(!$is_company) style="display: none;" @endif>
+            <legend>@lang('business.legal_representative'):</legend>
+            <div class="col-md-12 col-lg-6 col-xl-4">
+                <div class="form-group">
+                    {!! Form::label('legal_rep_name', __('business.legal_rep_full_name') . ':*') !!}
+                    {!! Form::text('legal_rep_name', null, ['class' => 'form-control', 'placeholder' => __('business.legal_rep_full_name'), 'required', 'maxlength' => 255]) !!}
+                    @include('business.partials.register_field_error', ['field' => 'legal_rep_name'])
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6 col-xl-4">
+                <div class="form-group">
+                    {!! Form::label('legal_rep_position', __('business.legal_rep_position') . ':*') !!}
+                    {!! Form::text('legal_rep_position', null, ['class' => 'form-control', 'placeholder' => __('business.legal_rep_position_placeholder'), 'required', 'maxlength' => 255]) !!}
+                    @include('business.partials.register_field_error', ['field' => 'legal_rep_position'])
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-12 col-lg-6 col-xl-4">
+                <div class="form-group">
+                    {!! Form::label('tax_label_2', __('business.document_type') . ':*') !!}
+                    {!! Form::select('tax_label_2', ['DNI' => 'DNI', 'NIE' => 'NIE'], old('tax_label_2'), ['class' => 'form-control', 'required', 'id' => 'tax_label_2']) !!}
+                    @include('business.partials.register_field_error', ['field' => 'tax_label_2'])
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6 col-xl-4">
+                <div class="form-group">
+                    {!! Form::label('tax_number_2', __('business.document_number') . ':*') !!}
+                    {!! Form::text('tax_number_2', null, ['class' => 'form-control spanish-tax-id', 'placeholder' => \App\Rules\SpanishTaxId::EXAMPLES['DNI'], 'required', 'data-type-field' => '#tax_label_2', 'autocomplete' => 'off', 'maxlength' => 9]) !!}
+                    <small class="help-block tax-id-hint" data-for="#tax_label_2"></small>
+                    @include('business.partials.register_field_error', ['field' => 'tax_number_2'])
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    @endif
+
+    <legend>@lang('business.contact_information'):</legend>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('contact_person', __('business.contact_person_name') . ':*') !!}
+            {!! Form::text('contact_person', null, ['class' => 'form-control', 'placeholder' => __('business.contact_person_placeholder'), 'required', 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'contact_person'])
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('contact_email', __('business.business_email') . ':*') !!}
+            {!! Form::email('contact_email', null, ['class' => 'form-control', 'placeholder' => __('business.email'), 'required', 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'contact_email'])
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('mobile', __('lang_v1.business_telephone') . ':*') !!}
+            <div class="input-group register-phone">
+                {!! Form::select('mobile_prefix', $phone_prefixes, old('mobile_prefix', '+34'), ['class' => 'form-control phone-prefix', 'id' => 'mobile_prefix', 'aria-label' => __('business.phone_prefix')]) !!}
+                {!! Form::tel('mobile', null, ['class' => 'form-control phone-number', 'placeholder' => __('business.phone_placeholder'), 'required', 'data-prefix-field' => '#mobile_prefix', 'inputmode' => 'numeric', 'maxlength' => 14]) !!}
+            </div>
+            @include('business.partials.register_field_error', ['field' => 'mobile'])
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('whatsapp_number', __('business.whatsapp_number') . ':') !!}
+            <div class="input-group register-phone">
+                {!! Form::select('whatsapp_prefix', $phone_prefixes, old('whatsapp_prefix', '+34'), ['class' => 'form-control phone-prefix', 'id' => 'whatsapp_prefix', 'aria-label' => __('business.phone_prefix')]) !!}
+                {!! Form::tel('whatsapp_number', null, ['class' => 'form-control phone-number', 'placeholder' => __('business.phone_placeholder'), 'data-prefix-field' => '#whatsapp_prefix', 'inputmode' => 'numeric', 'maxlength' => 14]) !!}
+            </div>
+            @include('business.partials.register_field_error', ['field' => 'whatsapp_number'])
+            <div class="checkbox">
+                <label>
+                    {!! Form::checkbox('whatsapp_same_as_mobile', 1, old('whatsapp_same_as_mobile'), ['id' => 'whatsapp_same_as_mobile', 'class' => 'input-check-box']) !!}
+                    @lang('business.same_as_contact_number')
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+    {{-- Address: Country -> Autonomous community -> Province -> Municipality -> Postal code -> Address --}}
+    <legend>@lang('business.address'):</legend>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('country', __('business.country') . ':*') !!}
+            {!! Form::select('country', ['Spain' => __('business.spain')], 'Spain', ['class' => 'form-control', 'required', 'id' => 'country']) !!}
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('community_code', __('business.autonomous_community') . ':*') !!}
+            {!! Form::select('community_code', ['' => __('business.select_community')] + $communities, old('community_code'), ['class' => 'form-control', 'required', 'id' => 'community_code']) !!}
+            @include('business.partials.register_field_error', ['field' => 'community_code'])
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('province_code', __('business.province') . ':*') !!}
+            {!! Form::select('province_code', ['' => __('business.select_province')], null, ['class' => 'form-control', 'required', 'id' => 'province_code', 'data-old' => old('province_code')]) !!}
+            @include('business.partials.register_field_error', ['field' => 'province_code'])
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('municipality_code', __('business.city_municipality') . ':*') !!}
+            {!! Form::select('municipality_code', ['' => __('business.select_municipality')], null, ['class' => 'form-control', 'required', 'id' => 'municipality_code', 'data-old' => old('municipality_code')]) !!}
+            @include('business.partials.register_field_error', ['field' => 'municipality_code'])
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('zip_code', __('business.postal_code') . ':*') !!}
+            {!! Form::text('zip_code', null, ['class' => 'form-control', 'placeholder' => '08001', 'required', 'inputmode' => 'numeric', 'maxlength' => 5]) !!}
+            @include('business.partials.register_field_error', ['field' => 'zip_code'])
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('landmark', __('business.physical_address') . ':*') !!}
+            {!! Form::text('landmark', null, ['class' => 'form-control', 'placeholder' => __('business.physical_address_placeholder'), 'required', 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'landmark'])
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group">
+            {!! Form::label('address_line_2', __('business.address_line_2') . ':') !!}
+            {!! Form::text('address_line_2', null, ['class' => 'form-control', 'placeholder' => __('business.address_line2_placeholder'), 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'address_line_2'])
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</fieldset>
 
 <!-- Owner Information -->
 @if(empty($is_admin))
@@ -267,13 +292,13 @@
 @endif
 
 <fieldset>
-    <legend>@lang('business.yaigo_account')</legend>
+    <legend>@lang('business.yaigo_account'):</legend>
 
-    <div class="col-md-12 company-only" style="display: none;">
+    <div class="col-md-12">
         <div class="checkbox">
             <label>
-                {!! Form::checkbox('same_as_rep', 1, false, ['id' => 'same_as_rep']) !!}
-                Same as contact Person
+                {!! Form::checkbox('same_as_rep', 1, false, ['id' => 'same_as_rep', 'class' => 'input-check-box']) !!}
+                @lang('business.same_as_contact_person')
             </label>
         </div>
     </div>
@@ -281,28 +306,31 @@
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('first_name', __('business.first_name') . ':*') !!}
-            {!! Form::text('first_name', null, ['class' => 'form-control','placeholder' => __('business.first_name'), 'required']); !!}
+            {!! Form::text('first_name', null, ['class' => 'form-control', 'placeholder' => __('business.first_name'), 'required', 'maxlength' => 255]) !!}
+            @include('business.partials.register_field_error', ['field' => 'first_name'])
         </div>
     </div>
 
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('last_name', __('business.last_name') . ':') !!}
-            {!! Form::text('last_name', null, ['class' => 'form-control','placeholder' =>  __('business.last_name')]); !!}
+            {!! Form::text('last_name', null, ['class' => 'form-control', 'placeholder' => __('business.last_name')]) !!}
         </div>
     </div>
     <div class="clearfix"></div>
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('username', __('business.username') . ':*') !!}
-            {!! Form::text('username', null, ['class' => 'form-control','placeholder' => __('business.username'), 'required']); !!}
+            {!! Form::text('username', null, ['class' => 'form-control', 'placeholder' => __('business.username'), 'required', 'autocomplete' => 'username']) !!}
+            @include('business.partials.register_field_error', ['field' => 'username'])
         </div>
     </div>
 
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('email', __('business.email') . ':*') !!}
-            {!! Form::text('email', null, ['class' => 'form-control','placeholder' => __('business.email'), 'required']); !!}
+            {!! Form::text('email', null, ['class' => 'form-control', 'placeholder' => __('business.email'), 'required', 'autocomplete' => 'email']) !!}
+            @include('business.partials.register_field_error', ['field' => 'email'])
         </div>
     </div>
 
@@ -310,40 +338,39 @@
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('password', __('business.password') . ':*') !!}
-            {!! Form::password('password', ['class' => 'form-control','placeholder' => __('business.password'), 'required']); !!}
+            {!! Form::password('password', ['class' => 'form-control', 'placeholder' => __('business.password'), 'required', 'autocomplete' => 'new-password']) !!}
+            @include('business.partials.register_field_error', ['field' => 'password'])
         </div>
     </div>
 
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('confirm_password', __('business.confirm_password') . ':*') !!}
-            {!! Form::password('confirm_password', ['class' => 'form-control','placeholder' => __('business.confirm_password'), 'required']); !!}
+            {!! Form::password('confirm_password', ['class' => 'form-control', 'placeholder' => __('business.confirm_password'), 'required', 'autocomplete' => 'new-password']) !!}
+            @include('business.partials.register_field_error', ['field' => 'confirm_password'])
         </div>
     </div>
     <div class="clearfix"></div>
     @if(!empty($system_settings['superadmin_enable_register_tc']) && !empty($is_register))
         <div class="col-md-12">
-            @if(!empty($system_settings['superadmin_enable_register_tc']) && !empty($is_register))
-                <div class="form-group">
-                    <label>
-                        {!! Form::checkbox('accept_tc', 1, false, ['required', 'class' => 'input-check-box']) !!}
-                        <a class="terms_condition cursor-pointer" data-toggle="modal" data-target="#tc_modal">
-                            @lang('lang_v1.accept_terms_and_conditions') <i></i>
-                        </a>
-                    </label>
-                </div>
-                @include('business.partials.terms_conditions')
-            @endif
             <div class="form-group">
                 <label>
-                    {!! Form::checkbox('accept_marketing', 1, false) !!}
+                    {!! Form::checkbox('accept_tc', 1, false, ['required', 'class' => 'input-check-box']) !!}
+                    <a class="terms_condition cursor-pointer" data-toggle="modal" data-target="#tc_modal">
+                        @lang('lang_v1.accept_terms_and_conditions') <i></i>
+                    </a>
+                </label>
+            </div>
+            @include('business.partials.terms_conditions')
+            <div class="form-group">
+                <label>
+                    {!! Form::checkbox('accept_marketing', 1, false, ['class' => 'input-check-box']) !!}
                     @lang('business.accept_marketing_communications')
                 </label>
             </div>
         </div>
         <div class="clearfix"></div>
     @endif
-
 
     @if(config('constants.enable_recaptcha') && !empty($is_register))
         <div class="col-md-12 col-lg-6 col-xl-4">
@@ -366,69 +393,28 @@
 
 @section('javascript')
     @parent
+    @php
+        $business_register_config = [
+            'ine_data_url' => asset('js/data/spain-ine.json?v=' . $asset_v),
+            'select_province' => __('business.select_province'),
+            'select_municipality' => __('business.select_municipality'),
+            'tax_examples' => \App\Rules\SpanishTaxId::EXAMPLES,
+            'lang' => [
+                'required' => __('business.js_required'),
+                'email' => __('business.js_email'),
+                'minlength' => __('business.js_minlength'),
+                'equal_to' => __('business.js_equal_to'),
+                'example' => __('business.document_example'),
+                'invalid_document' => __('business.invalid_document_number'),
+                'phone_invalid' => __('business.phone_invalid'),
+                'website_invalid' => __('business.website_invalid'),
+                'postal_code_invalid' => __('business.postal_code_invalid'),
+                'postal_code_province_mismatch' => __('business.postal_code_province_mismatch'),
+            ],
+        ];
+    @endphp
     <script>
-        $(document).ready(function() {
-            // ---------- Business type toggle ----------
-            function toggleBusinessType() {
-                var type = $('#business_type').val();
-
-                if (type === 'company') {
-                    $('.company-only').show();
-                    // Make company-only fields required
-                    $('#legal_name').prop('required', true);
-                    $('#tax_label_2').prop('required', true);
-                    $('#tax_number_2').prop('required', true);
-
-                    // Update tax_label_1 to show CIF option
-                    $('#tax_label_1').val('CIF').trigger('change');
-                } else {
-                    $('.company-only').hide();
-                    $('#legal_name').prop('required', false);
-                    $('#tax_label_1').prop('required', true);
-                    $('#tax_number_1').prop('required', true);
-                    $('#tax_label_2').prop('required', false);
-                    $('#tax_number_2').prop('required', false);
-
-                    // Update tax_label_1 to show NIF option
-                    $('#tax_label_1').val('NIF').trigger('change');
-                }
-            }
-
-            // Run on load and on change
-            toggleBusinessType();
-            $('#business_type').change(toggleBusinessType);
-
-            // ---------- Same as representative auto-fill ----------
-            $('#same_as_rep').change(function() {
-                if ($(this).is(':checked')) {
-                    var contactPersonFullName = $('input[name="contact_person"]').val();
-                    var contactEmail = $('input[name="contact_email"]').val();
-
-                    if (contactPersonFullName) {
-                        const nameParts = contactPersonFullName.trim().split(/\s+/);
-                        const firstName = nameParts[0] || '';
-                        const lastName = nameParts.slice(1).join(" ") || '';
-
-                        $('#first_name').val(firstName);
-                        $('#last_name').val(lastName);
-                    }
-
-                    if (contactEmail) {
-                        $('#email').val(contactEmail);
-                    }
-                }
-            });
-
-            // ---------- Date picker ----------
-            // $('.start-date-picker').datepicker({
-            //     format: 'dd-mm-yyyy',
-            //     autoclose: true,
-            //     todayHighlight: true,
-            //     endDate: '0d'
-            // });
-
-            // ---------- Select2 ----------
-           // $('.select2_register').select2();
-        })
+        window.BUSINESS_REGISTER = {!! json_encode($business_register_config, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!};
     </script>
+    <script src="{{ asset('js/business_register.js?v=' . $asset_v) }}"></script>
 @endsection

@@ -97,7 +97,7 @@ class RoleController extends Controller
                                     ->get();
 
         $module_permissions = $this->moduleUtil->getModuleData('user_permissions');
-
+        
         $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
         return view('role.create')

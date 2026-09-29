@@ -32,3 +32,7 @@ Pass: 12345678
 ## Stripe Webhook(Local Environment)
 1. Run the following command (run the 2nd command if this does not work): stripe listen --forward-to http://127.0.0.1:8000/subscriptions/webhook/stripe
 2. In the second terminal run the following command. stripe listen --all-snapshot --forward-to http://127.0.0.1:8000/subscriptions/webhook/stripe
+
+## Google ReCaptcha
+1. GOOGLE_RECAPTCHA_KEY="6LdKX84tAAAAAKMNJdLK9E80UWN8UtfF9J3fQtWC"
+2. GOOGLE_RECAPTCHA_SECRET="6LdKX84tAAAAAInExlrjyy7vUFFhZu0SNLvxfrp7"

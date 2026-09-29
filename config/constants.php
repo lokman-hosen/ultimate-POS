@@ -57,6 +57,7 @@ return [
     'administrator_usernames' => env('ADMINISTRATOR_USERNAMES'),
     'SHOW_REPAIR_STATUS_LOGIN_SCREEN' => env('SHOW_REPAIR_STATUS_LOGIN_SCREEN', true),
     'allow_registration' => env('ALLOW_REGISTRATION', true),
+    'guest_default_locale' => env('GUEST_DEFAULT_LOCALE', 'es'), //Language of login, registration and password reset pages when none is chosen
     'app_title' => env('APP_TITLE'),
 
     'google_recaptcha_key' => env('GOOGLE_RECAPTCHA_KEY'),

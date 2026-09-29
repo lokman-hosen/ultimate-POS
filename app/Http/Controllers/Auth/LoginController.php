@@ -67,6 +67,23 @@ class LoginController extends Controller
         return 'username';
     }
 
+    /**
+     * The login field accepts the username or the email address.
+     *
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        $login = trim((string) $request->input($this->username()));
+        $field = 'username';
+        //A username may itself look like an email address
+        if (filter_var($login, FILTER_VALIDATE_EMAIL) && ! \App\User::where('username', $login)->exists()) {
+            $field = 'email';
+        }
+
+        return [$field => $login, 'password' => $request->input('password')];
+    }
+
     public function logout()
     {
         $this->businessUtil->activityLog(auth()->user(), 'logout');

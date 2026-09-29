@@ -22,16 +22,16 @@ $(document).ready(function() {
                 }
                 // Needed in some cases if the user went back (clean up)
                 if (currentIndex < newIndex) {
-                    // To remove error styles
-                    form.find('.body:eq(' + newIndex + ') label.error').remove();
-                    form.find('.body:eq(' + newIndex + ') .error').removeClass('error');
+                    // To remove error styles (server-side errors stay until the field is fixed)
+                    form.find('.body:eq(' + newIndex + ') label.error:not(.server-error)').remove();
+                    form.find('.body:eq(' + newIndex + ') .error:not(.server-error)').removeClass('error');
                 }
                 form.validate().settings.ignore = ':disabled,:hidden';
                 return form.valid();
             },
             onStepChanged: function(event, currentIndex, priorIndex) {
-                // Render reCAPTCHA on last step
-                if (currentIndex === 2 && !recaptchaRendered) { // change 2 to your last step index
+                // Render reCAPTCHA on last step (Owner)
+                if (currentIndex === form.find('.steps li').length - 1 && !recaptchaRendered) {
                     if (typeof grecaptcha !== 'undefined') {
                         grecaptcha.render('recaptcha-container', {
                             'sitekey': window.RECAPTCHA_SITE_KEY
@@ -102,7 +102,7 @@ $(document).ready(function() {
             },
             password: {
                 required: true,
-                minlength: 5,
+                minlength: 4,
             },
             confirm_password: {
                 equalTo: '#password',
@@ -119,9 +119,6 @@ $(document).ready(function() {
                         },
                     },
                 },
-            },
-            website: {
-                url: true,
             },
         },
         messages: {

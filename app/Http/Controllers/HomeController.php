@@ -152,6 +152,7 @@ class HomeController extends Controller
         }
 
         $sells_chart_1 = new CommonChart;
+        $sells_chart_1->height(250);
 
         $sells_chart_1->labels($labels)
                         ->options($this->__chartOptions(__(
@@ -209,6 +210,7 @@ class HomeController extends Controller
         }
 
         $sells_chart_2 = new CommonChart;
+        $sells_chart_2->height(250);
         $sells_chart_2->labels($labels)
                     ->options($this->__chartOptions(__(
                         'home.total_sells',
@@ -236,8 +238,97 @@ class HomeController extends Controller
 
         $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
+        // Recent 5 Sales
+        $recent_sales = [];
+        if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view')) {
+            $recent_sales = Transaction::where('business_id', $business_id)
+                ->where('type', 'sell')
+                ->where('status', 'final')
+                ->with(['contact'])
+                ->latest('transaction_date')
+                ->limit(5)
+                ->get();
+        }
 
-        return view('home.index', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
+        // Recent 5 Purchases
+        $recent_purchases = [];
+        if (auth()->user()->can('purchase.view')) {
+            $recent_purchases = Transaction::where('business_id', $business_id)
+                ->where('type', 'purchase')
+                ->where('status', 'received')
+                ->with(['contact'])
+                ->latest('transaction_date')
+                ->limit(5)
+                ->get();
+        }
+
+        // Recent 5 Expenses
+        $recent_expenses = [];
+        if (auth()->user()->can('expense.access') || auth()->user()->can('view_own_expense')) {
+            $recent_expenses = Transaction::where('transactions.business_id', $business_id)
+                ->where('transactions.type', 'expense')
+                ->leftJoin('expense_categories as ec', 'transactions.expense_category_id', '=', 'ec.id')
+                ->select('transactions.*', 'ec.name as category_name')
+                ->latest('transactions.transaction_date')
+                ->limit(5)
+                ->get();
+        }
+
+        return view('home.index', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin', 'recent_sales', 'recent_purchases', 'recent_expenses'));
+    }
+
+    /**
+     * Retrieves recent sales, purchases, and expenses for dashboard.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getRecentTransactions(Request $request)
+    {
+        if ($request->ajax()) {
+            $business_id = $request->session()->get('user.business_id');
+            $location_id = $request->input('location_id');
+
+            // Recent 5 Sales
+            $recent_sales = [];
+            if (auth()->user()->can('sell.view') || auth()->user()->can('direct_sell.view')) {
+                $query = Transaction::where('business_id', $business_id)
+                    ->where('type', 'sell')
+                    ->where('status', 'final')
+                    ->with(['contact']);
+                if (!empty($location_id)) {
+                    $query->where('location_id', $location_id);
+                }
+                $recent_sales = $query->latest('transaction_date')->limit(5)->get();
+            }
+
+            // Recent 5 Purchases
+            $recent_purchases = [];
+            if (auth()->user()->can('purchase.view')) {
+                $query = Transaction::where('business_id', $business_id)
+                    ->where('type', 'purchase')
+                    ->where('status', 'received')
+                    ->with(['contact']);
+                if (!empty($location_id)) {
+                    $query->where('location_id', $location_id);
+                }
+                $recent_purchases = $query->latest('transaction_date')->limit(5)->get();
+            }
+
+            // Recent 5 Expenses
+            $recent_expenses = [];
+            if (auth()->user()->can('expense.access') || auth()->user()->can('view_own_expense')) {
+                $query = Transaction::where('transactions.business_id', $business_id)
+                    ->where('transactions.type', 'expense')
+                    ->leftJoin('expense_categories as ec', 'transactions.expense_category_id', '=', 'ec.id')
+                    ->select('transactions.*', 'ec.name as category_name');
+                if (!empty($location_id)) {
+                    $query->where('transactions.location_id', $location_id);
+                }
+                $recent_expenses = $query->latest('transactions.transaction_date')->limit(5)->get();
+            }
+
+            return view('home.partials.recent_transactions_content', compact('recent_sales', 'recent_purchases', 'recent_expenses'));
+        }
     }
 
     /**
@@ -297,6 +388,47 @@ class HomeController extends Controller
 
             //NET = TOTAL SALES - INVOICE DUE - EXPENSE
             $output['net'] = $output['total_sell'] - $output['invoice_due'] - $output['total_expense'];
+
+            // Calculate payment summary for total sell
+            $payment_summary_query = DB::table('transaction_payments')
+                ->join('transactions as t', 'transaction_payments.transaction_id', '=', 't.id')
+                ->where('t.business_id', $business_id)
+                ->where('t.type', 'sell')
+                ->where('t.status', 'final');
+
+            if (!empty($start) && !empty($end)) {
+                $payment_summary_query->whereDate('t.transaction_date', '>=', $start)
+                    ->whereDate('t.transaction_date', '<=', $end);
+            }
+
+            if (empty($start) && !empty($end)) {
+                $payment_summary_query->whereDate('t.transaction_date', '<=', $end);
+            }
+
+            if (!empty($location_id)) {
+                $payment_summary_query->where('t.location_id', $location_id);
+            }
+
+            if (!empty($created_by)) {
+                $payment_summary_query->where('t.created_by', $created_by);
+            }
+
+            $payment_summary_result = $payment_summary_query->select(
+                'transaction_payments.method',
+                DB::raw('SUM(IF(transaction_payments.is_return = 1, -1*transaction_payments.amount, transaction_payments.amount)) as total_amount')
+            )
+            ->groupBy('transaction_payments.method')
+            ->pluck('total_amount', 'method');
+
+            $output['total_sell_by_cash'] = $payment_summary_result['cash'] ?? 0;
+            $output['total_sell_by_card'] = $payment_summary_result['card'] ?? 0;
+
+            $output['total_sell_by_other'] = 0;
+            foreach ($payment_summary_result as $method => $amount) {
+                if (!in_array($method, ['cash', 'card'])) {
+                    $output['total_sell_by_other'] += (float)$amount;
+                }
+            }
 
             return $output;
         }

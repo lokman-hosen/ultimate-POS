@@ -30,4 +30,8 @@
      'leave_password_blank' => 'Deje el campo de contraseña en blanco si no desea actualizar la contraseña',
      'user_update_success' => 'Usuario actualizado con éxito',
      'user_delete_success' => 'Usuario eliminado con éxito',
+     'status' => 'Estado',
+     'status_active' => 'Activo',
+     'status_inactive' => 'Inactivo',
+     'status_terminated' => 'Terminado',
  ];

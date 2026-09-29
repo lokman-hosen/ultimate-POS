@@ -1,7 +1,10 @@
+@php
+	$dropdown_col_class = ($tables_enabled && $waiters_enabled) ? 'col-sm-6 col-md-6' : 'col-sm-7 col-md-6';
+@endphp
 @if($tables_enabled)
-<div class="col-sm-4">
-	<div class="form-group">
-		<div class="input-group">
+<div class="{{ $dropdown_col_class }}" id="table_dropdown_group">
+	<div class="form-group" style="margin-bottom: 10px;">
+		<div class="input-group" style="width: 100%;">
 			<span class="input-group-addon">
 				<i class="fa fa-table"></i>
 			</span>
@@ -11,13 +14,13 @@
 </div>
 @endif
 @if($waiters_enabled)
-<div class="col-sm-4">
-	<div class="form-group">
-		<div class="input-group">
+<div class="{{ $dropdown_col_class }}" id="waiter_dropdown_group">
+	<div class="form-group" style="margin-bottom: 10px;">
+		<div class="input-group" style="width: 100%;">
 			<span class="input-group-addon">
 				<i class="fa fa-user-secret"></i>
 			</span>
-			<select class="form-control" name="res_waiter_id" id="res_waiter_id" @if ($is_service_staff_required) 
+			<select class="form-control" name="res_waiter_id" id="res_waiter_id" style="width: 100%; min-width: 170px;" @if ($is_service_staff_required) 
 			required
 			@endif>
 				<option selected value="">{{ __('restaurant.select_service_staff') }}</option>

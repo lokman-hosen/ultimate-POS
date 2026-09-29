@@ -584,7 +584,7 @@ $(document).ready(function() {
         browseLabel: LANG.file_browse_label,
         removeLabel: LANG.remove,
         previewSettings: {
-            image: { width: 'auto', height: 'auto', 'max-width': '100%', 'max-height': '100%' },
+            image: { width: 'auto', height: '80px', 'max-width': '100%', 'max-height': '80px' },
         },
     };
     $('#upload_image').fileinput(img_fileinput_setting);

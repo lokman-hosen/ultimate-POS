@@ -1121,7 +1121,6 @@ class SellPosController extends Controller
                 'default_invoice_schemes', 'invoice_layouts', 'featured_products', 'customer_due',
                 'users', 'only_payment'));
     }
-
     /**
      * Update the specified resource in storage.
      * TODO: Add edit log.

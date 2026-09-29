@@ -46,41 +46,110 @@ class ManageUserController extends Controller
                         ->user()
                         ->where('is_cmmsn_agnt', 0)
                         ->select(['id', 'username',
-                            DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', ]);
+                            DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as full_name"), 'email', 'allow_login', 'status', ]);
 
             return Datatables::of($users)
+                ->addIndexColumn()
                 ->editColumn('username', '{{$username}} @if(empty($allow_login)) <span class="label bg-gray">@lang("lang_v1.login_not_allowed")</span>@endif')
                 ->addColumn(
                     'role',
                     function ($row) {
                         $role_name = $this->moduleUtil->getUserRoleName($row->id);
 
-                        return $role_name;
+                        return $this->roleLabel($role_name);
                     }
                 )
+                ->editColumn('status', function ($row) {
+                    return $this->statusLabel($row->status);
+                })
                 ->addColumn(
                     'action',
-                    '@can("user.update")
-                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</a>
-                        &nbsp;
+                    '<div class="user-actions">
+                    @can("user.update")
+                        <a href="{{action(\'App\Http\Controllers\ManageUserController@edit\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline user-action-btn user-action-btn--edit" data-toggle="tooltip" title="@lang("messages.edit")" aria-label="@lang("messages.edit")"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i></a>
                     @endcan
                     @can("user.view")
-                    <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline  tw-dw-btn-info"><i class="fa fa-eye"></i> @lang("messages.view")</a>
-                    &nbsp;
+                        <a href="{{action(\'App\Http\Controllers\ManageUserController@show\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline user-action-btn user-action-btn--view" data-toggle="tooltip" title="@lang("messages.view")" aria-label="@lang("messages.view")"><i class="fa fa-eye" aria-hidden="true"></i></a>
                     @endcan
                     @can("user.delete")
-                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_user_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                    @endcan'
+                        <button data-href="{{action(\'App\Http\Controllers\ManageUserController@destroy\', [$id])}}" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline user-action-btn user-action-btn--delete delete_user_button" data-toggle="tooltip" title="@lang("messages.delete")" aria-label="@lang("messages.delete")"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button>
+                    @endcan
+                    </div>'
                 )
                 ->filterColumn('full_name', function ($query, $keyword) {
                     $query->whereRaw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) like ?", ["%{$keyword}%"]);
                 })
+                ->filterColumn('status', function ($query, $keyword) {
+                    // Match the raw value or the translated label shown in the table (e.g. "Activo").
+                    $keyword = mb_strtolower(trim($keyword));
+                    $statuses = collect(['active', 'inactive', 'terminated'])->filter(function ($status) use ($keyword) {
+                        return str_starts_with($status, $keyword)
+                            || str_starts_with(mb_strtolower(__('user.status_'.$status)), $keyword);
+                    });
+                    if ($statuses->isNotEmpty()) {
+                        $query->whereIn('status', $statuses->values()->all());
+                    }
+                })
                 ->removeColumn('id')
-                ->rawColumns(['action', 'username'])
+                ->rawColumns(['action', 'username', 'role', 'status'])
                 ->make(true);
         }
 
         return view('manage_user.index');
+    }
+
+    /**
+     * Role name as a coloured pill for the users list. Known roles get a
+     * fixed colour; any other role gets a stable colour derived from its name.
+     *
+     * @param  string  $role_name
+     * @return string
+     */
+    private function roleLabel($role_name)
+    {
+        if ($role_name === null || trim($role_name) === '') {
+            return '';
+        }
+
+        $known = [
+            'admin' => 'purple',
+            'cashier' => 'blue',
+            'waiter' => 'green',
+            'kitchen staff' => 'orange',
+            'delivery driver' => 'red',
+            'manager' => 'indigo',
+        ];
+        $fallback = ['teal', 'pink', 'cyan', 'amber', 'lime', 'sky'];
+
+        $key = strtolower(trim($role_name));
+        $color = $known[$key] ?? $fallback[crc32($key) % count($fallback)];
+
+        return '<span class="user-pill user-pill--'.$color.'">'.e($role_name).'</span>';
+    }
+
+    /**
+     * User status as a pill with a dot for the users list.
+     *
+     * @param  string|null  $status
+     * @return string
+     */
+    private function statusLabel($status)
+    {
+        if ($status === 'active') {
+            $color = 'green';
+            $label = __('user.status_active');
+        } elseif ($status === 'inactive') {
+            $color = 'red';
+            $label = __('user.status_inactive');
+        } elseif ($status === 'terminated') {
+            $color = 'gray';
+            $label = __('user.status_terminated');
+        } else {
+            $color = 'gray';
+            $label = empty($status) ? '-' : ucfirst($status);
+        }
+
+        return '<span class="user-pill user-pill--'.$color.'"><span class="user-pill__dot"></span>'.e($label).'</span>';
     }
 
     /**

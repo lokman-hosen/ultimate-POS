@@ -105,5 +105,22 @@
                 {!! Form::textarea('welcome_email_body', isset($settings["welcome_email_body"]) ? $settings["welcome_email_body"] : '', ['class' => 'form-control','placeholder' => __('superadmin::lang.welcome_email_body')]); !!}
             </div>
         </div>
+        {{-- Sent to owners who registered in Spanish; when empty a default Spanish text is used --}}
+        <div class="col-xs-12">
+            <h4>@lang('superadmin::lang.welcome_email_template_es'):</h4>
+            <p class="help-block">@lang('superadmin::lang.welcome_email_template_es_help')</p>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                {!! Form::label('welcome_email_subject_es', __('superadmin::lang.welcome_email_subject') . ' (ES):') !!}
+                {!! Form::text('welcome_email_subject_es', isset($settings["welcome_email_subject_es"]) ? $settings["welcome_email_subject_es"] : '', ['class' => 'form-control','placeholder' => __('superadmin::lang.welcome_email_subject')]); !!}
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                {!! Form::label('welcome_email_body_es', __('superadmin::lang.welcome_email_body') . ' (ES):') !!}
+                {!! Form::textarea('welcome_email_body_es', isset($settings["welcome_email_body_es"]) ? $settings["welcome_email_body_es"] : '', ['class' => 'form-control','placeholder' => __('superadmin::lang.welcome_email_body')]); !!}
+            </div>
+        </div>
     </div>
 </div>

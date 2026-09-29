@@ -27,13 +27,3 @@
         </div>
     </div>
 @stop
-
-@section('javascript')
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('.change_lang').click(function() {
-                window.location = "{{ route('business.getRegister') }}?lang=" + $(this).attr('value');
-            });
-        })
-    </script>
-@endsection

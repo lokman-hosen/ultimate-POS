@@ -98,6 +98,27 @@ class User extends Authenticatable
      *
      * @return object
      */
+    /**
+     * Language for emails sent to this user: English or Spanish only for now
+     *
+     * @return string
+     */
+    public function mailLocale()
+    {
+        return in_array($this->language, ['en', 'es']) ? $this->language : 'en';
+    }
+
+    /**
+     * Send the password reset notification in the user's language.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify((new \App\Notifications\ResetPasswordNotification($token))->locale($this->mailLocale()));
+    }
+
     public static function create_user($details)
     {
         $user = User::create([

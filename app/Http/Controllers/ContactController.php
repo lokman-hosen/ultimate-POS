@@ -139,7 +139,10 @@ class ContactController extends Controller
             ->addColumn('address', '{{implode(", ", array_filter([$address_line_1, $address_line_2, $city, $state, $country, $zip_code]))}}')
             ->addColumn(
                 'due',
-                '<span class="contact_due" data-orig-value="{{$total_purchase - $purchase_paid - $total_ledger_discount}}" data-highlight=false>@format_currency($total_purchase - $purchase_paid - $total_ledger_discount)</span>'
+                function ($row) {
+                    $due = $row->total_purchase - $row->purchase_paid - $row->total_ledger_discount;
+                    return $this->formatDueAmount($due);
+                }
             )
             ->addColumn(
                 'return_due',
@@ -255,6 +258,9 @@ class ContactController extends Controller
                     return e($row->name);
                 }
             })
+            ->editColumn('supplier_business_name', function ($row) {
+                return $this->formatBusinessNameAvatar($row->supplier_business_name);
+            })
             ->editColumn('created_at', '{{@format_date($created_at)}}')
             ->removeColumn('opening_balance_paid')
             ->removeColumn('type')
@@ -274,8 +280,83 @@ class ContactController extends Controller
                     ->orWhereRaw("CONCAT(COALESCE(address_line_1, ''), ', ', COALESCE(address_line_2, ''), ', ', COALESCE(city, ''), ', ', COALESCE(state, ''), ', ', COALESCE(country, '') ) like ?", ["%{$keyword}%"]);
                 });
             })
-            ->rawColumns(['action', 'opening_balance', 'pay_term', 'due', 'return_due', 'name', 'balance'])
+            ->rawColumns(['action', 'opening_balance', 'pay_term', 'due', 'return_due', 'name', 'balance', 'supplier_business_name'])
             ->make(true);
+    }
+
+    /**
+     * Helper to format business name with letter avatar
+     */
+    private function formatBusinessNameAvatar($name)
+    {
+        if (empty($name)) {
+            return '--';
+        }
+
+        $trimmed = trim($name);
+        $first_letter = mb_strtoupper(mb_substr($trimmed, 0, 1));
+
+        $palette = [
+            ['bg' => '#eff6ff', 'text' => '#2563eb', 'border' => '#bfdbfe'], // Blue
+            ['bg' => '#f0fdf4', 'text' => '#16a34a', 'border' => '#bbf7d0'], // Green
+            ['bg' => '#faf5ff', 'text' => '#9333ea', 'border' => '#e9d5ff'], // Purple
+            ['bg' => '#fff7ed', 'text' => '#ea580c', 'border' => '#fed7aa'], // Orange
+            ['bg' => '#fdf2f8', 'text' => '#db2777', 'border' => '#fbcfe8'], // Pink
+            ['bg' => '#ecfeff', 'text' => '#0891b2', 'border' => '#a5f3fc'], // Cyan
+            ['bg' => '#eef2ff', 'text' => '#4f46e5', 'border' => '#c7d2fe'], // Indigo
+            ['bg' => '#fefce8', 'text' => '#ca8a04', 'border' => '#fef08a'], // Yellow/Amber
+            ['bg' => '#fff1f2', 'text' => '#e11d48', 'border' => '#fecdd3'], // Rose
+            ['bg' => '#f0fdfa', 'text' => '#0d9488', 'border' => '#99f6e4'], // Teal
+            ['bg' => '#f5f3ff', 'text' => '#7c3aed', 'border' => '#ddd6fe'], // Violet
+            ['bg' => '#f8fafc', 'text' => '#0284c7', 'border' => '#bae6fd'], // Sky
+            ['bg' => '#fef2f2', 'text' => '#dc2626', 'border' => '#fecaca'], // Red
+            ['bg' => '#f0fdf4', 'text' => '#15803d', 'border' => '#86efac'], // Emerald
+        ];
+
+        $char_code = ord($first_letter);
+        $color = $palette[$char_code % count($palette)];
+
+        $avatar = '<span style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; min-width:30px; border-radius:50%; background-color:' . $color['bg'] . '; color:' . $color['text'] . '; border:1px solid ' . $color['border'] . '; font-weight:700; font-size:13px; flex-shrink:0;">' . e($first_letter) . '</span>';
+
+        return '<div style="display:inline-flex; align-items:center; gap:8px;">' . $avatar . '<span style="font-weight:500; color:#1e293b;">' . e($name) . '</span></div>';
+    }
+
+    /**
+     * Helper to format due amount as a styled tag/badge based on tiered rules:
+     * 0: default color (soft gray/slate pill)
+     * 1 - 1000: green pill
+     * 1001 - 100000: orange pill
+     * > 100000: red pill
+     */
+    private function formatDueAmount($due)
+    {
+        $formatted = $this->transactionUtil->num_f($due, true);
+
+        if ($due <= 0) {
+            // Default (0)
+            $bg = '#f1f5f9';
+            $text = '#475569';
+            $border = '#e2e8f0';
+        } elseif ($due <= 1000) {
+            // 1 - 1000 Green
+            $bg = '#f0fdf4';
+            $text = '#16a34a';
+            $border = '#bbf7d0';
+        } elseif ($due <= 100000) {
+            // 1001 - 100000 Orange
+            $bg = '#fff7ed';
+            $text = '#ea580c';
+            $border = '#fed7aa';
+        } else {
+            // > 100000 Red
+            $bg = '#fff1f2';
+            $text = '#dc2626';
+            $border = '#fecdd3';
+        }
+
+        $style = "display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 9999px; background-color: {$bg}; color: {$text}; border: 1px solid {$border}; font-weight: 600; font-size: 12.5px; white-space: nowrap;";
+
+        return '<span class="contact_due" data-orig-value="' . $due . '" style="' . $style . '">' . $formatted . '</span>';
     }
 
     /**
@@ -366,7 +447,10 @@ class ContactController extends Controller
         //    + $sell_return_paid add this in due because after paymnet for sell return not calculated 
             ->addColumn(
                 'due',
-                '<span class="contact_due" data-orig-value="{{$total_invoice - $invoice_received - $total_ledger_discount - $total_sell_return  + $sell_return_paid}}" data-highlight=true>@format_currency($total_invoice - $invoice_received - $total_ledger_discount -  $total_sell_return + $sell_return_paid)  </span>'
+                function ($row) {
+                    $due = $row->total_invoice - $row->invoice_received - $row->total_ledger_discount - $row->total_sell_return + $row->sell_return_paid;
+                    return $this->formatDueAmount($due);
+                }
             )
             ->addColumn(
                 'return_due',
@@ -485,16 +569,25 @@ class ContactController extends Controller
                 @endif
             ')
             ->editColumn('name', function ($row) {
-                $name = e($row->name);
+                $name = $this->formatBusinessNameAvatar($row->name);
                 if ($row->contact_status == 'inactive') {
-                    $name = e($row->name).' <small class="label pull-right bg-red no-print">'.__('lang_v1.inactive').'</small>';
+                    $name .= ' <small class="label pull-right bg-red no-print">'.__('lang_v1.inactive').'</small>';
                 }
 
                 if (! empty($row->converted_by)) {
-                    $name .= '<span class="label bg-info label-round no-print" data-toggle="tooltip" title="Converted from leads"><i class="fas fa-sync-alt"></i></span>';
+                    $name .= ' <span class="label bg-info label-round no-print" data-toggle="tooltip" title="Converted from leads"><i class="fas fa-sync-alt"></i></span>';
                 }
 
                 return $name;
+            })
+            ->editColumn('supplier_business_name', function ($row) {
+                return $this->formatBusinessNameAvatar($row->supplier_business_name);
+            })
+            ->editColumn('customer_group', function ($row) {
+                if (empty($row->customer_group)) {
+                    return '--';
+                }
+                return '<span class="customer-group-tag" style="display:inline-flex; align-items:center; justify-content:center; padding:4px 12px; border-radius:9999px; background-color:#f3e8ff; color:#7e22ce; border:1px solid #d8b4fe; font-weight:600; font-size:12.5px; white-space:nowrap;">' . e($row->customer_group) . '</span>';
             })
             ->editColumn('total_rp', '{{$total_rp ?? 0}}')
             ->editColumn('created_at', '{{@format_date($created_at)}}')
@@ -525,7 +618,7 @@ class ContactController extends Controller
             $contacts->removeColumn('total_rp');
         }
 
-        return $contacts->rawColumns(['action', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name', 'balance'])
+        return $contacts->rawColumns(['action', 'opening_balance', 'credit_limit', 'pay_term', 'due', 'return_due', 'name', 'balance', 'supplier_business_name', 'customer_group'])
                         ->make(true);
     }
 
