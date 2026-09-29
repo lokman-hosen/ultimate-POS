@@ -107,35 +107,51 @@
             const container = hiddenServiceSelect.closest('div.col-md-4, div.col-sm-6');
             if(container) container.style.display = 'none';
 
-            // Initial Sync
+            // Initial Sync if already selected
             const currentVal = hiddenServiceSelect.value;
             if (currentVal && document.querySelector('.custom-service-btn[data-val="'+currentVal+'"]')) {
                 document.querySelector('.custom-service-btn[data-val="'+currentVal+'"]').classList.add('active-service');
-            } else if (serviceBtns.length > 0) {
-                // If not pre-selected, activate first service
-                serviceBtns[0].classList.add('active-service');
-                hiddenServiceSelect.value = serviceBtns[0].getAttribute('data-val');
-                $(hiddenServiceSelect).trigger('change');
             }
+
+            // Sync when hidden select changes
+            $(hiddenServiceSelect).on('change', function() {
+                const val = $(this).val();
+                serviceBtns.forEach(btn => {
+                    if (val && btn.getAttribute('data-val') === val) {
+                        btn.classList.add('active-service');
+                    } else {
+                        btn.classList.remove('active-service');
+                    }
+                });
+            });
         }
 
         serviceBtns.forEach(btn => {
             btn.addEventListener('click', function() {
-                // Remove active class from all
-                serviceBtns.forEach(b => b.classList.remove('active-service'));
-                // Add active class to clicked
-                this.classList.add('active-service');
-                // Update hidden select and trigger change event
-                if (hiddenServiceSelect) {
-                    hiddenServiceSelect.value = this.getAttribute('data-val');
-                    $(hiddenServiceSelect).trigger('change');
+                const val = this.getAttribute('data-val');
+                const isAlreadyActive = this.classList.contains('active-service');
+                
+                if (isAlreadyActive) {
+                    // Toggle / Unselect
+                    this.classList.remove('active-service');
+                    if (hiddenServiceSelect) {
+                        hiddenServiceSelect.value = '';
+                        $(hiddenServiceSelect).trigger('change');
+                    }
+                } else {
+                    // Select
+                    serviceBtns.forEach(b => b.classList.remove('active-service'));
+                    this.classList.add('active-service');
+                    if (hiddenServiceSelect) {
+                        hiddenServiceSelect.value = val;
+                        $(hiddenServiceSelect).trigger('change');
+                    }
                 }
             });
         });
 
         // --- TABLES LOGIC ---
         // Tables are loaded dynamically via AJAX into #restaurant_module_span -> select#res_table_id
-        
         let lastTableOptions = "";
         const observer = new MutationObserver(function(mutations) {
             const tableSelect = document.querySelector('select[name="res_table_id"]');
@@ -169,6 +185,7 @@
                     hasTables = true;
                     const btn = document.createElement('div');
                     btn.className = 'custom-table-btn';
+                    btn.setAttribute('data-table-id', opt.value);
                     if (opt.selected) {
                         btn.classList.add('active-table');
                     }
@@ -181,12 +198,19 @@
                     `;
 
                     btn.addEventListener('click', function() {
-                        // Remove active from all
-                        document.querySelectorAll('.custom-table-btn').forEach(b => b.classList.remove('active-table'));
-                        this.classList.add('active-table');
-                        // Update native select
-                        selectElement.value = opt.value;
-                        $(selectElement).trigger('change');
+                        const isAlreadyActive = btn.classList.contains('active-table');
+                        if (isAlreadyActive) {
+                            // Toggle / Unselect
+                            btn.classList.remove('active-table');
+                            selectElement.value = '';
+                            $(selectElement).trigger('change');
+                        } else {
+                            // Select
+                            grid.querySelectorAll('.custom-table-btn').forEach(b => b.classList.remove('active-table'));
+                            btn.classList.add('active-table');
+                            selectElement.value = opt.value;
+                            $(selectElement).trigger('change');
+                        }
                     });
 
                     grid.appendChild(btn);
@@ -196,6 +220,18 @@
             if (!hasTables) {
                 grid.innerHTML = '<div class="tw-text-slate-400 tw-text-sm tw-col-span-3">No tables available</div>';
             }
+
+            // Sync table grid when native select changes externally
+            $(selectElement).off('change.syncSidebar').on('change.syncSidebar', function() {
+                const selectedVal = $(this).val();
+                grid.querySelectorAll('.custom-table-btn').forEach(b => {
+                    if (selectedVal && b.getAttribute('data-table-id') === selectedVal) {
+                        b.classList.add('active-table');
+                    } else {
+                        b.classList.remove('active-table');
+                    }
+                });
+            });
         }
         
         // Initial build just in case it's already there
@@ -203,5 +239,33 @@
         if (initialTableSelect) {
             buildCustomTableGrid(initialTableSelect);
         }
+
+        // --- RESET ON FORM RESET / SALE CREATION ---
+        function resetRestaurantSidebar() {
+            // Reset Service buttons
+            serviceBtns.forEach(b => b.classList.remove('active-service'));
+            if (hiddenServiceSelect && hiddenServiceSelect.value !== '') {
+                hiddenServiceSelect.value = '';
+                $(hiddenServiceSelect).trigger('change');
+            }
+            // Reset Table buttons
+            const grid = document.getElementById('custom_tables_grid');
+            if (grid) {
+                grid.querySelectorAll('.custom-table-btn').forEach(b => b.classList.remove('active-table'));
+            }
+            const tableSelect = document.querySelector('select[name="res_table_id"]');
+            if (tableSelect && tableSelect.value !== '') {
+                tableSelect.value = '';
+                $(tableSelect).trigger('change');
+            }
+        }
+
+        $(document).on('sell_form_reset', function() {
+            resetRestaurantSidebar();
+        });
+
+        $(document).on('reset', '#add_pos_sell_form, #edit_pos_sell_form', function() {
+            setTimeout(resetRestaurantSidebar, 50);
+        });
     });
 </script>
