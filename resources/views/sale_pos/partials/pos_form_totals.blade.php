@@ -275,17 +275,17 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 3px 4px;
+		padding: 3px 2px;
 		min-height: 30px;
 		overflow: hidden;
 		box-sizing: border-box;
 	}
 	.pos_form_totals .pos_totals_label {
-		font-size: 9px;
+		font-size: 8px;
 		font-weight: 700;
 		color: #94a3b8;
 		text-transform: uppercase;
-		letter-spacing: 0.3px;
+		letter-spacing: 0.2px;
 		line-height: 1.1;
 		text-align: center;
 		max-width: 100%;
@@ -293,7 +293,7 @@
 		text-overflow: ellipsis;
 	}
 	.pos_form_totals .pos_totals_value {
-		font-size: 12px;
+		font-size: 11px;
 		font-weight: 700;
 		color: #0f172a;
 		line-height: 1.2;
@@ -305,8 +305,8 @@
 	.pos_form_totals .pos_totals_value--loyalty { color: #8b5cf6; }
 	.pos_form_totals .pos_totals_edit {
 		cursor: pointer;
-		font-size: 9px;
-		padding: 0 2px;
+		font-size: 8px;
+		padding: 0 1px;
 		margin-left: 1px;
 		color: #3b82f6;
 		vertical-align: middle;
@@ -320,21 +320,21 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 8px;
-		padding: 10px 12px;
+		padding: 8px 10px;
 		background: #ecfdf5;
 		border-top: 1px solid #d1fae5;
 	}
 	.pos_form_totals .pos_totals_right_label {
-		font-size: 11px;
+		font-size: 9.5px;
 		font-weight: 800;
 		color: #065f46;
 		text-transform: uppercase;
-		letter-spacing: 0.8px;
+		letter-spacing: 0.6px;
 		white-space: nowrap;
 		line-height: 1.2;
 	}
 	.pos_form_totals .pos_totals_right_value {
-		font-size: 19px;
+		font-size: 17px;
 		font-weight: 800;
 		color: #047857;
 		letter-spacing: -0.5px;
@@ -364,26 +364,26 @@
 			flex-direction: column;
 			justify-content: center;
 			gap: 2px;
-			padding: 6px 12px;
-			min-height: 56px;
+			padding: 4px 8px;
+			min-height: 52px;
 			border-top: none;
 			border-left: 1px solid #d1fae5;
 		}
 		.pos_form_totals .pos_totals_cell {
-			padding: 6px 8px;
-			min-height: 44px;
+			padding: 4px 4px;
+			min-height: 40px;
 		}
 		.pos_form_totals .pos_totals_label {
-			font-size: 10px;
-			letter-spacing: 0.5px;
+			font-size: 8.5px;
+			letter-spacing: 0.2px;
 			line-height: 1.2;
 			white-space: nowrap;
 		}
 		.pos_form_totals .pos_totals_value {
-			font-size: 13px;
+			font-size: 11.5px;
 		}
-		.pos_form_totals .pos_totals_right_label { font-size: 10px; }
-		.pos_form_totals .pos_totals_right_value { font-size: 26px; }
+		.pos_form_totals .pos_totals_right_label { font-size: 9.5px; }
+		.pos_form_totals .pos_totals_right_value { font-size: 20px; }
 		.pos_form_totals .desktop-only { display: inline; }
 		.pos_form_totals .mobile-only { display: none; }
 	}
