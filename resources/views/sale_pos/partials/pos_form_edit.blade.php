@@ -145,19 +145,17 @@
 	<!-- Call restaurant module if defined -->
     @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
     	<span id="restaurant_module_span" 
-    		data-transaction_id="{{$transaction->id}}">
-      		<div class="col-md-3"></div>
+    		data-transaction_id="{{$transaction->id}}" style="display: contents;">
+      		<div class="col-sm-6 col-md-6"></div>
     	</span>
     @endif
 	@if(in_array('kitchen' ,$enabled_modules))
-		<div class="col-md-3">
-			<div class="form-group">
-				<div class="checkbox">
-				<label>
-						{!! Form::checkbox('is_kitchen_order', 1, $transaction->is_kitchen_order, ['class' => 'input-icheck status', 'id' => 'is_kitchen_order']); !!} {{ __('lang_v1.kitchen_order') }}
-				</label>
-				</div>
-			</div>
+		<div class="col-sm-6 col-md-6 tw-flex tw-items-center" style="min-height: 34px; margin-bottom: 10px;">
+			<label class="tw-inline-flex tw-items-center tw-cursor-pointer tw-font-medium tw-text-sm tw-text-slate-700 tw-mb-0" style="margin-bottom: 0; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; white-space: nowrap;">
+				{!! Form::checkbox('is_kitchen_order', 1, $transaction->is_kitchen_order, ['class' => 'input-icheck status', 'id' => 'is_kitchen_order']); !!}
+				<span style="margin-left: 6px;">{{ __('lang_v1.kitchen_order') }}</span>
+				<span style="margin-left: 4px;">@show_tooltip(__('lang_v1.kitchen_order_tooltip'))</span>
+			</label>
 		</div>
     @endif
     @if(in_array('subscription', $enabled_modules))

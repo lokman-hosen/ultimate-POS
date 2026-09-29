@@ -156,7 +156,7 @@
             if (!grid) return;
 
             // Hide native container
-            const container = selectElement.closest('div.col-sm-4');
+            const container = selectElement.closest('#table_dropdown_group') || selectElement.closest('[class*="col-"]') || selectElement.closest('.form-group');
             if (container) container.style.display = 'none';
 
             grid.innerHTML = ''; // Clear loading text
