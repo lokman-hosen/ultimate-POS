@@ -1,37 +1,42 @@
-<div class="tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100 tw-p-3 tw-flex tw-flex-col tw-h-full tw-gap-4">
+<div class="tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100 tw-p-3.5 tw-flex tw-flex-col tw-h-full tw-gap-3 tw-w-full tw-min-w-0 tw-overflow-hidden">
     
-    @if(in_array('tables', $enabled_modules))
-    <div class="tw-flex-1 tw-flex tw-flex-col tw-min-h-[250px]">
-        <h4 class="tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Tables</h4>
+    @if(in_array('tables', $enabled_modules) || in_array('types_of_service', $enabled_modules))
+    <div class="tw-flex-1 tw-flex tw-flex-col tw-min-h-[250px] tw-min-w-0 tw-overflow-hidden">
         
-        <!-- Filter pills placeholder (Optional matching design) -->
-        <div class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto custom-scroll tw-pb-1">
-            <button class="tw-px-4 tw-py-1.5 tw-rounded-full tw-bg-slate-900 tw-text-white tw-text-sm tw-font-semibold tw-whitespace-nowrap">All Tables</button>
-        </div>
-
-        <div id="custom_tables_grid" class="tw-gap-3 tw-overflow-y-auto tw-p-1 custom-scroll tw-content-start" style="display: grid; grid-template-columns: repeat(3, 1fr);">
-            <!-- Tables will be injected here by JS -->
-            <div class="tw-text-slate-400 tw-text-sm" style="grid-column: span 3;">Loading tables...</div>
-        </div>
-    </div>
-    @endif
-
-    @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
-    <div class="tw-flex-1 tw-flex tw-flex-col tw-min-h-[200px]">
-        <h4 class="tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Type of Service</h4>
-        <div id="custom_service_list" class="tw-flex tw-flex-col tw-gap-2 tw-overflow-y-auto tw-p-1 custom-scroll">
+        <!-- Header Title -->
+        @if(in_array('tables', $enabled_modules))
+            <h4 class="tw-font-bold tw-text-lg tw-mb-2.5 tw-text-slate-800 tw-tracking-tight">@lang('restaurant.tables')</h4>
+        @else
+            <h4 class="tw-font-bold tw-text-lg tw-mb-2.5 tw-text-slate-800 tw-tracking-tight">@lang('restaurant.service_type')</h4>
+        @endif
+        
+        <!-- Types of Service Horizontal Scrollable Pills -->
+        @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+        <div id="custom_service_list" class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-mb-3 tw-overflow-x-auto custom-scroll tw-pb-1.5 tw-w-full tw-min-w-0" style="scrollbar-width: thin;">
             @foreach($types_of_service as $key => $value)
-                <div class="custom-service-btn tw-p-3 tw-rounded-xl tw-border tw-border-slate-200 tw-bg-slate-50 tw-text-center tw-cursor-pointer tw-font-bold tw-text-slate-700 tw-transition-all hover:-tw-translate-y-px hover:tw-shadow-md active:tw-scale-95" data-val="{{$key}}">
+                <div class="custom-service-btn tw-px-4 tw-py-2 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
                     {{$value}}
                 </div>
             @endforeach
         </div>
+        @endif
+
+        <!-- Tables Grid -->
+        @if(in_array('tables', $enabled_modules))
+        <div id="custom_tables_grid" class="tw-gap-2.5 tw-overflow-y-auto tw-p-0.5 custom-scroll tw-content-start tw-flex-1" style="display: grid; grid-template-columns: repeat(3, 1fr);">
+            <!-- Tables will be injected here by JS -->
+            <div class="tw-text-slate-400 tw-text-sm" style="grid-column: span 3;">Loading tables...</div>
+        </div>
+        @endif
     </div>
     @endif
 </div>
 
 <style>
     /* Scrollbar styling for the sidebar */
+    .custom-scroll {
+        -webkit-overflow-scrolling: touch;
+    }
     .custom-scroll::-webkit-scrollbar {
         width: 4px;
         height: 4px;
@@ -40,11 +45,11 @@
         background: transparent;
     }
     .custom-scroll::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
+        background: #e2e8f0;
         border-radius: 4px;
     }
     .custom-scroll:hover::-webkit-scrollbar-thumb {
-        background: #94a3b8;
+        background: #cbd5e1;
     }
 
     /* Table Grid Button Styling */
@@ -84,12 +89,13 @@
         opacity: 0.7;
     }
     
-    /* Service List Active Styling */
+    /* Service List Active Pill Styling */
     .custom-service-btn.active-service {
         background-color: #0f172a !important;
-        color: white !important;
+        color: #ffffff !important;
         border-color: #0f172a !important;
-        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2) !important;
+        font-weight: 700 !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25) !important;
     }
 </style>
 
@@ -104,7 +110,15 @@
             if(container) container.style.display = 'none';
 
             // Initial Sync
-            document.querySelector('.custom-service-btn[data-val="'+hiddenServiceSelect.value+'"]')?.classList.add('active-service');
+            const currentVal = hiddenServiceSelect.value;
+            if (currentVal && document.querySelector('.custom-service-btn[data-val="'+currentVal+'"]')) {
+                document.querySelector('.custom-service-btn[data-val="'+currentVal+'"]').classList.add('active-service');
+            } else if (serviceBtns.length > 0) {
+                // If not pre-selected, activate first service
+                serviceBtns[0].classList.add('active-service');
+                hiddenServiceSelect.value = serviceBtns[0].getAttribute('data-val');
+                $(hiddenServiceSelect).trigger('change');
+            }
         }
 
         serviceBtns.forEach(btn => {
