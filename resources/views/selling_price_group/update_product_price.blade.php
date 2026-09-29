@@ -182,19 +182,19 @@
                         <div class="tw-flex tw-items-start tw-gap-3 tw-p-3 tw-bg-blue-50/60 tw-border tw-border-blue-100 tw-rounded-xl">
                             <i class="fa fa-info-circle tw-text-blue-600 tw-text-lg tw-mt-0.5 tw-flex-shrink-0"></i>
                             <div class="tw-text-xs tw-text-blue-900 tw-leading-relaxed">
-                                <strong>Export File Includes:</strong> All single and variable product variations with their <strong>SKU</strong>, current <strong>Base Selling Price</strong>, and columns for all active <strong>Selling Price Groups</strong>.
+                                {!! __('lang_v1.export_file_includes_info') !!}
                             </div>
                         </div>
 
                         <ul class="tw-text-xs tw-text-gray-600 tw-space-y-1.5 tw-pl-1">
                             <li class="tw-flex tw-items-center tw-gap-2">
-                                <i class="fa fa-check-circle tw-text-emerald-500"></i> Includes all products from your catalog
+                                <i class="fa fa-check-circle tw-text-emerald-500"></i> @lang('lang_v1.export_bullet_1')
                             </li>
                             <li class="tw-flex tw-items-center tw-gap-2">
-                                <i class="fa fa-check-circle tw-text-emerald-500"></i> Pre-formatted ready for instant editing in Excel/CSV
+                                <i class="fa fa-check-circle tw-text-emerald-500"></i> @lang('lang_v1.export_bullet_2')
                             </li>
                             <li class="tw-flex tw-items-center tw-gap-2">
-                                <i class="fa fa-check-circle tw-text-emerald-500"></i> Matches exact database structure for smooth import
+                                <i class="fa fa-check-circle tw-text-emerald-500"></i> @lang('lang_v1.export_bullet_3')
                             </li>
                         </ul>
                     </div>
@@ -228,8 +228,8 @@
                             </label>
                             <div class="tw-border-2 tw-border-dashed tw-border-slate-200 hover:tw-border-blue-400 tw-rounded-xl tw-p-4 tw-text-center tw-bg-slate-50/70 hover:tw-bg-blue-50/30 tw-transition-all">
                                 <i class="fa fa-cloud-upload tw-text-3xl tw-text-blue-500 tw-mb-1"></i>
-                                <p class="tw-text-xs tw-font-medium tw-text-gray-700 tw-mb-1">Select your updated spreadsheet</p>
-                                <p class="tw-text-xs tw-text-gray-400 tw-mb-3">Allowed: <strong>.xls, .xlsx, .csv</strong></p>
+                                <p class="tw-text-xs tw-font-medium tw-text-gray-700 tw-mb-1">@lang('lang_v1.select_updated_spreadsheet')</p>
+                                <p class="tw-text-xs tw-text-gray-400 tw-mb-3">{!! __('lang_v1.allowed_file_formats') !!}</p>
                                 <div class="tw-flex tw-justify-center">
                                     {!! Form::file('product_group_prices', ['required' => 'required', 'accept' => '.xls, .xlsx, .csv', 'class' => 'tw-text-xs tw-text-gray-600', 'style' => 'max-width: 250px;']); !!}
                                 </div>
@@ -256,7 +256,7 @@
                     <div class="product-section-badge">3</div>
                     <div>
                         <h3 class="product-section-title">@lang('lang_v1.instructions')</h3>
-                        <p class="product-section-subtitle">Please read carefully before importing to avoid errors</p>
+                        <p class="product-section-subtitle">@lang('lang_v1.read_instructions_carefully')</p>
                     </div>
                 </div>
 
@@ -266,7 +266,7 @@
                         <div class="instruction-step-card">
                             <div class="tw-flex tw-items-center tw-gap-2.5 tw-mb-2">
                                 <span class="tw-w-7 tw-h-7 tw-rounded-full tw-bg-blue-100 tw-text-blue-700 tw-font-bold tw-text-xs tw-flex tw-items-center tw-justify-center">1</span>
-                                <h4 class="tw-font-bold tw-text-gray-800 tw-text-sm tw-m-0">Export First</h4>
+                                <h4 class="tw-font-bold tw-text-gray-800 tw-text-sm tw-m-0">@lang('lang_v1.export_first')</h4>
                             </div>
                             <p class="tw-text-xs tw-text-gray-600 tw-leading-relaxed tw-m-0">
                                 @lang('lang_v1.price_import_instruction_1')
@@ -279,7 +279,7 @@
                         <div class="instruction-step-card">
                             <div class="tw-flex tw-items-center tw-gap-2.5 tw-mb-2">
                                 <span class="tw-w-7 tw-h-7 tw-rounded-full tw-bg-blue-100 tw-text-blue-700 tw-font-bold tw-text-xs tw-flex tw-items-center tw-justify-center">2</span>
-                                <h4 class="tw-font-bold tw-text-gray-800 tw-text-sm tw-m-0">Edit Prices</h4>
+                                <h4 class="tw-font-bold tw-text-gray-800 tw-text-sm tw-m-0">@lang('lang_v1.edit_prices')</h4>
                             </div>
                             <p class="tw-text-xs tw-text-gray-600 tw-leading-relaxed tw-m-0">
                                 @lang('lang_v1.price_import_instruction_2')
@@ -294,7 +294,7 @@
                                 <span class="tw-w-7 tw-h-7 tw-rounded-full tw-bg-amber-200 tw-text-amber-800 tw-font-bold tw-text-xs tw-flex tw-items-center tw-justify-center">
                                     <i class="fa fa-exclamation"></i>
                                 </span>
-                                <h4 class="tw-font-bold tw-text-amber-900 tw-text-sm tw-m-0">Keep Headers &amp; SKU</h4>
+                                <h4 class="tw-font-bold tw-text-amber-900 tw-text-sm tw-m-0">@lang('lang_v1.keep_headers_and_sku')</h4>
                             </div>
                             <p class="tw-text-xs tw-text-amber-950 tw-font-medium tw-leading-relaxed tw-m-0">
                                 @lang('lang_v1.price_import_instruction_3')
@@ -307,7 +307,7 @@
                         <div class="instruction-step-card">
                             <div class="tw-flex tw-items-center tw-gap-2.5 tw-mb-2">
                                 <span class="tw-w-7 tw-h-7 tw-rounded-full tw-bg-emerald-100 tw-text-emerald-700 tw-font-bold tw-text-xs tw-flex tw-items-center tw-justify-center">4</span>
-                                <h4 class="tw-font-bold tw-text-gray-800 tw-text-sm tw-m-0">Import File</h4>
+                                <h4 class="tw-font-bold tw-text-gray-800 tw-text-sm tw-m-0">@lang('lang_v1.import_file')</h4>
                             </div>
                             <p class="tw-text-xs tw-text-gray-600 tw-leading-relaxed tw-m-0">
                                 @lang('lang_v1.price_import_instruction_4')
@@ -326,8 +326,8 @@
                 <div class="product-section-header">
                     <div class="product-section-badge">4</div>
                     <div>
-                        <h3 class="product-section-title">Format for Import Data</h3>
-                        <p class="product-section-subtitle">Structure and column guidelines of the export / import spreadsheet</p>
+                        <h3 class="product-section-title">@lang('lang_v1.format_for_import_data')</h3>
+                        <p class="product-section-subtitle">@lang('lang_v1.format_for_import_data_subtitle')</p>
                     </div>
                 </div>
 
@@ -338,7 +338,7 @@
                             <tr>
                                 <th style="width: 80px;">@lang('lang_v1.col_no')</th>
                                 <th style="width: 220px;">@lang('lang_v1.col_name')</th>
-                                <th style="width: 140px;">Requirement</th>
+                                <th style="width: 140px;">@lang('lang_v1.requirement')</th>
                                 <th>@lang('lang_v1.instruction')</th>
                             </tr>
                         </thead>
@@ -355,7 +355,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="tw-text-xs tw-text-gray-700">Product Name &amp; Variation details (e.g. <code>Men T-Shirt - Red - XL</code>). Used for visual reference only. <strong>Do not change or delete this header.</strong></div>
+                                    <div class="tw-text-xs tw-text-gray-700">{!! __('lang_v1.col_product_desc') !!}</div>
                                 </td>
                             </tr>
                             <tr>
@@ -370,29 +370,29 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="tw-text-xs tw-text-gray-700">Product Variation SKU (e.g. <code>TS-RED-XL-001</code>). Used to identify the product in database. <strong>Do not edit SKU values.</strong></div>
+                                    <div class="tw-text-xs tw-text-gray-700">{!! __('lang_v1.col_sku_desc') !!}</div>
                                 </td>
                             </tr>
                             <tr>
                                 <td><span class="tw-font-bold tw-text-slate-700">3</span></td>
                                 <td>
-                                    <span class="tw-font-bold tw-text-gray-900">Selling Price Including Tax</span>
-                                    <div class="tw-text-xs tw-text-gray-500">(Default Price)</div>
+                                    <span class="tw-font-bold tw-text-gray-900">@lang('lang_v1.selling_price_inc_tax_default')</span>
+                                    <div class="tw-text-xs tw-text-gray-500">@lang('lang_v1.default_price_label')</div>
                                 </td>
                                 <td>
                                     <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-blue-100 tw-text-blue-800">
-                                        Editable
+                                        @lang('lang_v1.editable')
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="tw-text-xs tw-text-gray-700">Default product selling price including tax. Modifying this will recalculate base price and profit percentage.</div>
+                                    <div class="tw-text-xs tw-text-gray-700">@lang('lang_v1.col_selling_price_desc')</div>
                                 </td>
                             </tr>
                             <tr>
                                 <td><span class="tw-font-bold tw-text-slate-700">4+</span></td>
                                 <td>
-                                    <span class="tw-font-bold tw-text-gray-900">[Price Group Name]</span>
-                                    <div class="tw-text-xs tw-text-gray-500">(e.g. Wholesale, Retail, VIP)</div>
+                                    <span class="tw-font-bold tw-text-gray-900">@lang('lang_v1.price_group_name_col')</span>
+                                    <div class="tw-text-xs tw-text-gray-500">@lang('lang_v1.price_group_example')</div>
                                 </td>
                                 <td>
                                     <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-emerald-100 tw-text-emerald-800">
@@ -400,7 +400,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="tw-text-xs tw-text-gray-700">Each column represents an active selling price group. Enter the selling price including tax for this group, or leave blank to keep unchanged.</div>
+                                    <div class="tw-text-xs tw-text-gray-700">@lang('lang_v1.col_price_group_desc')</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -411,7 +411,7 @@
                 <div class="tw-bg-slate-50 tw-p-4 tw-rounded-xl tw-border tw-border-slate-200">
                     <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
                         <span class="tw-text-xs tw-font-bold tw-text-slate-700 tw-uppercase tw-tracking-wider">
-                            <i class="fa fa-table tw-text-blue-600 tw-mr-1"></i> Sample Spreadsheet Preview
+                            <i class="fa fa-table tw-text-blue-600 tw-mr-1"></i> @lang('lang_v1.sample_spreadsheet_preview')
                         </span>
                         <span class="tw-text-xs tw-text-slate-500">product_prices.xlsx</span>
                     </div>
