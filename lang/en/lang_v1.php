@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'enable_editing_product_from_purchase' => 'Enable editing product price from purchase screen',
@@ -1695,4 +1695,41 @@ return [
     'send_password_reset_link_help' => 'Enter your email address and we will send you a link to reset your password.',
     'back_to_login' => 'Back to login',
     'pricing' => 'Pricing',
+
+    // Role Create / Permissions UI
+    'create_role_instruction' => 'Create a new role and set the permissions.',
+    'role_information' => 'Role Information',
+    'role_info_sub' => 'Set a name and description for this role.',
+    'role_name' => 'Role Name',
+    'role_name_placeholder' => 'e.g. Waiter',
+    'permissions' => 'Permissions',
+    'permissions_help_text' => 'Select the permissions for this role. You can use the presets or customize manually.',
+    'use_preset' => 'Use Preset',
+    'cashier' => 'Cashier',
+    'waiter' => 'Waiter',
+    'store_manager' => 'Store Manager',
+    'full_access_all' => 'Full Access (All)',
+    'reset_clear' => 'Reset / Clear',
+    'role_summary' => 'Role Summary',
+    'permissions_selected' => 'permissions selected',
+    'select_permissions_to_view_summary' => 'Select permissions from the left to see a summary here.',
+    'quick_actions' => 'Quick Actions',
+    'select_all_permissions' => 'Select all permissions',
+    'clear_all_permissions' => 'Clear all permissions',
+    'save_role' => 'Save Role',
+    
+    // Permission category descriptions
+    'perm_desc_general' => 'Basic access to the system.',
+    'perm_desc_sales' => 'Permissions for POS and sales.',
+    'perm_desc_orders' => 'Manage orders (restaurant, delivery, take away).',
+    'perm_desc_products' => 'Manage products, units, brands, and variations.',
+    'perm_desc_purchases' => 'Manage purchases, supplier bills, and POs.',
+    'perm_desc_stock' => 'Inventory adjustments and stock transfers.',
+    'perm_desc_customers' => 'Customer management and credit tracking.',
+    'perm_desc_suppliers' => 'Supplier management and transactions.',
+    'perm_desc_expenses' => 'Expenses, categories, and payment tracking.',
+    'perm_desc_bookings' => 'Table bookings and service appointments.',
+    'perm_desc_reports' => 'Access to financial, profit, and audit reports.',
+    'perm_desc_settings' => 'System parameters, configuration, and tools.',
+    'perm_desc_modules' => 'Module permissions and controls.',
 ];

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
     'enable_editing_product_from_purchase' => 'Habilitar la edición del precio del producto desde la pantalla de compra',
@@ -1466,4 +1466,41 @@ return [
     'username_or_email' => 'Usuario o correo electrónico',
     'send_password_reset_link_help' => 'Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
     'back_to_login' => 'Volver a iniciar sesión',
+
+    // Role Create / Permissions UI
+    'create_role_instruction' => 'Cree un nuevo rol y configure los permisos.',
+    'role_information' => 'Información del rol',
+    'role_info_sub' => 'Establezca un nombre y una descripción para este rol.',
+    'role_name' => 'Nombre del rol',
+    'role_name_placeholder' => 'ej. Camarero',
+    'permissions' => 'Permisos',
+    'permissions_help_text' => 'Seleccione los permisos para este rol. Puede usar ajustes preestablecidos o personalizar manualmente.',
+    'use_preset' => 'Usar preajuste',
+    'cashier' => 'Cajero',
+    'waiter' => 'Camarero',
+    'store_manager' => 'Gerente de tienda',
+    'full_access_all' => 'Acceso total (Todo)',
+    'reset_clear' => 'Restablecer / Limpiar',
+    'role_summary' => 'Resumen del rol',
+    'permissions_selected' => 'permisos seleccionados',
+    'select_permissions_to_view_summary' => 'Seleccione los permisos de la izquierda para ver un resumen aquí.',
+    'quick_actions' => 'Acciones rápidas',
+    'select_all_permissions' => 'Seleccionar todos los permisos',
+    'clear_all_permissions' => 'Borrar todos los permisos',
+    'save_role' => 'Guardar rol',
+    
+    // Permission category descriptions
+    'perm_desc_general' => 'Acceso básico al sistema.',
+    'perm_desc_sales' => 'Permisos para POS y ventas.',
+    'perm_desc_orders' => 'Gestionar pedidos (restaurante, entrega a domicilio, para llevar).',
+    'perm_desc_products' => 'Gestionar productos, unidades, marcas y variaciones.',
+    'perm_desc_purchases' => 'Gestionar compras, facturas de proveedores y órdenes de compra.',
+    'perm_desc_stock' => 'Ajustes de inventario y transferencias de stock.',
+    'perm_desc_customers' => 'Gestión de clientes y seguimiento de créditos.',
+    'perm_desc_suppliers' => 'Gestión de proveedores y transacciones.',
+    'perm_desc_expenses' => 'Gastos, categorías y seguimiento de pagos.',
+    'perm_desc_bookings' => 'Reservas de mesas y citas de servicios.',
+    'perm_desc_reports' => 'Acceso a informes financieros, de beneficios y de auditoría.',
+    'perm_desc_settings' => 'Parámetros del sistema, configuración y herramientas.',
+    'perm_desc_modules' => 'Permisos y controles del módulo.',
 ];
