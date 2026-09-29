@@ -65,11 +65,11 @@
                             <i class="fa fa-shopping-cart tw-text-base"></i>
                         </div>
                         <h3 class="tw-font-bold tw-text-base lg:tw-text-lg tw-text-gray-900 tw-m-0">
-                            Recent Sales
+                            @lang('home.recent_sales')
                         </h3>
                     </div>
                     <a href="{{ action([\App\Http\Controllers\SellController::class, 'index']) }}" class="tw-text-blue-600 hover:tw-text-blue-800 tw-text-xs tw-font-semibold tw-flex tw-items-center tw-gap-1 tw-transition-colors">
-                        View all <i class="fa fa-arrow-right tw-text-[10px]"></i>
+                        @lang('home.view_all') <i class="fa fa-arrow-right tw-text-[10px]"></i>
                     </a>
                 </div>
 
@@ -78,9 +78,9 @@
                         <thead>
                             <tr class="tw-bg-slate-50 tw-border-b tw-border-slate-100">
                                 <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-l-lg">#</th>
-                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">Time</th>
-                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">Amount</th>
-                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-r-lg">Status</th>
+                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">@lang('home.time')</th>
+                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">@lang('home.amount')</th>
+                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-r-lg">@lang('home.status')</th>
                             </tr>
                         </thead>
                         <tbody class="tw-divide-y tw-divide-slate-50">
@@ -101,15 +101,15 @@
                                         @endphp
                                         @if(in_array($sale_status, ['paid', 'completed', 'final']))
                                             <span class="status-tag status-tag-green">
-                                                Completed
+                                                @lang('home.completed')
                                             </span>
                                         @elseif(in_array($sale_status, ['due', 'pending']))
                                             <span class="status-tag status-tag-orange">
-                                                Due
+                                                @lang('home.due')
                                             </span>
                                         @elseif($sale_status == 'partial')
                                             <span class="status-tag status-tag-blue">
-                                                Partial
+                                                @lang('home.partial')
                                             </span>
                                         @elseif(in_array($sale_status, ['draft', 'quotation']))
                                             <span class="status-tag status-tag-gray">
@@ -129,7 +129,7 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="tw-text-center tw-py-6 tw-text-xs tw-text-slate-400">
-                                        No recent sales
+                                        @lang('home.no_recent_sales')
                                     </td>
                                 </tr>
                             @endforelse
@@ -150,11 +150,11 @@
                             <i class="fa fa-truck tw-text-base"></i>
                         </div>
                         <h3 class="tw-font-bold tw-text-base lg:tw-text-lg tw-text-gray-900 tw-m-0">
-                            Recent Purchases
+                            @lang('home.recent_purchases')
                         </h3>
                     </div>
                     <a href="{{ action([\App\Http\Controllers\PurchaseController::class, 'index']) }}" class="tw-text-blue-600 hover:tw-text-blue-800 tw-text-xs tw-font-semibold tw-flex tw-items-center tw-gap-1 tw-transition-colors">
-                        View all <i class="fa fa-arrow-right tw-text-[10px]"></i>
+                        @lang('home.view_all') <i class="fa fa-arrow-right tw-text-[10px]"></i>
                     </a>
                 </div>
 
@@ -162,10 +162,10 @@
                     <table class="tw-w-full tw-border-collapse">
                         <thead>
                             <tr class="tw-bg-slate-50 tw-border-b tw-border-slate-100">
-                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-l-lg">Date</th>
-                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">Supplier</th>
-                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">Amount</th>
-                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-r-lg">Status</th>
+                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-l-lg">@lang('home.date')</th>
+                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">@lang('home.supplier')</th>
+                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">@lang('home.amount')</th>
+                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-r-lg">@lang('home.status')</th>
                             </tr>
                         </thead>
                         <tbody class="tw-divide-y tw-divide-slate-50">
@@ -186,19 +186,19 @@
                                         @endphp
                                         @if(in_array($purchase_status, ['paid', 'received', 'completed']))
                                             <span class="status-tag status-tag-green">
-                                                Paid
+                                                @lang('home.paid')
                                             </span>
                                         @elseif(in_array($purchase_status, ['due', 'pending', 'ordered']))
                                             <span class="status-tag status-tag-orange">
-                                                Pending
+                                                @lang('home.pending')
                                             </span>
                                         @elseif($purchase_status == 'partial')
                                             <span class="status-tag status-tag-blue">
-                                                Partial
+                                                @lang('home.partial')
                                             </span>
                                         @elseif($purchase_status == 'draft')
                                             <span class="status-tag status-tag-gray">
-                                                Draft
+                                                @lang('home.draft')
                                             </span>
                                         @else
                                             <span class="status-tag status-tag-purple">
@@ -210,7 +210,7 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="tw-text-center tw-py-6 tw-text-xs tw-text-slate-400">
-                                        No recent purchases
+                                        @lang('home.no_recent_purchases')
                                     </td>
                                 </tr>
                             @endforelse
@@ -231,11 +231,11 @@
                             <i class="fa fa-file-text-o tw-text-base"></i>
                         </div>
                         <h3 class="tw-font-bold tw-text-base lg:tw-text-lg tw-text-gray-900 tw-m-0">
-                            Recent Expenses
+                            @lang('home.recent_expenses')
                         </h3>
                     </div>
                     <a href="{{ action([\App\Http\Controllers\ExpenseController::class, 'index']) }}" class="tw-text-blue-600 hover:tw-text-blue-800 tw-text-xs tw-font-semibold tw-flex tw-items-center tw-gap-1 tw-transition-colors">
-                        View all <i class="fa fa-arrow-right tw-text-[10px]"></i>
+                        @lang('home.view_all') <i class="fa fa-arrow-right tw-text-[10px]"></i>
                     </a>
                 </div>
 
@@ -243,9 +243,9 @@
                     <table class="tw-w-full tw-border-collapse">
                         <thead>
                             <tr class="tw-bg-slate-50 tw-border-b tw-border-slate-100">
-                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-l-lg">Date</th>
-                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">Category</th>
-                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-r-lg">Amount</th>
+                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-l-lg">@lang('home.date')</th>
+                                <th class="tw-text-left tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500">@lang('home.category')</th>
+                                <th class="tw-text-right tw-py-2 tw-px-2 tw-text-xs tw-font-semibold tw-text-slate-500 tw-rounded-r-lg">@lang('home.amount')</th>
                             </tr>
                         </thead>
                         <tbody class="tw-divide-y tw-divide-slate-50">
@@ -264,7 +264,7 @@
                             @empty
                                 <tr>
                                     <td colspan="3" class="tw-text-center tw-py-6 tw-text-xs tw-text-slate-400">
-                                        No recent expenses
+                                        @lang('home.no_recent_expenses')
                                     </td>
                                 </tr>
                             @endforelse
