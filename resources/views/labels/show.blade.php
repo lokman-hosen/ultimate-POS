@@ -162,6 +162,42 @@
         border-color: #3b82f6;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
+    .barcode-select-wrapper {
+        width: 100%;
+        position: relative;
+    }
+    .barcode-select-wrapper .select2-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+    .barcode-select-wrapper .select2-container .select2-selection--single {
+        height: 42px !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .barcode-select-wrapper .select2-container--open .select2-selection--single,
+    .barcode-select-wrapper .select2-container--focus .select2-selection--single {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    }
+    .barcode-select-wrapper .select2-container .select2-selection--single .select2-selection__rendered {
+        line-height: 40px !important;
+        padding-left: 14px !important;
+        padding-right: 32px !important;
+        font-size: 14px !important;
+        color: #1e293b !important;
+        font-weight: 500 !important;
+    }
+    .barcode-select-wrapper .select2-container .select2-selection--single .select2-selection__arrow {
+        height: 40px !important;
+        right: 10px !important;
+    }
 </style>
 @endsection
 
@@ -420,15 +456,12 @@
             <!-- Left: Setting Selection & Specifications -->
             <div class="col-md-5 col-sm-12 tw-mb-4">
                 <div class="form-group tw-mb-4">
-                    {!! Form::label('barcode_setting', __('barcode.barcode_setting') . ':', ['class' => 'tw-font-bold tw-text-gray-800 tw-text-sm tw-mb-1.5']) !!}
-                    <div class="input-group" style="width: 100%;">
-                        <span class="input-group-addon" style="background: #f8fafc; border-color: #cbd5e1; color: #2563eb;">
-                            <i class="fa fa-cog"></i>
-                        </span>
+                    {!! Form::label('barcode_setting', __('barcode.barcode_setting') . ':', ['class' => 'tw-font-bold tw-text-gray-800 tw-text-sm tw-mb-1.5 tw-block']) !!}
+                    <div class="barcode-select-wrapper">
                         {!! Form::select('barcode_setting', $barcode_settings, !empty($default) ? $default->id : null, [
                             'class' => 'form-control select2',
                             'id' => 'barcode_setting',
-                            'style' => 'width: 100%; border-color: #cbd5e1;'
+                            'style' => 'width: 100%;'
                         ]); !!}
                     </div>
                 </div>
