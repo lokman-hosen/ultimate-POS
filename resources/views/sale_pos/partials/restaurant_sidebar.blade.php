@@ -6,7 +6,7 @@
         
         <!-- Types of Service / Filter pills in header (horizontal scrollable) -->
         @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
-        <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto custom-scroll tw-pb-1">
+        <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto tw-pb-1">
             @foreach($types_of_service as $key => $value)
                 <button type="button" class="custom-service-btn tw-px-4 tw-py-1.5 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
                     {{$value}}
@@ -23,7 +23,7 @@
     @elseif(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
     <div class="tw-flex-1 tw-flex tw-flex-col tw-min-h-[200px]">
         <h4 class="tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Type of Service</h4>
-        <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto custom-scroll tw-pb-1">
+        <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto tw-pb-1">
             @foreach($types_of_service as $key => $value)
                 <button type="button" class="custom-service-btn tw-px-4 tw-py-1.5 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
                     {{$value}}
@@ -35,7 +35,7 @@
 </div>
 
 <style>
-    /* Scrollbar styling for the sidebar */
+    /* Scrollbar styling for the sidebar table grid */
     .custom-scroll::-webkit-scrollbar {
         width: 4px;
         height: 4px;
@@ -49,6 +49,25 @@
     }
     .custom-scroll:hover::-webkit-scrollbar-thumb {
         background: #94a3b8;
+    }
+
+    /* Hide scrollbar for service list while keeping swipe/scrollability */
+    #custom_service_list {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: grab;
+        scroll-behavior: smooth;
+    }
+    #custom_service_list.active-dragging {
+        cursor: grabbing;
+        scroll-behavior: auto;
+    }
+    #custom_service_list::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
     }
 
     /* Table Grid Button Styling */
@@ -99,6 +118,62 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- DRAG / SWIPE TO SCROLL FOR SERVICE LIST ---
+        document.querySelectorAll('#custom_service_list').forEach(slider => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            let hasMoved = false;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                hasMoved = false;
+                slider.classList.add('active-dragging');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('active-dragging');
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('active-dragging');
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 1.5;
+                if (Math.abs(walk) > 4) {
+                    hasMoved = true;
+                }
+                slider.scrollLeft = scrollLeft - walk;
+            });
+
+            // Prevent accidental button toggle when dragging/swiping
+            slider.querySelectorAll('.custom-service-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (hasMoved) {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                        hasMoved = false;
+                    }
+                }, true);
+            });
+
+            // Mouse wheel horizontal scroll
+            slider.addEventListener('wheel', (e) => {
+                if (e.deltaY !== 0) {
+                    e.preventDefault();
+                    slider.scrollLeft += e.deltaY;
+                }
+            }, { passive: false });
+        });
+
         // --- TYPE OF SERVICE LOGIC ---
         const serviceBtns = document.querySelectorAll('.custom-service-btn');
         const hiddenServiceSelect = document.getElementById('types_of_service_id');
