@@ -135,14 +135,14 @@
 				flex: 0 0 22% !important;
 				max-width: 22% !important;
 				min-width: 0 !important;
-				height: calc(100vh - 65px) !important;
+				height: calc(100vh - 118px) !important;
 			}
 			.pos-left-product-section {
 				width: 48% !important;
 				flex: 0 0 48% !important;
 				max-width: 48% !important;
 				min-width: 0 !important;
-				height: calc(100vh - 65px) !important;
+				height: calc(100vh - 118px) !important;
 			}
 			/* Force 3 columns for products in restaurant mode */
 			.pos-left-product-section .pos-card-col-5,
@@ -155,7 +155,7 @@
 				flex: 0 0 70% !important;
 				max-width: 70% !important;
 				min-width: 0 !important;
-				height: calc(100vh - 65px) !important;
+				height: calc(100vh - 118px) !important;
 			}
 			@endif
 			.pos-right-cart-section {
@@ -163,7 +163,7 @@
 				flex: 0 0 30% !important;
 				max-width: 30% !important;
 				min-width: 0 !important;
-				height: calc(100vh - 65px) !important;
+				height: calc(100vh - 118px) !important;
 			}
 			.pos-right-cart-section.pos-cart-full-width {
 				width: 100% !important;
@@ -212,6 +212,9 @@
 			}
 		}
 		@media (max-width: 991px) {
+			section.content {
+				padding-bottom: 58px !important;
+			}
 			.pos-left-product-section,
 			.pos-right-cart-section {
 				width: 100% !important;
