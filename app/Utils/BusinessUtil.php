@@ -12,6 +12,7 @@ use App\InvoiceLayout;
 use App\InvoiceScheme;
 use App\NotificationTemplate;
 use App\Printer;
+use App\Rules\ValidPostCodeForLocation;
 use App\Unit;
 use App\User;
 use Illuminate\Http\Request;
@@ -410,13 +411,13 @@ class BusinessUtil extends Util
                     $fail(__('validation.in', ['attribute' => __('business.city_municipality')]));
                 }
             }],
-            'zip_code' => ['required', function ($attribute, $value, $fail) use ($location_util, $request) {
+            'zip_code' => ['bail', 'required', function ($attribute, $value, $fail) use ($location_util, $request) {
                 if (! preg_match('/^[0-9]{5}$/', (string) $value)) {
                     $fail(__('business.postal_code_invalid'));
                 } elseif (! $location_util->postalCodeMatchesProvince($value, (string) $request->input('province_code'))) {
                     $fail(__('business.postal_code_province_mismatch'));
                 }
-            }],
+            }, new ValidPostCodeForLocation($request->input('province_code'), $request->input('municipality_code'))],
             'landmark' => 'required|max:255',
             'address_line_2' => 'nullable|max:255',
             'contact_person' => 'required|max:255',

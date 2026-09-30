@@ -192,6 +192,15 @@
             {!! Form::label('contact_person', __('business.contact_person_name') . ':*') !!}
             {!! Form::text('contact_person', null, ['class' => 'form-control', 'placeholder' => __('business.contact_person_placeholder'), 'required', 'maxlength' => 255]) !!}
             @include('business.partials.register_field_error', ['field' => 'contact_person'])
+            @if(empty($is_admin))
+                {{-- Company (SL): the contact person is often the legal representative --}}
+                <div class="checkbox company-only" @if(!$is_company) style="display: none;" @endif>
+                    <label>
+                        {!! Form::checkbox('contact_same_as_legal_rep', 1, old('contact_same_as_legal_rep'), ['id' => 'contact_same_as_legal_rep', 'class' => 'input-check-box']) !!}
+                        @lang('business.same_as_legal_rep_name')
+                    </label>
+                </div>
+            @endif
         </div>
     </div>
     <div class="col-md-12 col-lg-6 col-xl-4">
@@ -264,7 +273,10 @@
     <div class="col-md-12 col-lg-6 col-xl-4">
         <div class="form-group">
             {!! Form::label('zip_code', __('business.postal_code') . ':*') !!}
-            {!! Form::text('zip_code', null, ['class' => 'form-control', 'placeholder' => '08001', 'required', 'inputmode' => 'numeric', 'maxlength' => 5]) !!}
+            {!! Form::text('zip_code', null, ['class' => 'form-control', 'placeholder' => '08001', 'required', 'inputmode' => 'numeric', 'maxlength' => 5, 'list' => 'zip_code_suggestions', 'autocomplete' => 'off']) !!}
+            {{-- Postal codes of the selected municipality (filled by business_register.js); typing another value is still possible --}}
+            <datalist id="zip_code_suggestions"></datalist>
+            <small class="help-block" id="zip_code_hint">@lang('business.postal_code_select_location_hint')</small>
             @include('business.partials.register_field_error', ['field' => 'zip_code'])
         </div>
     </div>
@@ -410,6 +422,7 @@
                 'website_invalid' => __('business.website_invalid'),
                 'postal_code_invalid' => __('business.postal_code_invalid'),
                 'postal_code_province_mismatch' => __('business.postal_code_province_mismatch'),
+                'postal_code_municipality_mismatch' => __('business.postal_code_municipality_mismatch'),
             ],
         ];
     @endphp

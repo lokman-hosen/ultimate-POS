@@ -86,6 +86,37 @@ class BusinessRegistrationTest extends TestCase
         $this->assertSame(0, Business::where('name', 'like', 'Test Shop%')->count());
     }
 
+    public function test_postal_code_must_belong_to_the_selected_municipality()
+    {
+        //08201 is a Sabadell postal code: right province, wrong municipality (Barcelona)
+        $data = $this->payload(['zip_code' => '08201']);
+
+        $this->from('/business/register?lang=es')->post('/business/register', $data)
+            ->assertRedirect('/business/register?lang=es')
+            ->assertSessionHasErrors(['zip_code' => 'El código postal no corresponde a la ciudad/municipio seleccionado.'])
+            ->assertSessionHasInput('zip_code', '08201')
+            ->assertSessionHasInput('province_code', '08')
+            ->assertSessionHasInput('municipality_code', '08019');
+
+        $this->assertFalse(User::where('username', $data['username'])->exists());
+
+        //The failed value and the selection are printed again for the form scripts
+        $html = $this->get('/business/register?lang=es')->assertOk()->getContent();
+        $this->assertStringContainsString('value="08201"', $html);
+        $this->assertStringContainsString('data-old="08019"', $html);
+        $this->assertStringContainsString('id="zip_code_suggestions"', $html);
+    }
+
+    public function test_valid_postal_code_is_stored_with_its_leading_zero()
+    {
+        $data = $this->payload(['community_code' => '01', 'province_code' => '04', 'municipality_code' => '04001', 'zip_code' => '04510']);
+        $this->post('/business/register', $data)->assertRedirect()->assertSessionHasNoErrors();
+
+        $location = BusinessLocation::where('business_id', User::where('username', $data['username'])->value('business_id'))->firstOrFail();
+        $this->assertSame('04510', $location->zip_code);
+        $this->assertSame(['04', '04001', 'Abla'], [$location->province_code, $location->municipality_code, $location->city]);
+    }
+
     public function test_self_employed_registration_in_spanish_stores_data_and_sends_spanish_email()
     {
         $data = $this->payload([

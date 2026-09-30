@@ -6,10 +6,12 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * INE (Instituto Nacional de Estadística) autonomous communities,
- * provinces and municipalities used by the business registration form.
+ * provinces and municipalities (with their postal codes) used by the
+ * business registration form.
  *
  * The same data file is served to the browser (public/js/data/spain-ine.json)
- * so client-side and server-side checks always agree.
+ * so client-side and server-side checks always agree. It is built from the
+ * YAIGO_JSON data with: php artisan pos:buildSpainLocationData
  */
 class SpainLocationUtil
 {
@@ -23,13 +25,13 @@ class SpainLocationUtil
     /**
      * Flattened lookup tables keyed by INE code
      *
-     * @return array ['communities' => [code => name], 'provinces' => [code => [name, community]], 'municipalities' => [code => [name, province]]]
+     * @return array ['communities' => [code => name], 'provinces' => [code => [name, community]], 'municipalities' => [code => [name, province, postal codes]]]
      */
     public function lookup()
     {
         $path = public_path(self::DATA_FILE);
 
-        return Cache::remember('spain_ine_lookup_'.filemtime($path), 60 * 60 * 24, function () use ($path) {
+        return Cache::remember('spain_ine_lookup_v2_'.filemtime($path), 60 * 60 * 24, function () use ($path) {
             $communities = [];
             $provinces = [];
             $municipalities = [];
@@ -39,7 +41,7 @@ class SpainLocationUtil
                 foreach ($community['p'] as $province) {
                     $provinces[$province['c']] = [$province['n'], $community['c']];
                     foreach ($province['m'] as $municipality) {
-                        $municipalities[$municipality[0]] = [$municipality[1], $province['c']];
+                        $municipalities[$municipality[0]] = [$municipality[1], $province['c'], array_map('strval', $municipality[2] ?? [])];
                     }
                 }
             }
@@ -86,6 +88,24 @@ class SpainLocationUtil
     public function postalCodeMatchesProvince($postal_code, $province_code)
     {
         return preg_match('/^[0-9]{5}$/', (string) $postal_code) && substr($postal_code, 0, 2) === $province_code;
+    }
+
+    /**
+     * Postal codes (strings) that can be used for a municipality.
+     * Codes of another province are left out as postalCodeMatchesProvince() never accepts them.
+     *
+     * @return array
+     */
+    public function postalCodesForMunicipality($municipality_code)
+    {
+        $municipality = $this->lookup()['municipalities'][$municipality_code] ?? null;
+        if (empty($municipality)) {
+            return [];
+        }
+
+        return array_values(array_filter($municipality[2] ?? [], function ($postal_code) use ($municipality) {
+            return $this->postalCodeMatchesProvince($postal_code, $municipality[1]);
+        }));
     }
 
     public function provinceName($province_code)

@@ -104,9 +104,15 @@
             var province = $('#province_code').val();
             return this.optional(element) || !province || value.substr(0, 2) === province;
         }, lang.postal_code_province_mismatch);
+
+        // Municipalities without known postal codes only get the format/province checks
+        $.validator.addMethod('postalCodeMunicipality', function(value, element) {
+            var codes = municipalityPostalCodes();
+            return this.optional(element) || !codes.length || $.inArray(value, codes) !== -1;
+        }, lang.postal_code_municipality_mismatch);
     }
 
-    // ---------- Address: Community -> Province -> Municipality (INE codes) ----------
+    // ---------- Address: Community -> Province -> Municipality -> Postal code (INE codes) ----------
     var ineData = null;
 
     function fillSelect($select, placeholder, items, selected) {
@@ -136,6 +142,37 @@
         fillSelect($('#municipality_code'), cfg.select_municipality, province ? province.m : [], selected);
     }
 
+    // Postal codes of the selected municipality; codes of another province never pass postalCodeProvince
+    function municipalityPostalCodes() {
+        var community = findCommunity($('#community_code').val());
+        var provinceCode = $('#province_code').val();
+        var municipalityCode = $('#municipality_code').val();
+        var province = community ? $.grep(community.p, function(p) { return p.c === provinceCode; })[0] : null;
+        var municipality = province && municipalityCode ? $.grep(province.m, function(m) { return m[0] === municipalityCode; })[0] : null;
+        return $.grep((municipality && municipality[2]) || [], function(code) {
+            return code.substr(0, 2) === provinceCode;
+        });
+    }
+
+    // Suggestions for the postal code field; a single postal code is pre-filled
+    function refreshPostalCodes(keepValue) {
+        var $zip = $('#zip_code');
+        var codes = municipalityPostalCodes();
+        var $list = $('#zip_code_suggestions').empty();
+        $.each(codes, function(i, code) {
+            $list.append($('<option>', { value: code }));
+        });
+        $('#zip_code_hint').toggle(!$('#municipality_code').val());
+
+        if (!keepValue) {
+            $zip.val('').removeClass('error');
+            $('#zip_code-error').remove();
+        }
+        if (!$zip.val() && codes.length === 1) {
+            $zip.val(codes[0]);
+        }
+    }
+
     function initAddress() {
         var $community = $('#community_code');
         if (!$community.length) {
@@ -146,18 +183,21 @@
             ineData = data;
             refreshProvinces($('#province_code').data('old'));
             refreshMunicipalities($('#municipality_code').data('old'));
+            // Keeps the value restored after a failed submit
+            refreshPostalCodes(true);
         });
 
         $community.on('change', function() {
             refreshProvinces();
             refreshMunicipalities();
+            refreshPostalCodes();
         });
         $('#province_code').on('change', function() {
             refreshMunicipalities();
-            var $zip = $('#zip_code');
-            if ($zip.val()) {
-                $zip.valid();
-            }
+            refreshPostalCodes();
+        });
+        $('#municipality_code').on('change', function() {
+            refreshPostalCodes();
         });
     }
 
@@ -224,6 +264,21 @@
         }
     }
 
+    // ---------- Contact person same as legal representative (company only) ----------
+    function syncContactPerson() {
+        var $same = $('#contact_same_as_legal_rep');
+        var same = $same.is(':checked') && !$same.prop('disabled');
+        var $contact = $('#contact_person');
+        if (same) {
+            $contact.val($('#legal_rep_name').val());
+        }
+        $contact.prop('readonly', same);
+        if (same && $contact.val()) {
+            $contact.removeClass('error');
+            $('#contact_person-error').remove();
+        }
+    }
+
     function addRules($form) {
         if (!$form.data('validator')) {
             return;
@@ -236,7 +291,7 @@
         add('.spanish-tax-id', { spanishTaxId: true });
         add('.phone-number', { phoneNumber: true });
         add('#website', { websiteUrl: true });
-        add('#zip_code', { postalCode: true, postalCodeProvince: true });
+        add('#zip_code', { postalCode: true, postalCodeProvince: true, postalCodeMunicipality: true });
     }
 
     $(document).ready(function() {
@@ -269,6 +324,8 @@
         });
 
         $('#business_type').on('change', toggleBusinessType);
+        $('#business_type, #contact_same_as_legal_rep').on('change', syncContactPerson);
+        $('#legal_rep_name').on('input change', syncContactPerson);
         $('#business_sector').on('change', toggleActivityOther);
         $('#whatsapp_same_as_mobile').on('change', syncWhatsapp);
         $('#mobile, #mobile_prefix').on('input change', function() {
@@ -296,6 +353,7 @@
         toggleBusinessType();
         toggleActivityOther();
         syncWhatsapp();
+        syncContactPerson();
         updateTaxHints();
         initAddress();
 
