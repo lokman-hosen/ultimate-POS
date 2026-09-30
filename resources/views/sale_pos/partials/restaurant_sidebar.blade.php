@@ -6,9 +6,12 @@
         
         <!-- Types of Service / Filter pills in header (horizontal scrollable) -->
         @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+        @php
+            $selected_service_id = $transaction->types_of_service_id ?? request()->get('types_of_service_id');
+        @endphp
         <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto tw-pb-1">
             @foreach($types_of_service as $key => $value)
-                <button type="button" class="custom-service-btn tw-px-4 tw-py-1.5 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
+                <button type="button" class="custom-service-btn @if(!empty($selected_service_id) && $selected_service_id == $key) active-service @endif tw-px-4 tw-py-1.5 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
                     {{$value}}
                 </button>
             @endforeach
@@ -21,11 +24,14 @@
         </div>
     </div>
     @elseif(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
+    @php
+        $selected_service_id = $transaction->types_of_service_id ?? request()->get('types_of_service_id');
+    @endphp
     <div class="tw-flex-1 tw-flex tw-flex-col tw-min-h-[200px]">
         <h4 class="tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Type of Service</h4>
         <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto tw-pb-1">
             @foreach($types_of_service as $key => $value)
-                <button type="button" class="custom-service-btn tw-px-4 tw-py-1.5 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
+                <button type="button" class="custom-service-btn @if(!empty($selected_service_id) && $selected_service_id == $key) active-service @endif tw-px-4 tw-py-1.5 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
                     {{$value}}
                 </button>
             @endforeach
