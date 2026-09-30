@@ -77,6 +77,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        text-align: center;
+        padding: 6px 8px;
         border-radius: 12px;
         border: 1px solid #e2e8f0;
         background-color: #f8fafc;
@@ -98,13 +100,19 @@
     }
     .custom-table-btn .table-name {
         font-weight: 800;
-        font-size: 16px;
+        font-size: 15px;
+        line-height: 1.25;
         margin-bottom: 2px;
+        text-align: center;
+        width: 100%;
+        word-break: break-word;
     }
     .custom-table-btn .table-status {
         font-size: 11px;
         font-weight: 500;
         opacity: 0.7;
+        text-align: center;
+        width: 100%;
     }
     
     /* Service List Active Styling */
