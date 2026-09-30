@@ -20,7 +20,17 @@
 	<div class="row" style="margin:0;">
 		<div class="col-md-12" style="padding:0;">
 			<div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch" style="gap: 6px; margin: 0; padding: 0;">
-				@if(empty($pos_settings['hide_product_suggestion']) && !isMobile() && empty($only_payment))
+				@php
+					$is_restaurant = in_array('tables', $enabled_modules) || in_array('types_of_service', $enabled_modules);
+				@endphp
+
+				@if($is_restaurant)
+					<div class="pos-restaurant-section tw-w-full" style="padding:0; min-width:0;">
+						@include('sale_pos.partials.restaurant_sidebar')
+					</div>
+				@endif
+
+				@if(empty($pos_settings['hide_product_suggestion']))
 					<div class="pos-left-product-section tw-w-full" style="padding:0; min-width:0;" id="pos_sidebar_wrap">
 						@include('sale_pos.partials.pos_sidebar')
 					</div>
@@ -35,9 +45,6 @@
 							<input type="hidden" id="item_addition_method" value="{{$business_details->item_addition_method}}">
 								<div class="tw-relative tw-flex-1 tw-flex tw-flex-col tw-min-h-0">
 									@include('sale_pos.partials.pos_form_edit')
-									@if(!empty($only_payment))
-										<div class="overlay"></div>
-									@endif
 								</div>
 
 								@include('sale_pos.partials.pos_form_totals', ['edit' => true])
@@ -87,6 +94,11 @@
 
 @include('sale_pos.partials.weighing_scale_modal')
 
+<div class="modal fade" id="expense_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+</div>
+<div class="modal fade" id="pos_pay_contact_due_modal" tabindex="-1" role="dialog">
+</div>
+
 @stop
 
 @section('javascript')
@@ -117,6 +129,27 @@
 @section('css')
 	<style type="text/css">
 		@media (min-width: 992px) {
+			@if(!empty($is_restaurant))
+			.pos-restaurant-section {
+				width: 22% !important;
+				flex: 0 0 22% !important;
+				max-width: 22% !important;
+				min-width: 0 !important;
+				height: calc(100vh - 65px) !important;
+			}
+			.pos-left-product-section {
+				width: 48% !important;
+				flex: 0 0 48% !important;
+				max-width: 48% !important;
+				min-width: 0 !important;
+				height: calc(100vh - 65px) !important;
+			}
+			/* Force 3 columns for products in restaurant mode */
+			.pos-left-product-section .pos-card-col-5,
+			.pos-left-product-section .col-md-3 {
+				width: 33.333333% !important;
+			}
+			@else
 			.pos-left-product-section {
 				width: 70% !important;
 				flex: 0 0 70% !important;
@@ -124,6 +157,7 @@
 				min-width: 0 !important;
 				height: calc(100vh - 65px) !important;
 			}
+			@endif
 			.pos-right-cart-section {
 				width: 30% !important;
 				flex: 0 0 30% !important;
