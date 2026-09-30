@@ -262,7 +262,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::get('/barcodes/set_default/{id}', [BarcodeController::class, 'setDefault']);
     Route::resource('barcodes', BarcodeController::class);
-
     //Invoice schemes..
     Route::get('/invoice-schemes/set_default/{id}', [InvoiceSchemeController::class, 'setDefault']);
     Route::resource('invoice-schemes', InvoiceSchemeController::class);

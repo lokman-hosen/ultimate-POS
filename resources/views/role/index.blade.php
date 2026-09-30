@@ -1,6 +1,48 @@
 @extends('layouts.app')
 @section('title', __('user.roles'))
 
+@section('css')
+<style>
+    /* Roles list icon-only action buttons matching Users list */
+    #roles_table .role-actions {
+        display: inline-flex;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    #roles_table .role-action-btn {
+        width: 28px;
+        height: 28px;
+        min-height: 28px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        color: var(--act-color);
+        border-color: var(--act-color);
+        background: #fff;
+    }
+    #roles_table .role-action-btn:hover,
+    #roles_table .role-action-btn:focus {
+        color: var(--act-color);
+        border-color: var(--act-color);
+        background: var(--act-tint);
+    }
+    #roles_table .role-action-btn--edit   { --act-color: #2563eb; --act-tint: #dbeafe; }
+    #roles_table .role-action-btn--delete { --act-color: #dc2626; --act-tint: #fee2e2; }
+
+    #roles_table th:first-child,
+    #roles_table td:first-child {
+        width: 220px;
+        max-width: 260px;
+    }
+    #roles_table th:last-child,
+    #roles_table td:last-child {
+        text-align: left;
+    }
+</style>
+@endsection
+
 @section('content')
 
 <!-- Content Header (Page header) -->
@@ -35,14 +77,16 @@
             @endslot
         @endcan
         @can('roles.view')
-            <table class="table table-bordered table-striped" id="roles_table">
-                <thead>
-                    <tr>
-                        <th>@lang( 'user.roles' )</th>
-                        <th class="not-export">@lang( 'messages.action' )</th>
-                    </tr>
-                </thead>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="roles_table">
+                    <thead>
+                        <tr>
+                            <th style="width: 220px;">@lang( 'user.roles' )</th>
+                            <th class="not-export text-left">@lang( 'messages.action' )</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         @endcan
     @endcomponent
 
@@ -56,16 +100,27 @@
         var roles_table = $('#roles_table').DataTable({
                     processing: true,
                     serverSide: true,
-                    fixedHeader:false,
+                    fixedHeader: false,
                     ajax: '/roles',
-                    buttons:[],
+                    columns: [
+                        { data: 'name', name: 'name', width: '220px' },
+                        { data: 'action', name: 'action', orderable: false, searchable: false }
+                    ],
+                    buttons: [],
                     columnDefs: [ {
                         "targets": 1,
                         "orderable": false,
                         "searchable": false
-                    } ]
+                    } ],
+                    preDrawCallback: function() {
+                        $('#roles_table [data-toggle="tooltip"]').tooltip('destroy');
+                    },
+                    drawCallback: function() {
+                        $('#roles_table [data-toggle="tooltip"]').tooltip({container: 'body', trigger: 'hover'});
+                    }
                 });
-        $(document).on('click', 'button.delete_role_button', function(){
+        $(document).on('click', '.delete_role_button', function(e){
+            e.preventDefault();
             swal({
               title: LANG.sure,
               text: LANG.confirm_delete_role,
@@ -74,7 +129,7 @@
               dangerMode: true,
             }).then((willDelete) => {
                 if (willDelete) {
-                    var href = $(this).data('href');
+                    var href = $(this).data('href') || $(this).attr('href');
                     var data = $(this).serialize();
 
                     $.ajax({
