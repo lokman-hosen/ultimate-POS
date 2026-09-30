@@ -1598,7 +1598,8 @@ $(document).ready(function() {
         if ($('input#location_id').val() == '') {
             toastr.warning(LANG.select_location);
         } else {
-            pos_product_row($(this).data('variation_id'));
+            //Do not auto open the edit price modal when added from product list
+            pos_product_row($(this).data('variation_id'), null, null, 1, false);
         }
     });
 
@@ -1973,8 +1974,9 @@ function get_recent_transactions(status, element_obj) {
 /**
  * Common function to insert product row into POS table
  * @param {object} result - The result object containing html_content and other data
+ * @param {boolean} open_edit_modal - Whether to auto open the edit price modal for serial number products
  */
-function pos_insert_product_row(result) {
+function pos_insert_product_row(result, open_edit_modal = true) {
     pos_play_success_sound();
     var product_row = $('input#product_row_count').val();
     $('table#pos_table tbody')
@@ -1999,7 +2001,7 @@ function pos_insert_product_row(result) {
         this_row.find('select.sub_unit').trigger('change');
     }
 
-    if (result.enable_sr_no == '1') {
+    if (result.enable_sr_no == '1' && open_edit_modal) {
         var new_row = $('table#pos_table tbody')
             .find('tr')
             .last();
@@ -2095,7 +2097,7 @@ function pos_add_product_row_from_data(result) {
     }
 }
 
-function pos_product_row(variation_id = null, purchase_line_id = null, weighing_scale_barcode = null, quantity = 1) {
+function pos_product_row(variation_id = null, purchase_line_id = null, weighing_scale_barcode = null, quantity = 1, open_edit_modal = true) {
 
     //Get item addition method
     var item_addtn_method = 0;
@@ -2223,7 +2225,7 @@ function pos_product_row(variation_id = null, purchase_line_id = null, weighing_
             dataType: 'json',
             success: function(result) {
                 if (result.success) {
-                    pos_insert_product_row(result);
+                    pos_insert_product_row(result, open_edit_modal);
                 } else {
                     toastr.error(result.msg);
                     if (!$('#__is_mobile').length) {
