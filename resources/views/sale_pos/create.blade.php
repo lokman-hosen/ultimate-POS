@@ -161,37 +161,6 @@
             max-width: 100% !important;
         }
 
-    @media (min-width: 1050px) and (max-width: 1360px) {
-        @if($is_restaurant)
-            .pos-restaurant-section {
-                width: 20% !important;
-                flex: 0 0 20% !important;
-                max-width: 20% !important;
-            }
-            .pos-left-product-section {
-                width: 47% !important;
-                flex: 0 0 47% !important;
-                max-width: 47% !important;
-            }
-            .pos-right-cart-section {
-                width: 33% !important;
-                flex: 0 0 33% !important;
-                max-width: 33% !important;
-            }
-        @else
-            .pos-left-product-section {
-                width: 66% !important;
-                flex: 0 0 66% !important;
-                max-width: 66% !important;
-            }
-            .pos-right-cart-section {
-                width: 34% !important;
-                flex: 0 0 34% !important;
-                max-width: 34% !important;
-            }
-        @endif
-    }
-
         .pos-right-cart-section>div {
             height: 100% !important;
             display: flex !important;
@@ -237,6 +206,37 @@
             margin-top: auto !important;
             width: 100% !important;
         }
+    }
+
+    @media (min-width: 1050px) and (max-width: 1360px) {
+        @if($is_restaurant)
+            .pos-restaurant-section {
+                width: 20% !important;
+                flex: 0 0 20% !important;
+                max-width: 20% !important;
+            }
+            .pos-left-product-section {
+                width: 47% !important;
+                flex: 0 0 47% !important;
+                max-width: 47% !important;
+            }
+            .pos-right-cart-section {
+                width: 33% !important;
+                flex: 0 0 33% !important;
+                max-width: 33% !important;
+            }
+        @else
+            .pos-left-product-section {
+                width: 66% !important;
+                flex: 0 0 66% !important;
+                max-width: 66% !important;
+            }
+            .pos-right-cart-section {
+                width: 34% !important;
+                flex: 0 0 34% !important;
+                max-width: 34% !important;
+            }
+        @endif
     }
 
     @media (max-width: 1049px) {
