@@ -261,4 +261,7 @@ return [
     'paid_via' => 'Paguaj me',
     'payment_transaction_id' => 'ID e transaksionit të pagesës',
     'remaining' => 'Mbetur',
+    'monthly' => 'Mujore',
+    'annual' => 'Vjetore',
+    'choose_pricing_plan' => 'Zgjidhni planin e çmimeve :app që preferoni',
 ];

@@ -156,7 +156,23 @@
     {{-- ================= RIGHT: utility nav + page content ================= --}}
     <div class="pos-content">
 
-        <div class="pos-topnav">
+        <nav class="pos-topnav">
+
+            {{-- logo shown while the left brand panel is hidden (tablet / mobile) --}}
+            <a href="{{ url('/') }}" class="pos-topnav__brand">
+                <img src="{{ asset('img/logo-small.png') }}" alt="{{ config('app.name', 'YaigoPos') }}">
+            </a>
+
+            {{-- menu toggle, only visible below 992px --}}
+            <button type="button" class="pos-topnav__toggle" aria-controls="pos-topnav-menu" aria-expanded="false"
+                    aria-label="@lang('lang_v1.open_menu')"
+                    data-label-open="@lang('lang_v1.open_menu')" data-label-close="@lang('lang_v1.close_menu')">
+                <span class="pos-topnav__toggle-bar"></span>
+                <span class="pos-topnav__toggle-bar"></span>
+                <span class="pos-topnav__toggle-bar"></span>
+            </button>
+
+            <div class="pos-topnav__menu" id="pos-topnav-menu">
 
             {{-- mobile-only utility links (the brand panel's copy is hidden below md) --}}
             <div class="pos-topnav__mobile-utility">
@@ -178,7 +194,7 @@
                     <div class="pos-register-pill">
                         <a href="{{ route('business.getRegister', !empty(request()->lang) ? ['lang' => request()->lang] : []) }}" style="display: inline-flex; align-items: center;">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
-                                 style="width: 1.5em; height: 1.5em; fill: currentColor; margin-right: 5px;"
+                                 style="width: 1.5em; height: 1.5em; fill: currentColor;"
                             >
                                 <path d="M285.7 368C384.2 368 464 447.8 464 546.3C464 562.7 450.7 576 434.3 576L77.7 576C61.3 576 48 562.7 48 546.3C48 447.8 127.8 368 226.3 368L285.7 368zM528 144C541.3 144 552 154.7 552 168L552 216L600 216C613.3 216 624 226.7 624 240C624 253.3 613.3 264 600 264L552 264L552 312C552 325.3 541.3 336 528 336C514.7 336 504 325.3 504 312L504 264L456 264C442.7 264 432 253.3 432 240C432 226.7 442.7 216 456 216L504 216L504 168C504 154.7 514.7 144 528 144zM256 312C189.7 312 136 258.3 136 192C136 125.7 189.7 72 256 72C322.3 72 376 125.7 376 192C376 258.3 322.3 312 256 312z"/>
                             </svg>
@@ -212,7 +228,8 @@
                 </a>
             @endif
             @include('layouts.partials.language_btn')
-        </div>
+            </div>
+        </nav>
 
         <div class="pos-main">
             @yield('content')
@@ -238,6 +255,49 @@
             window.location = url.toString();
         });
     });
+
+    // Mobile / tablet navbar toggle
+    (function() {
+        var nav = document.querySelector('.pos-topnav');
+        var toggle = nav && nav.querySelector('.pos-topnav__toggle');
+        if (!toggle) return;
+        var desktop = window.matchMedia('(min-width: 992px)');
+
+        function isOpen() {
+            return nav.classList.contains('is-open');
+        }
+
+        function setOpen(open) {
+            nav.classList.toggle('is-open', open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            toggle.setAttribute('aria-label', toggle.getAttribute(open ? 'data-label-close' : 'data-label-open'));
+            if (!open) {
+                var lang = nav.querySelector('details[open]');
+                if (lang) lang.removeAttribute('open');
+            }
+        }
+
+        toggle.addEventListener('click', function() {
+            setOpen(!isOpen());
+        });
+        // close on link tap, outside tap, Escape and when growing to desktop width
+        nav.addEventListener('click', function(e) {
+            if (isOpen() && e.target.closest('#pos-topnav-menu a')) setOpen(false);
+        });
+        document.addEventListener('click', function(e) {
+            if (isOpen() && !nav.contains(e.target)) setOpen(false);
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isOpen()) {
+                setOpen(false);
+                toggle.focus();
+            }
+        });
+        var onBreakpoint = function(e) {
+            if (e.matches) setOpen(false);
+        };
+        desktop.addEventListener ? desktop.addEventListener('change', onBreakpoint) : desktop.addListener(onBreakpoint);
+    })();
 </script>
 </body>
 

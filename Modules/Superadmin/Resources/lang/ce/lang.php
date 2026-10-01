@@ -261,4 +261,7 @@ return [
     'paid_via' => '通过支付',
     'payment_transaction_id' => '支付交易ID',
     'remaining' => '剩余',
+    'monthly' => '按月',
+    'annual' => '按年',
+    'choose_pricing_plan' => '选择您喜欢的 :app 价格方案',
 ];

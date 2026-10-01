@@ -262,4 +262,7 @@ return [
     'paid_via' => 'مدفوع عبر',
     'payment_transaction_id' => 'معرف معاملة الدفع',
     'remaining' => 'متبقي',
+    'monthly' => 'شهري',
+    'annual' => 'سنوي',
+    'choose_pricing_plan' => 'اختر خطة أسعار :app المفضلة لديك',
 ];

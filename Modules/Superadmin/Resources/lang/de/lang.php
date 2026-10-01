@@ -261,4 +261,7 @@ return [
     'paid_via' => 'Bezahlt über',
     'payment_transaction_id' => 'Zahlungstransaktions-ID',
     'remaining' => 'Verbleibend',
+    'monthly' => 'Monatlich',
+    'annual' => 'Jährlich',
+    'choose_pricing_plan' => 'Wählen Sie Ihren bevorzugten :app-Preisplan',
 ];

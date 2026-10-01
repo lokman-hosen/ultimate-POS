@@ -261,4 +261,7 @@ return [
     'paid_via' => 'Betaald via',
     'payment_transaction_id' => 'Betalingstransactie-ID',
     'remaining' => 'Resterend',
+    'monthly' => 'Maandelijks',
+    'annual' => 'Jaarlijks',
+    'choose_pricing_plan' => 'Kies uw favoriete :app-prijsplan',
 ];

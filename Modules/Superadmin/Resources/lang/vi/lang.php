@@ -259,4 +259,7 @@ return [
     'paid_via' => 'Đã thanh toán qua',
     'payment_transaction_id' => 'ID giao dịch thanh toán',
     'remaining' => 'Còn lại',
+    'monthly' => 'Hàng tháng',
+    'annual' => 'Hàng năm',
+    'choose_pricing_plan' => 'Chọn gói giá :app bạn muốn',
 ];

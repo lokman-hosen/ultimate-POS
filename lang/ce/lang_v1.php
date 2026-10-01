@@ -1484,4 +1484,6 @@ return [
     'enter_customer_name_phone' => 'Enter Customer name / phone',
     'cart_is_empty' => 'Your cart is empty',
     'cart_is_empty_hint' => 'Scan a barcode, tap a product tile, or type to search.',
+    'open_menu' => '打开菜单',
+    'close_menu' => '关闭菜单',
 ];

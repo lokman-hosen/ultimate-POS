@@ -259,4 +259,7 @@ return [
     'paid_via' => 'Plătit prin',
     'payment_transaction_id' => 'ID-ul tranzacției de plată',
     'remaining' => 'Rămase',
+    'monthly' => 'Lunar',
+    'annual' => 'Anual',
+    'choose_pricing_plan' => 'Alegeți planul de prețuri :app preferat',
 ];

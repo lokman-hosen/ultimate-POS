@@ -1557,4 +1557,6 @@ return [
     'cols' => 'cols',
     'rows' => 'filas',
     'labels_shown' => 'etiquetas mostradas',
+    'open_menu' => 'Abrir menú',
+    'close_menu' => 'Cerrar menú',
 ];

@@ -255,4 +255,7 @@ return [
     'paid_via' => 'Payé via',
     'payment_transaction_id' => 'ID de transaction de paiement',
     'remaining' => 'Restant',
+    'monthly' => 'Mensuel',
+    'annual' => 'Annuel',
+    'choose_pricing_plan' => 'Choisissez votre formule :app préférée',
 ];

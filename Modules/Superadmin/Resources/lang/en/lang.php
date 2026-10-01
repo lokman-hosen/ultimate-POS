@@ -272,4 +272,7 @@ return array(
     'remaining' => 'Remaining',
     'welcome_email_template_es' => 'Welcome email template (Spanish)',
     'welcome_email_template_es_help' => 'Used for owners who registered in Spanish. If left empty, a default Spanish welcome text is sent.',
+    'monthly' => 'Monthly',
+    'annual' => 'Annual',
+    'choose_pricing_plan' => 'Choose your preferred :app pricing plan',
 );
