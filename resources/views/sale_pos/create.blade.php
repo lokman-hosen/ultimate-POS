@@ -194,12 +194,14 @@
             section.content {
                 padding-bottom: 58px !important;
             }
+            .pos-restaurant-section,
             .pos-left-product-section,
             .pos-right-cart-section {
                 width: 100% !important;
                 flex: 0 0 100% !important;
                 max-width: 100% !important;
                 min-width: 0 !important;
+                height: auto !important;
             }
             .pos_product_div {
                 max-height: 320px !important;

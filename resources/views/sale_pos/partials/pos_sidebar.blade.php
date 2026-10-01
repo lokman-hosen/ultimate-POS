@@ -57,8 +57,75 @@
         border-color: #0f172a !important;
         box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2) !important;
     }
+
+    @media (min-width: 992px) {
+        .pos-sidebar-root {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .pos-product-grid-row {
+            margin: 0;
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .pos-product-grid-col {
+            padding: 0;
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        #product_list_body {
+            padding-right: 4px;
+            flex: 1 1 0;
+            height: 100%;
+            max-height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .pos-sidebar-root {
+            height: auto !important;
+            overflow: visible !important;
+        }
+        .pos-product-grid-row {
+            margin: 0 !important;
+            flex: none !important;
+            min-height: 200px !important;
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+        }
+        .pos-product-grid-col {
+            padding: 0 !important;
+            flex: none !important;
+            height: auto !important;
+            min-height: 200px !important;
+            display: block !important;
+        }
+        #product_list_body {
+            padding-right: 4px !important;
+            height: auto !important;
+            min-height: 200px !important;
+            max-height: 480px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            display: block !important;
+        }
+        #product_list_items {
+            min-height: 50px;
+        }
+    }
 </style>
-<div class="pos-sidebar-root tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding: 6px; overflow: hidden; height: 100%; display: flex; flex-direction: column;">
+<div class="pos-sidebar-root tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100" style="padding: 6px;">
 <div class="tw-flex tw-items-start tw-gap-2 tw-flex-wrap" style="margin: 0 0 6px 0; padding: 0 4px; flex-shrink: 0;">
     @if (!empty($categories))
         <div class="tw-flex-1 tw-min-w-[140px]" id="product_category_div">
@@ -253,10 +320,10 @@
     </div>
 @endif
 
-<div class="row" style="margin: 0; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+<div class="row pos-product-grid-row">
     <input type="hidden" id="suggestion_page" value="1">
-    <div class="col-md-12" style="padding: 0; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; height: 100%;">
-        <div id="product_list_body" class="eq-height-row tw-overflow-y-auto tw-overflow-x-hidden" style="padding-right: 4px; flex: 1 1 0; height: 100%; max-height: 100%;">
+    <div class="col-md-12 pos-product-grid-col">
+        <div id="product_list_body" class="eq-height-row tw-overflow-y-auto tw-overflow-x-hidden">
             <div id="featured_products_box" style="display: none;">
                 @if (!empty($featured_products))
                     @include('sale_pos.partials.featured_products')
@@ -283,7 +350,7 @@
                     </a>
                 </div>
             </div>
-            <div id="product_list_items" class="tw-w-full"></div>
+            <div id="product_list_items" class="row tw-w-full" style="margin-left: 0; margin-right: 0;"></div>
         </div>
     </div>
     <div class="col-md-12 text-center" id="suggestion_page_loader" style="display: none;">
