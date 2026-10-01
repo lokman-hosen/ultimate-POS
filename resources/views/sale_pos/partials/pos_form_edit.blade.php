@@ -147,15 +147,15 @@
     @if(in_array('tables' ,$enabled_modules) || in_array('service_staff' ,$enabled_modules))
     	<span id="restaurant_module_span" 
     		data-transaction_id="{{$transaction->id}}" style="display: contents;">
-      		<div class="col-sm-6 col-md-6"></div>
+      		<div class="col-xs-6 col-sm-6 col-md-6" style="padding-left: 4px; padding-right: 4px;"></div>
     	</span>
     @endif
 	@if(in_array('kitchen' ,$enabled_modules))
-		<div class="col-sm-6 col-md-6 tw-flex tw-items-center" style="min-height: 34px; margin-bottom: 10px;">
-			<label class="tw-inline-flex tw-items-center tw-cursor-pointer tw-font-medium tw-text-sm tw-text-slate-700 tw-mb-0" style="margin-bottom: 0; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; white-space: nowrap;">
+		<div class="col-xs-6 col-sm-6 col-md-6 tw-flex tw-items-center" style="min-height: 32px; margin-bottom: 8px; padding-left: 4px; padding-right: 4px;">
+			<label class="tw-inline-flex tw-items-center tw-cursor-pointer tw-font-medium tw-text-xs md:tw-text-sm tw-text-slate-700 tw-mb-0" style="margin-bottom: 0; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; white-space: nowrap; max-width: 100%; overflow: hidden;">
 				{!! Form::checkbox('is_kitchen_order', 1, $transaction->is_kitchen_order, ['class' => 'input-icheck status', 'id' => 'is_kitchen_order']); !!}
-				<span style="margin-left: 6px;">{{ __('lang_v1.kitchen_order') }}</span>
-				<span style="margin-left: 4px;">@show_tooltip(__('lang_v1.kitchen_order_tooltip'))</span>
+				<span style="margin-left: 5px; font-size: 12px; white-space: nowrap;">{{ __('lang_v1.kitchen_order') }}</span>
+				<span style="margin-left: 3px; font-size: 11px;">@show_tooltip(__('lang_v1.kitchen_order_tooltip'))</span>
 			</label>
 		</div>
     @endif
@@ -177,7 +177,7 @@
 @endif
 </div>
 <div class="row pos-cart-table-row" style="margin:0;">
-	<div class="col-sm-12 pos_product_div">
+	<div class="col-sm-12 pos_product_div" style="padding:4px 0 0 0;">
 		<input type="hidden" name="sell_price_tax" id="sell_price_tax" value="{{$business_details->sell_price_tax}}">
 
 		<!-- Keeps count of product rows -->
@@ -188,38 +188,57 @@
 			if( session()->get('business.enable_inline_tax') == 0){
 				$hide_tax = 'hide';
 			}
+			$has_tax = empty($hide_tax);
+			$has_inline_staff = !empty($pos_settings['inline_service_staff']);
 		@endphp
 		<table class="table table-condensed" id="pos_table" style="table-layout: fixed !important; width: 100% !important; margin-bottom: 0 !important;">
 			<colgroup>
-				<col style="width: 46% !important;">
-				<col style="width: 19% !important;">
-				@if(!empty($pos_settings['inline_service_staff']))
-					<col style="width: 10% !important;">
+				@if(!$has_tax && !$has_inline_staff)
+					<col style="width: 44% !important;">
+					<col style="width: 30% !important;">
+					<col style="width: 26% !important;">
+					<col style="width: 26px !important;">
+				@elseif($has_inline_staff && !$has_tax)
+					<col style="width: 38% !important;">
+					<col style="width: 26% !important;">
+					<col style="width: 15% !important;">
+					<col style="width: 21% !important;">
+					<col style="width: 26px !important;">
+				@elseif(!$has_inline_staff && $has_tax)
+					<col style="width: 36% !important;">
+					<col style="width: 24% !important;">
+					<col style="width: 18% !important;">
+					<col style="width: 22% !important;">
+					<col style="width: 26px !important;">
+				@else
+					<col style="width: 32% !important;">
+					<col style="width: 22% !important;">
+					<col style="width: 14% !important;">
+					<col style="width: 14% !important;">
+					<col style="width: 18% !important;">
+					<col style="width: 26px !important;">
 				@endif
-				<col class="{{$hide_tax}}" style="width: 14% !important;">
-				<col style="width: 17% !important;">
-				<col style="width: 34px !important;">
 			</colgroup>
 			<thead>
 				<tr>
-					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 46% !important;">
+					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle">
 						@lang('sale.product') @show_tooltip(__('lang_v1.tooltip_sell_product_column'))
 					</th>
-					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 19% !important;">
+					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle">
 						@lang('sale.qty')
 					</th>
 					@if(!empty($pos_settings['inline_service_staff']))
-						<th class="text-center pos-th-staff tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 10% !important;">
+						<th class="text-center pos-th-staff tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle">
 							@lang('restaurant.service_staff')
 						</th>
 					@endif
-					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="width: 14% !important; text-overflow: ellipsis;">
+					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="text-overflow: ellipsis;">
 						@lang('sale.price_inc_tax')
 					</th>
-					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
+					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle">
 						@lang('sale.subtotal')
 					</th>
-					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-2 !tw-px-0 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle !tw-text-center" style="width: 34px !important; padding: 0 8px 0 2px !important;"></th>
+					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-2 !tw-px-0 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle !tw-text-center" style="width: 26px !important; padding: 0 2px !important;"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -254,28 +273,28 @@
 				font-size: 10px !important;
 			}
 			#pos_table th.pos-th-product, #pos_table td.pos-td-product {
-				width: 46% !important;
-				max-width: 46% !important;
 				overflow: hidden !important;
 			}
 			#pos_table th.pos-th-qty, #pos_table td.pos-td-qty {
-				width: 19% !important;
-				max-width: 19% !important;
 				position: relative !important;
-				overflow: visible !important;
+				text-align: center !important;
+				padding-left: 1px !important;
+				padding-right: 1px !important;
 			}
 			#pos_table th.pos-th-price, #pos_table td.pos-td-price {
-				width: 14% !important;
-				max-width: 14% !important;
+				text-align: right !important;
+				padding-left: 2px !important;
+				padding-right: 2px !important;
 			}
 			#pos_table th.pos-th-subtotal, #pos_table td.pos-td-subtotal {
-				width: 17% !important;
-				max-width: 17% !important;
+				text-align: right !important;
+				padding-left: 2px !important;
+				padding-right: 4px !important;
 			}
 			#pos_table th.pos-th-action, #pos_table td.pos-td-action {
-				width: 34px !important;
-				max-width: 34px !important;
-				padding: 0 8px 0 2px !important;
+				width: 26px !important;
+				max-width: 26px !important;
+				padding: 0 2px !important;
 				text-align: center !important;
 			}
 
@@ -287,7 +306,7 @@
 				background: #f8fafc;
 			}
 			#pos_table tbody tr.product_row td {
-				padding: 7px 3px !important;
+				padding: 5px 2px !important;
 				vertical-align: middle !important;
 				border-top: none !important;
 				border-bottom: 1px solid #f1f5f9 !important;
@@ -296,12 +315,13 @@
 			.pos-qty-stepper {
 				display: inline-flex !important;
 				align-items: center !important;
-				background: #f8fafc !important;
+				justify-content: center !important;
+				background: #f1f5f9 !important;
 				border: 1px solid #e2e8f0 !important;
-				border-radius: 6px !important;
+				border-radius: 5px !important;
 				padding: 1px !important;
 				width: auto !important;
-				max-width: 96px !important;
+				max-width: 100% !important;
 				box-sizing: border-box !important;
 				position: relative !important;
 				overflow: visible !important;
@@ -381,23 +401,26 @@
 				}
 			}
 			.pos-qty-btn {
-				width: 20px !important;
-				height: 20px !important;
-				min-width: 20px !important;
+				width: 18px !important;
+				height: 18px !important;
+				min-width: 18px !important;
 				border: none !important;
 				background: #2563eb !important;
 				color: #ffffff !important;
-				border-radius: 4px !important;
+				border-radius: 3px !important;
 				display: inline-flex !important;
 				align-items: center !important;
 				justify-content: center !important;
 				padding: 0 !important;
 				cursor: pointer !important;
-				box-shadow: 0 1px 2px rgba(37,99,235,0.25) !important;
+				box-shadow: 0 1px 2px rgba(37,99,235,0.2) !important;
 				transition: all 0.15s ease !important;
+				flex-shrink: 0 !important;
 			}
 			.pos-qty-btn svg {
 				stroke: #ffffff !important;
+				width: 10px !important;
+				height: 10px !important;
 			}
 			.pos-qty-btn:hover {
 				background: #1d4ed8 !important;
@@ -413,30 +436,32 @@
 				background: #1d4ed8 !important;
 			}
 			.pos-qty-input {
-				width: 38px !important;
-				min-width: 34px !important;
-				height: 22px !important;
-				padding: 0 1px !important;
+				width: 26px !important;
+				min-width: 18px !important;
+				max-width: 34px !important;
+				height: 18px !important;
+				padding: 0 !important;
 				background: transparent !important;
 				border: none !important;
 				box-shadow: none !important;
 				text-align: center !important;
-				font-size: 13px !important;
+				font-size: 11.5px !important;
 				font-weight: 700 !important;
 				color: #0f172a !important;
+				line-height: 18px !important;
 			}
 			.pos-qty-input:focus {
 				background: #ffffff !important;
-				border-radius: 4px !important;
+				border-radius: 3px !important;
 				box-shadow: 0 0 0 1px #2563eb !important;
 				outline: none !important;
 			}
 			.pos-price-input {
 				width: 100% !important;
-				max-width: 60px !important;
-				height: 25px !important;
-				padding: 1px 4px !important;
-				font-size: 13px !important;
+				max-width: 54px !important;
+				height: 22px !important;
+				padding: 1px 3px !important;
+				font-size: 11.5px !important;
 				font-weight: 600 !important;
 				color: #334155 !important;
 				text-align: right !important;
@@ -462,6 +487,13 @@
 				cursor: default !important;
 				color: #475569 !important;
 				font-weight: 600 !important;
+			}
+			.pos_line_total_text {
+				font-size: 12px !important;
+				font-weight: 700 !important;
+				white-space: nowrap !important;
+				display: inline-block !important;
+				color: #0f172a !important;
 			}
 		</style>
 	</div>

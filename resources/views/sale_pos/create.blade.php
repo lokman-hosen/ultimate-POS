@@ -137,7 +137,8 @@
                 width: 33.333333% !important;
             }
 
-        @else .pos-left-product-section {
+        @else 
+            .pos-left-product-section {
                 width: 70% !important;
                 flex: 0 0 70% !important;
                 max-width: 70% !important;
@@ -145,7 +146,8 @@
                 height: calc(100vh - 118px) !important;
             }
 
-        @endif .pos-right-cart-section {
+        @endif 
+        .pos-right-cart-section {
             width: 30% !important;
             flex: 0 0 30% !important;
             max-width: 30% !important;
@@ -158,6 +160,37 @@
             flex: 0 0 100% !important;
             max-width: 100% !important;
         }
+
+    @media (min-width: 1050px) and (max-width: 1360px) {
+        @if($is_restaurant)
+            .pos-restaurant-section {
+                width: 20% !important;
+                flex: 0 0 20% !important;
+                max-width: 20% !important;
+            }
+            .pos-left-product-section {
+                width: 47% !important;
+                flex: 0 0 47% !important;
+                max-width: 47% !important;
+            }
+            .pos-right-cart-section {
+                width: 33% !important;
+                flex: 0 0 33% !important;
+                max-width: 33% !important;
+            }
+        @else
+            .pos-left-product-section {
+                width: 66% !important;
+                flex: 0 0 66% !important;
+                max-width: 66% !important;
+            }
+            .pos-right-cart-section {
+                width: 34% !important;
+                flex: 0 0 34% !important;
+                max-width: 34% !important;
+            }
+        @endif
+    }
 
         .pos-right-cart-section>div {
             height: 100% !important;
