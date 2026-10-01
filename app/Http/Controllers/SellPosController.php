@@ -1108,6 +1108,12 @@ class SellPosController extends Controller
 
         $customer_due = $customer_due != 0 ? $this->transactionUtil->num_f($customer_due, true) : '';
 
+        //Types of service
+        $types_of_service = [];
+        if ($this->moduleUtil->isModuleEnabled('types_of_service')) {
+            $types_of_service = TypesOfService::forDropdown($business_id);
+        }
+
         //Added check because $users is of no use if enable_contact_assign if false
         $users = config('constants.enable_contact_assign') ? User::forDropdown($business_id, false, false, false, true) : [];
         $only_payment = request()->segment(2) == 'payment';
@@ -1119,7 +1125,7 @@ class SellPosController extends Controller
                 'brands', 'accounts', 'waiters', 'redeem_details', 'edit_price', 'edit_discount',
                 'shipping_statuses', 'warranties', 'sub_type', 'pos_module_data', 'invoice_schemes',
                 'default_invoice_schemes', 'invoice_layouts', 'featured_products', 'customer_due',
-                'users', 'only_payment'));
+                'users', 'only_payment', 'types_of_service'));
     }
     /**
      * Update the specified resource in storage.

@@ -47,14 +47,14 @@ class RoleController extends Controller
             return DataTables::of($roles)
                 ->addColumn('action', function ($row) {
                     if (! $row->is_default || $row->name == 'Cashier#'.$row->business_id) {
-                        $action = '';
+                        $action = '<div class="role-actions">';
                         if (auth()->user()->can('roles.update')) {
-                            $action .= '<a href="'.action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline tw-dw-btn-primary"><i class="glyphicon glyphicon-edit"></i> '.__('messages.edit').'</a>';
+                            $action .= '<a href="'.action([\App\Http\Controllers\RoleController::class, 'edit'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline role-action-btn role-action-btn--edit" data-toggle="tooltip" title="'.__('messages.edit').'" aria-label="'.__('messages.edit').'"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i></a>';
                         }
                         if (auth()->user()->can('roles.delete')) {
-                            $action .= '&nbsp
-                                <button data-href="'.action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-outline tw-dw-btn-xs tw-dw-btn-error delete_role_button"><i class="glyphicon glyphicon-trash"></i> '.__('messages.delete').'</button>';
+                            $action .= '<button data-href="'.action([\App\Http\Controllers\RoleController::class, 'destroy'], [$row->id]).'" class="tw-dw-btn tw-dw-btn-xs tw-dw-btn-outline role-action-btn role-action-btn--delete delete_role_button" data-toggle="tooltip" title="'.__('messages.delete').'" aria-label="'.__('messages.delete').'"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i></button>';
                         }
+                        $action .= '</div>';
 
                         return $action;
                     } else {
@@ -72,8 +72,8 @@ class RoleController extends Controller
                 ->removeColumn('id')
                 ->removeColumn('is_default')
                 ->removeColumn('business_id')
-                ->rawColumns([1])
-                ->make(false);
+                ->rawColumns(['action'])
+                ->make(true);
         }
 
         return view('role.index');

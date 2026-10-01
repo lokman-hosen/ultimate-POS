@@ -112,16 +112,17 @@
 		</div>
 	@endif
 
-	@if(in_array('types_of_service', $enabled_modules) && !empty($transaction->types_of_service))
+	@if(in_array('types_of_service', $enabled_modules) && (!empty($types_of_service) || !empty($transaction->types_of_service)))
 		<div class="col-md-4 col-sm-6">
 			<div class="form-group">
 				<div class="input-group">
 					<span class="input-group-addon">
 						<i class="fas fa-external-link-square-alt text-primary service_modal_btn"></i>
 					</span>
-					{!! Form::text('types_of_service_text', $transaction->types_of_service->name, ['class' => 'form-control', 'readonly']); !!}
+					{!! Form::text('types_of_service_text', $transaction->types_of_service->name ?? null, ['class' => 'form-control', 'readonly']); !!}
 
-					{!! Form::hidden('types_of_service_id', $transaction->types_of_service_id, ['id' => 'types_of_service_id']) !!}
+					{!! Form::hidden('types_of_service_id', $transaction->types_of_service_id ?? null, ['id' => 'types_of_service_id']) !!}
+					{!! Form::hidden('types_of_service_price_group', (!empty($transaction->types_of_service) && is_array($transaction->types_of_service->location_price_group)) ? ($transaction->types_of_service->location_price_group[$transaction->location_id] ?? '') : '', ['id' => 'types_of_service_price_group']) !!}
 					<span class="input-group-addon">
 						@show_tooltip(__('lang_v1.types_of_service_help'))
 					</span> 
