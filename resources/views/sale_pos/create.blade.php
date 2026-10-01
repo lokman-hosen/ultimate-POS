@@ -22,7 +22,7 @@
         ]) !!}
         <div class="row" style="margin:0;">
             <div class="col-md-12" style="padding:0;">
-                <div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch" style="gap: 6px; margin: 0; padding: 0;">
+                <div class="row tw-flex pos-main-flex-row tw-items-stretch" style="gap: 6px; margin: 0; padding: 0;">
                 @php
                     $is_restaurant = in_array('tables', $enabled_modules) || in_array('types_of_service', $enabled_modules);
                 @endphp
@@ -107,7 +107,10 @@
 @stop
 @section('css')
     <style>
-        @media (min-width: 992px) {
+        @media (min-width: 1050px) {
+            .pos-main-flex-row {
+                flex-direction: row !important;
+            }
             @if($is_restaurant)
             .pos-restaurant-section {
                 width: 22% !important;
@@ -190,9 +193,30 @@
                 width: 100% !important;
             }
         }
-        @media (max-width: 991px) {
+        @media (max-width: 1049px) {
+            body, html {
+                height: auto !important;
+                min-height: 100% !important;
+                overflow-y: auto !important;
+            }
+            .thetop, main {
+                height: auto !important;
+                min-height: 100vh !important;
+                overflow: visible !important;
+            }
+            #scrollable-container {
+                height: auto !important;
+                min-height: calc(100vh - 55px) !important;
+                overflow-y: visible !important;
+            }
+            .pos-main-flex-row {
+                flex-direction: column !important;
+                height: auto !important;
+            }
             section.content {
-                padding-bottom: 58px !important;
+                padding-bottom: 75px !important;
+                height: auto !important;
+                overflow: visible !important;
             }
             .pos-restaurant-section,
             .pos-left-product-section,
@@ -202,6 +226,14 @@
                 max-width: 100% !important;
                 min-width: 0 !important;
                 height: auto !important;
+            }
+            .pos-right-cart-section > div {
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .pos-right-cart-section .box-body {
+                height: auto !important;
+                overflow: visible !important;
             }
             .pos_product_div {
                 max-height: 320px !important;

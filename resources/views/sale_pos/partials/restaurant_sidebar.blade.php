@@ -1,7 +1,7 @@
 <div class="restaurant-sidebar-card tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100 tw-p-3 tw-flex tw-flex-col tw-h-full tw-gap-4">
     
     @if(in_array('tables', $enabled_modules))
-    <div class="restaurant-tables-container tw-flex-1 tw-flex tw-flex-col lg:tw-min-h-[250px]">
+    <div class="restaurant-tables-container tw-flex-1 tw-flex tw-flex-col">
         <h4 class="restaurant-section-title tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Tables</h4>
         
         <!-- Types of Service / Filter pills in header (horizontal scrollable) -->
@@ -27,7 +27,7 @@
     @php
         $selected_service_id = $transaction->types_of_service_id ?? request()->get('types_of_service_id');
     @endphp
-    <div class="restaurant-tables-container tw-flex-1 tw-flex tw-flex-col lg:tw-min-h-[200px]">
+    <div class="restaurant-tables-container tw-flex-1 tw-flex tw-flex-col">
         <h4 class="restaurant-section-title tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Type of Service</h4>
         <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto tw-pb-1">
             @foreach($types_of_service as $key => $value)
@@ -76,10 +76,15 @@
         height: 0;
     }
 
-    /* Default / Desktop Grid Styling */
-    #custom_tables_grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+    /* Default / Desktop Grid Styling (>= 1050px) */
+    @media (min-width: 1050px) {
+        .restaurant-tables-container {
+            min-height: 250px;
+        }
+        #custom_tables_grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
     /* Table Grid Button Styling */
@@ -135,8 +140,8 @@
         box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2) !important;
     }
 
-    /* Medium & Mobile Devices (< 992px) */
-    @media (max-width: 991px) {
+    /* Medium & Mobile Devices (< 1050px) */
+    @media (max-width: 1049px) {
         .restaurant-sidebar-card {
             padding: 10px !important;
             gap: 8px !important;
@@ -156,6 +161,7 @@
             font-size: 12px !important;
         }
         #custom_tables_grid {
+            display: grid !important;
             grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)) !important;
             gap: 8px !important;
             max-height: 150px !important;

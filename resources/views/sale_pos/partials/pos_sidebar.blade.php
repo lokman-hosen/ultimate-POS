@@ -58,7 +58,7 @@
         box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2) !important;
     }
 
-    @media (min-width: 992px) {
+    @media (min-width: 1050px) {
         .pos-sidebar-root {
             height: 100%;
             display: flex;
@@ -91,7 +91,7 @@
         }
     }
 
-    @media (max-width: 991px) {
+    @media (max-width: 1049px) {
         .pos-sidebar-root {
             height: auto !important;
             overflow: visible !important;
