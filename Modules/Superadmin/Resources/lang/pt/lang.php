@@ -259,4 +259,7 @@ return [
     'paid_via' => 'Pago Via',
     'payment_transaction_id' => 'ID da transação de pagamento',
     'remaining' => 'Restante',
+    'monthly' => 'Mensal',
+    'annual' => 'Anual',
+    'choose_pricing_plan' => 'Escolha o seu plano de preços :app preferido',
 ];

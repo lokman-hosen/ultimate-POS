@@ -270,4 +270,7 @@ return [
 
     'welcome_email_template_es' => 'Plantilla de correo de bienvenida (español)',
     'welcome_email_template_es_help' => 'Se usa para los propietarios que se registraron en español. Si se deja vacía, se envía un texto de bienvenida en español predeterminado.',
+    'monthly' => 'Mensual',
+    'annual' => 'Anual',
+    'choose_pricing_plan' => 'Elige el plan de precios de :app que prefieras',
 ];

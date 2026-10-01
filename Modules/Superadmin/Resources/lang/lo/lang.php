@@ -259,4 +259,7 @@ return [
     'paid_via' => 'ຈ່າຍຜ່ານ',
     'payment_transaction_id' => 'ຫົວໜ່ວຍທົດສອບການຊຳລະ',
     'remaining' => 'ຫົວໜ່ວຍຫົກສັກ',
+    'monthly' => 'ລາຍເດືອນ',
+    'annual' => 'ລາຍປີ',
+    'choose_pricing_plan' => 'ເລືອກແຜນລາຄາ :app ທີ່ທ່ານມັກ',
 ];

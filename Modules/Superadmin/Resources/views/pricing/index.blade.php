@@ -1,41 +1,34 @@
-@extends('layouts.auth')
+@extends('layouts.auth2')
 @section('title', __('superadmin::lang.pricing'))
 
+@section('css')
+    {{-- card styles + brand colors live in admin.css; pricing.css holds this page's public layout --}}
+    <link rel="stylesheet" href="{{ asset('css/admin.css?v=' . $asset_v) }}">
+    <link rel="stylesheet" href="{{ asset('css/pricing.css?v=' . $asset_v) }}">
+@endsection
+
 @section('content')
-    <link rel="stylesheet" href="{{ asset('css/pricing.css') }}">
-    <div class="container">
-        @include('superadmin::layouts.partials.currency')
-        <div class="pos-price-page">
-            <div class="tw-mt-20">
-                <div class="tw-flex tw-flex-col tw-items-center">
+    @include('superadmin::layouts.partials.currency')
+    <div class="pos-price-page">
+        <div class="pos-card pos-price-head">
+            <h1 class="pos-h1 pos-price-heading">@lang('superadmin::lang.pricing')</h1>
+            <p class="pos-p">
+                @lang('superadmin::lang.choose_pricing_plan', ['app' => config('app.name', 'YaigoPos')])
+            </p>
 
-                    <div class="tw-flex tw-flex-col tw-gap-2 tw-text-center">
-{{--                        <p class="pos-price-eyebrow">Pricing</p>--}}
-                        <h2 class="pos-price-heading tw-font-bold tw-text-3xl tw-text-white">@lang('superadmin::lang.pricing')</h2>
-                        <h3 class="tw-text-sm tw-font-medium tw-text-white">
-                            Choose your prefered {{ config('app.name', 'YaigoPos') }} pricing plan
-                        </h3>
-                    </div>
-                    <!-- Montly/annual-->
-                    <div class="pos-price-toggle-row mt-5 md:tw-mt-5">
-                        <span>Montly</span>
-                        <input type="checkbox" id="durationCheck" class="tw-dw-toggle tw-dw-toggle-secondary duration_check"
-                               style="margin: 0px" />
-
-                        <span> Annual </span>
-                    </div>
-                </div>
-
-                 <div class="box-body tw-mt-6">
-{{--                <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-5 md:tw-gap-0 tw-mt-5 md:tw-mt-7 tw-mb-10 tw-h-auto"--}}
-                <div class="row tw-gap-5 md:tw-gap-0 tw-mt-5 md:tw-mt-7 tw-mb-10 tw-h-auto"
-                     id="packages">
-                    @include('superadmin::subscription.partials.packages', [
-                           'action_type' => 'register',
-                       ])
-                </div>
-                </div>
+            <!-- Monthly/annual -->
+            <div class="pos-price-toggle-row">
+                <span class="pos-price-toggle-monthly">@lang('superadmin::lang.monthly')</span>
+                <input type="checkbox" id="durationCheck" class="tw-dw-toggle tw-dw-toggle-secondary duration_check"
+                       aria-label="@lang('superadmin::lang.annual')" style="margin: 0px" />
+                <span class="pos-price-toggle-annual">@lang('superadmin::lang.annual')</span>
             </div>
+        </div>
+
+        <div class="pos-price-grid" id="packages">
+            @include('superadmin::subscription.partials.packages', [
+                'action_type' => 'register',
+            ])
         </div>
     </div>
 @stop

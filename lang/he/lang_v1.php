@@ -1585,7 +1585,8 @@ return [
   'revenue_and_income' => 'הכנסות ורווחים',
   'details' => 'פרטים',
   'total_sell_return_discount' => 'סך הנחת החזרות מכירה',
-
-  ];
+    'open_menu' => 'פתח תפריט',
+    'close_menu' => 'סגור תפריט',
+];
 
 

@@ -260,4 +260,7 @@ return [
     'paid_via' => 'د لارې تادیه',
     'payment_transaction_id' => 'د تادیې ټرانزکشن آی ډی',
     'remaining' => 'باقي',
+    'monthly' => 'میاشتنی',
+    'annual' => 'کلنی',
+    'choose_pricing_plan' => 'د :app خپل غوره بیې پلان وټاکئ',
 ];

@@ -1786,4 +1786,6 @@ return [
     'cols' => 'cols',
     'rows' => 'rows',
     'labels_shown' => 'labels shown',
+    'open_menu' => 'Open menu',
+    'close_menu' => 'Close menu',
 ];

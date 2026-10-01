@@ -260,4 +260,7 @@ return [
     'paid_via' => 'Dibayar Melalui',
     'payment_transaction_id' => 'ID Transaksi Pembayaran',
     'remaining' => 'Tersisa',
+    'monthly' => 'Bulanan',
+    'annual' => 'Tahunan',
+    'choose_pricing_plan' => 'Pilih paket harga :app pilihan Anda',
 ];

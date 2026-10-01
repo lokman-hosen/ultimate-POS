@@ -259,4 +259,7 @@ return [
     'paid_via' => 'Ödeme Yöntemi',
     'payment_transaction_id' => 'Ödeme İşlem Numarası',
     'remaining' => 'Kalan',
+    'monthly' => 'Aylık',
+    'annual' => 'Yıllık',
+    'choose_pricing_plan' => 'Tercih ettiğiniz :app fiyat planını seçin',
 ];

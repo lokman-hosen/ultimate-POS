@@ -261,4 +261,7 @@ return [
     'paid_via' => 'भुगतान माध्यम',
     'payment_transaction_id' => 'भुगतान लेन-देन आईडी',
     'remaining' => 'बचा हुआ',
+    'monthly' => 'मासिक',
+    'annual' => 'वार्षिक',
+    'choose_pricing_plan' => 'अपना पसंदीदा :app मूल्य प्लान चुनें',
 ];
