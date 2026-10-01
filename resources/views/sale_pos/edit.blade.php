@@ -218,6 +218,7 @@
 			body, html {
 				height: auto !important;
 				min-height: 100% !important;
+				overflow-x: hidden !important;
 				overflow-y: auto !important;
 			}
 			.thetop, main {
@@ -227,26 +228,35 @@
 			}
 			#scrollable-container {
 				height: auto !important;
-				min-height: calc(100vh - 55px) !important;
-				overflow-y: visible !important;
+				min-height: auto !important;
+				overflow: visible !important;
+				padding-bottom: 40px !important;
 			}
 			.pos-main-flex-row {
 				flex-direction: column !important;
 				height: auto !important;
 			}
 			section.content {
-				padding-bottom: 75px !important;
+				padding-bottom: 80px !important;
 				height: auto !important;
 				overflow: visible !important;
 			}
 			.pos-restaurant-section,
-			.pos-left-product-section,
+			.pos-left-product-section {
+				width: 100% !important;
+				flex: 0 0 100% !important;
+				max-width: 100% !important;
+				min-width: 0 !important;
+				height: auto !important;
+				margin-bottom: 12px !important;
+			}
 			.pos-right-cart-section {
 				width: 100% !important;
 				flex: 0 0 100% !important;
 				max-width: 100% !important;
 				min-width: 0 !important;
 				height: auto !important;
+				margin-bottom: 80px !important;
 			}
 			.pos-right-cart-section > div {
 				height: auto !important;
@@ -256,9 +266,23 @@
 				height: auto !important;
 				overflow: visible !important;
 			}
+			.pos-cart-table-row {
+				height: auto !important;
+				overflow: visible !important;
+			}
 			.pos_product_div {
-				max-height: 320px !important;
-				overflow-y: auto !important;
+				height: auto !important;
+				max-height: none !important;
+				overflow: visible !important;
+			}
+			.pos_form_totals {
+				margin-top: 0 !important;
+				width: 100% !important;
+			}
+			.pos_cart_action_buttons {
+				width: 100% !important;
+				display: flex !important;
+				visibility: visible !important;
 			}
 		}
 		/*CSS to print receipts*/
@@ -281,6 +305,15 @@
 			cursor: not-allowed;
 		}
 	</style>
+	<!-- include module css -->
+    @if(!empty($pos_module_data))
+        @foreach($pos_module_data as $key => $value)
+            @if(!empty($value['module_css_path']))
+                @includeIf($value['module_css_path'])
+            @endif
+        @endforeach
+    @endif
+@endsection
 	<!-- include module css -->
     @if(!empty($pos_module_data))
         @foreach($pos_module_data as $key => $value)
