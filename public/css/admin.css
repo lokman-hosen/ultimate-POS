@@ -626,7 +626,7 @@ button:focus-visible {
     background-color: rgb(11 42 77);
 }
 
-.pos-button{
+.pos-button, .pos-button:hover {
     background-color: #18ccee !important;
 }
 #side-bar .theme-sidebar-active {

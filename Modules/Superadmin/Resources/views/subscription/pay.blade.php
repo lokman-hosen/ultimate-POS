@@ -26,7 +26,7 @@
 					</small>)
         		</h3>
 				<h4>
-					Total Payable(Price + IVA 21%):
+					<span>@lang('business.total_payable')</span>
 					<span class="display_currency" data-currency_symbol="true">{{$package->price + ($package->price * 21 / 100)}}</span>
 				</h4>
         		<ul>
@@ -110,7 +110,7 @@
 					</div>
 						<div class="col-md-4 ">
 							<div class="form-group" style="margin-top: 28px">
-								{!! Form::submit('Apply', ['class' => 'tw-dw-btn tw-dw-btn-success tw-text-white tw-dw-btn-sm']) !!}
+								{!! Form::submit(__('business.apply'), ['class' => 'tw-dw-btn tw-dw-btn-success tw-text-white tw-dw-btn-sm']) !!}
 							</div>
 						</div>
 					{!! Form::close() !!}

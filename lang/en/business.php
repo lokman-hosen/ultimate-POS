@@ -266,4 +266,7 @@ return [
     'js_email' => 'Please enter a valid email address.',
     'js_minlength' => 'Please enter at least {0} characters.',
     'js_equal_to' => 'The passwords do not match.',
+    'pay_stripe' => 'Make Payment',
+    'apply' => 'Apply',
+    'total_payable' => 'Total Payable(Price + IVA 21%):',
 ];

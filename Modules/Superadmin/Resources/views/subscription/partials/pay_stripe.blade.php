@@ -12,7 +12,7 @@
 
 		<button type="submit" class="btn btn-primary">
 			<i class="fab fa-cc-stripe"></i>
-			Pay with Stripe
+			{{ __('business.pay_stripe') }}
 		</button>
 	</form>
 </div>

@@ -238,4 +238,7 @@
     'electronics' => 'Electrónica',
     'manufacturing' => 'Fabricación',
     'upload_logo' => 'Subir logotipo',
-];
+    'pay_stripe' => 'Realizar el pago',
+    'apply' => 'Aplicar',
+    'total_payable' => 'Total a pagar (precio + IVA 21 %)',
+ ];
