@@ -11,6 +11,7 @@
 	if (!empty($pos_settings['inline_service_staff'])) $dst_fixed_cols += 140;
 	if (!empty($common_settings['enable_product_warranty'])) $dst_fixed_cols += 140;
 	if (!auth()->user()->can('edit_product_price_from_sale_screen')) $dst_fixed_cols -= 110;
+	if (auth()->user()->can('edit_product_price_from_sale_screen')) $dst_fixed_cols += 160; // Update unit price
 	if (!auth()->user()->can('edit_product_discount_from_sale_screen')) $dst_fixed_cols -= 130;
 @endphp
 <style>
@@ -27,6 +28,7 @@
 	.direct-sell-product-table > thead > tr > th.dst-col-discount       { width: 130px !important; }
 	.direct-sell-product-table > thead > tr > th.dst-col-tax            { width: 80px  !important; }
 	.direct-sell-product-table > thead > tr > th.dst-col-price-inc-tax  { width: 140px !important; }
+	.direct-sell-product-table > thead > tr > th.dst-col-update-price   { width: 160px !important; }
 	.direct-sell-product-table > thead > tr > th.dst-col-warranty       { width: 140px !important; }
 	.direct-sell-product-table > thead > tr > th.dst-col-subtotal       { width: 110px !important; }
 	.direct-sell-product-table > thead > tr > th.dst-col-remove         { width: 50px  !important; }

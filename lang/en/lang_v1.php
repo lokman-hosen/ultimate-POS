@@ -1788,4 +1788,10 @@ return [
     'labels_shown' => 'labels shown',
     'open_menu' => 'Open menu',
     'close_menu' => 'Close menu',
+    'update_unit_price' => 'Update unit price',
+    'confirm_update_main_price' => 'Do you want to update product main price also?',
+    'product_price_updated' => 'Product main price updated successfully.',
+    'invalid_unit_price' => 'Unit price must be a number greater than 0.',
+    'main_price_update_not_allowed_with_price_group' => 'Product main price can only be updated when no selling price group is applied.',
+    'main_price_update_not_allowed_for_combo' => 'Main price of combo products cannot be updated from here.',
 ];

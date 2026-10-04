@@ -178,5 +178,8 @@ LANG = {
     'calc_no_calculations_yet': 'No calculations yet',
     'calc_clear_history': 'Clear history',
     'day': 'Day',
-    'days': 'Days'
+    'days': 'Days',
+    'yes': 'Yes',
+    'confirm_update_main_price': 'Do you want to update product main price also?',
+    'invalid_unit_price': 'Unit price must be a number greater than 0.'
 };

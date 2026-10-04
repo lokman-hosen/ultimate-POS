@@ -2473,59 +2473,97 @@ class SellPosController extends Controller
     }
 
     /**
-     * Updates only variations.sell_price_inc_tax of the product edited from the POS price modal.
+     * Updates the master selling price (variations.default_sell_price, sell_price_inc_tax
+     * and profit_percent) of the variation whose price was edited on the POS / sell screen.
+     *
+     * unit_price is the row's unit price exc. tax and before line discount, for the unit
+     * selected on the row (sub_unit_id); it is stored per base unit.
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateMainProductPrice(Request $request)
     {
-        if (! auth()->user()->can('edit_product_price_from_sale_screen')) {
+        if (! auth()->user()->can('product.update') ||
+            (! auth()->user()->can('edit_product_price_from_pos_screen') && ! auth()->user()->can('edit_product_price_from_sale_screen'))) {
             abort(403, 'Unauthorized action.');
         }
 
+        //Price modal used to send the value as "price"
+        if (! $request->filled('unit_price') && $request->filled('price')) {
+            $request->merge(['unit_price' => $request->input('price')]);
+        }
+        $request->merge(['unit_price' => $this->productUtil->num_uf($request->input('unit_price'))]);
+
         $request->validate([
-            'product_id' => 'required|integer',
-            'variation_id' => 'nullable|integer',
-            'price' => 'required',
+            'variation_id' => 'required|integer',
+            'product_id' => 'nullable|integer',
+            'sub_unit_id' => 'nullable|integer',
+            'unit_price' => 'required|numeric|gt:0',
+        ], [
+            'unit_price.*' => __('lang_v1.invalid_unit_price'),
         ]);
 
-        $price = $this->productUtil->num_uf($request->input('price'));
-        if (! is_numeric($price) || $price < 0) {
+        //Only the default selling price can be updated from here
+        if (! empty($request->input('price_group_id'))) {
+            return ['success' => false, 'msg' => __('lang_v1.main_price_update_not_allowed_with_price_group')];
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        $variation = Variation::whereHas('product', function ($q) use ($business_id) {
+            $q->where('business_id', $business_id);
+        })
+            ->with(['product', 'product.product_tax'])
+            ->findOrFail($request->input('variation_id'));
+
+        $product = $variation->product;
+
+        if (! empty($request->input('product_id')) && $product->id != $request->input('product_id')) {
+            abort(404);
+        }
+
+        if ($product->type == 'combo') {
+            return ['success' => false, 'msg' => __('lang_v1.main_price_update_not_allowed_for_combo')];
+        }
+
+        //Convert sub unit price to base unit price
+        $multiplier = 1;
+        $sub_unit_id = $request->input('sub_unit_id');
+        if (! empty($sub_unit_id) && $sub_unit_id != $product->unit_id) {
+            $sub_units = $this->productUtil->getSubUnits($business_id, $product->unit_id, false, $product->id);
+            if (! isset($sub_units[$sub_unit_id])) {
+                return ['success' => false, 'msg' => __('lang_v1.unable_to_update_product_main_price')];
+            }
+            $multiplier = $sub_units[$sub_unit_id]['multiplier'];
+        }
+
+        if (empty($multiplier) || $multiplier <= 0) {
             return ['success' => false, 'msg' => __('lang_v1.unable_to_update_product_main_price')];
         }
 
         try {
-            $business_id = $request->session()->get('user.business_id');
+            $tax_rate = ! empty($product->product_tax) ? $product->product_tax->amount : 0;
 
-            $query = DB::table('variations')
-                ->join('products', 'products.id', '=', 'variations.product_id')
-                ->where('products.business_id', $business_id)
-                ->where('variations.product_id', $request->input('product_id'))
-                ->whereNull('variations.deleted_at');
+            $default_sell_price = $request->input('unit_price') / $multiplier;
 
-            //Restrict to the edited variation so other variations of a variable product stay untouched
-            if (! empty($request->input('variation_id'))) {
-                $query->where('variations.id', $request->input('variation_id'));
-            }
+            DB::beginTransaction();
 
-            $variation_ids = $query->pluck('variations.id');
+            $variation->default_sell_price = $default_sell_price;
+            $variation->sell_price_inc_tax = $this->productUtil->calc_percentage($default_sell_price, $tax_rate, $default_sell_price);
+            $variation->profit_percent = $this->productUtil->get_percent($variation->default_purchase_price, $default_sell_price);
+            $variation->save();
 
-            if ($variation_ids->isEmpty()) {
-                return ['success' => false, 'msg' => __('lang_v1.unable_to_update_product_main_price')];
-            }
+            DB::commit();
 
-            DB::table('variations')
-                ->whereIn('id', $variation_ids)
-                ->update([
-                    'sell_price_inc_tax' => $price,
-                    'default_sell_price' => $price
-                ]);
-
-            $output = ['success' => true, 'msg' => __('lang_v1.product_main_price_updated')];
+            $output = ['success' => true,
+                'msg' => __('lang_v1.product_price_updated'),
+                'base_unit_sell_price' => $default_sell_price,
+            ];
         } catch (\Exception $e) {
+            DB::rollBack();
             \Log::emergency('File:' . $e->getFile() . 'Line:' . $e->getLine() . 'Message:' . $e->getMessage());
 
-            $output = ['success' => false, 'msg' => __('lang_v1.unable_to_update_product_main_price')];
+            $output = ['success' => false, 'msg' => __('messages.something_went_wrong')];
         }
 
         return $output;

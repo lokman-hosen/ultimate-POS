@@ -1376,6 +1376,9 @@ body.lockscreen::-webkit-scrollbar-thumb:hover {
   body.lockscreen #pos_table th.pos-th-subtotal {
     min-width: 90px !important;
   }
+  body.lockscreen #pos_table th.pos-th-update-price {
+    min-width: 130px !important;
+  }
   body.lockscreen #pos_table .display_currency.pos_line_total_text,
   body.lockscreen #pos_table .pos_line_total_text {
     white-space: nowrap !important;
@@ -1642,3 +1645,24 @@ body.lockscreen::-webkit-scrollbar-thumb:hover {
 .pos-subcat-pill.is-active { background: #4f46e5; border-color: #4f46e5; color: white; transform: scale(0.96); }
 .pos-subcat-pill--all { border-style: dashed; }
 /* ===== End POS Mobile View Fixes ===== */
+
+/* POS / sell product row: inline unit price edit (input + Save) */
+.pos-update-price-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+.pos-update-price-wrap .update_unit_price_input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100% !important;
+  height: 26px;
+  padding: 2px 4px;
+  font-size: 12px;
+  text-align: right;
+}
+.pos-update-price-wrap .save_unit_price_btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}

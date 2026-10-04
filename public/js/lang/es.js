@@ -152,5 +152,8 @@ LANG = {
     'calculator': 'Calculadora',
     'calc_recent_calculations': 'Cálculos recientes',
     'calc_no_calculations_yet': 'Aún no hay cálculos',
-    'calc_clear_history': 'Borrar historial'
+    'calc_clear_history': 'Borrar historial',
+    'yes': 'Sí',
+    'confirm_update_main_price': '¿Desea actualizar también el precio principal del producto?',
+    'invalid_unit_price': 'El precio unitario debe ser un número mayor que 0.'
 };

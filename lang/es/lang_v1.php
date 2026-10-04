@@ -1559,4 +1559,13 @@ return [
     'labels_shown' => 'etiquetas mostradas',
     'open_menu' => 'Abrir menú',
     'close_menu' => 'Cerrar menú',
+    'update_product_main_price_also' => '¿Desea actualizar también el precio principal del producto?',
+    'product_main_price_updated' => 'Precio principal del producto actualizado correctamente.',
+    'unable_to_update_product_main_price' => 'No se pudo actualizar el precio principal del producto.',
+    'update_unit_price' => 'Actualizar precio unitario',
+    'confirm_update_main_price' => '¿Desea actualizar también el precio principal del producto?',
+    'product_price_updated' => 'Precio principal del producto actualizado correctamente.',
+    'invalid_unit_price' => 'El precio unitario debe ser un número mayor que 0.',
+    'main_price_update_not_allowed_with_price_group' => 'El precio principal solo se puede actualizar cuando no hay un grupo de precios de venta aplicado.',
+    'main_price_update_not_allowed_for_combo' => 'El precio principal de los productos combo no se puede actualizar desde aquí.',
 ];

@@ -217,21 +217,22 @@
 		@endphp
 		<table class="table table-condensed" id="pos_table" style="table-layout: fixed !important; width: 100% !important; margin-bottom: 0 !important;">
 			<colgroup>
-				<col style="width: 46% !important;">
-				<col style="width: 19% !important;">
+				<col style="width: 34% !important;">
+				<col style="width: 16% !important;">
 				@if(!empty($pos_settings['inline_service_staff']))
 					<col style="width: 10% !important;">
 				@endif
-				<col class="{{$hide_tax}}" style="width: 14% !important;">
-				<col style="width: 17% !important;">
-				<col style="width: 34px !important;">
+				<col class="{{$hide_tax}}" style="width: 13% !important;">
+				<col class="@if(!auth()->user()->can('edit_product_price_from_pos_screen')) hide @endif" style="width: 28% !important;">
+				<col style="width: 15% !important;">
+				<col style="width: 14px !important;">
 			</colgroup>
 			<thead>
 				<tr>
-					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 46% !important;">
+					<th class="text-left pos-th-product tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-1.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 34% !important;">
 						@lang('sale.product') @show_tooltip(__('lang_v1.tooltip_sell_product_column'))
 					</th>
-					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 19% !important;">
+					<th class="text-center pos-th-qty tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 16% !important;">
 						@lang('sale.qty')
 					</th>
 					@if(!empty($pos_settings['inline_service_staff']))
@@ -239,10 +240,13 @@
 							@lang('restaurant.service_staff')
 						</th>
 					@endif
-					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="width: 14% !important; text-overflow: ellipsis;">
+					<th class="text-right pos-th-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle {{$hide_tax}}" style="width: 13% !important; text-overflow: ellipsis;">
 						@lang('sale.price_inc_tax')
 					</th>
-					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 17% !important;">
+					<th class="text-center pos-th-update-price tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle @if(!auth()->user()->can('edit_product_price_from_pos_screen')) hide @endif" style="width: 18% !important; text-overflow: ellipsis;">
+						@lang('lang_v1.update_unit_price')
+					</th>
+					<th class="text-right pos-th-subtotal tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-text-[#94a3b8] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-px-0.5 !tw-py-2 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle" style="width: 15% !important;">
 						@lang('sale.subtotal')
 					</th>
 					<th class="pos-th-action tw-sticky tw-top-0 tw-z-10 !tw-bg-[#f8fafc] !tw-border-b !tw-border-[#e2e8f0] !tw-border-t-0 !tw-border-l-0 !tw-border-r-0 !tw-py-2 !tw-px-0 !tw-text-[10px] !tw-font-medium tw-uppercase tw-tracking-[0.4px] !tw-leading-none tw-whitespace-nowrap tw-overflow-hidden !tw-align-middle !tw-text-center" style="width: 34px !important; padding: 0 8px 0 2px !important;"></th>
@@ -281,23 +285,27 @@
 				font-size: 10px !important;
 			}
 			#pos_table th.pos-th-product, #pos_table td.pos-td-product {
-				width: 46% !important;
-				max-width: 46% !important;
+				width: 34% !important;
+				max-width: 34% !important;
 				overflow: hidden !important;
 			}
 			#pos_table th.pos-th-qty, #pos_table td.pos-td-qty {
-				width: 19% !important;
-				max-width: 19% !important;
+				width: 16% !important;
+				max-width: 16% !important;
 				position: relative !important;
 				overflow: visible !important;
 			}
 			#pos_table th.pos-th-price, #pos_table td.pos-td-price {
-				width: 14% !important;
-				max-width: 14% !important;
+				width: 13% !important;
+				max-width: 13% !important;
+			}
+			#pos_table th.pos-th-update-price, #pos_table td.pos-td-update-price {
+				width: 18% !important;
+				max-width: 18% !important;
 			}
 			#pos_table th.pos-th-subtotal, #pos_table td.pos-td-subtotal {
-				width: 17% !important;
-				max-width: 17% !important;
+				width: 15% !important;
+				max-width: 15% !important;
 			}
 			#pos_table th.pos-th-action, #pos_table td.pos-td-action {
 				width: 34px !important;

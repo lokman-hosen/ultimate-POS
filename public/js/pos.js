@@ -1037,7 +1037,7 @@ $(document).ready(function() {
             .select();
     });
 
-    //Optionally update product main price (variations.sell_price_inc_tax) when price modal is closed
+    //Optionally update product main price when price modal is closed
     $(document).on('click', '.row_edit_product_price_model .row_edit_product_price_close', function() {
         var modal = $(this).closest('.row_edit_product_price_model');
         var checkbox = modal.find('input.update_main_price');
@@ -1045,28 +1045,55 @@ $(document).ready(function() {
             return;
         }
 
-        var tr = modal.closest('tr.product_row');
-        $.ajax({
-            method: 'POST',
-            url: '/sells/pos/update-main-product-price',
-            dataType: 'json',
-            data: {
-                product_id: tr.find('input.product_id').val(),
-                variation_id: tr.find('input.row_variation_id').val(),
-                price: __read_number(modal.find('input.pos_unit_price')),
-            },
-            success: function(result) {
-                if (result.success) {
-                    checkbox.prop('checked', false);
-                    toastr.success(result.msg);
-                } else {
-                    toastr.error(result.msg);
-                }
-            },
-            error: function() {
-                toastr.error(LANG.something_went_wrong);
-            },
+        update_main_product_price(modal.closest('tr.product_row'), null, function() {
+            checkbox.prop('checked', false);
         });
+    });
+
+    //Inline unit price edit: replaces the row unit price (not a discount),
+    //then optionally updates the product main price
+    $(document).on('click', '#pos_table .save_unit_price_btn', function() {
+        var btn = $(this);
+        var tr = btn.closest('tr.product_row');
+        var new_price = __read_number(tr.find('input.update_unit_price_input'));
+
+        if (isNaN(new_price) || !(new_price > 0)) {
+            toastr.error(LANG.invalid_unit_price || LANG.something_went_wrong);
+            return;
+        }
+
+        var price_input = tr.find('input.pos_unit_price');
+
+        //Respect minimum selling price if enabled
+        var min_price = price_input.data('rule-min-value');
+        if (typeof min_price !== 'undefined' && new_price < parseFloat(min_price)) {
+            toastr.error(price_input.data('msg-min-value'));
+            return;
+        }
+
+        __write_number(price_input, new_price);
+        price_input.change();
+
+        if (btn.data('can_update_main_price') != 1) {
+            return;
+        }
+
+        swal({
+            title: LANG.confirm_update_main_price || 'Do you want to update product main price also?',
+            icon: 'warning',
+            buttons: [LANG.cancel || 'Cancel', LANG.yes || 'Yes'],
+        }).then(function(confirm) {
+            if (confirm) {
+                update_main_product_price(tr, btn);
+            }
+        });
+    });
+
+    $(document).on('keydown', '#pos_table input.update_unit_price_input', function(e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            $(this).closest('tr.product_row').find('.save_unit_price_btn').click();
+        }
     });
 
     //Update Order tax
@@ -2264,6 +2291,72 @@ function pos_each_row(row_obj) {
     //var unit_price_inc_tax = __read_number(row_obj.find('input.pos_unit_price_inc_tax'));
 
     __write_number(row_obj.find('input.item_tax'), unit_price_inc_tax - discounted_unit_price);
+
+    //Keep inline unit price edit field in sync with the row unit price
+    var update_price_input = row_obj.find('input.update_unit_price_input');
+    if (update_price_input.length && !update_price_input.is(':focus')) {
+        __write_number(update_price_input, unit_price);
+    }
+}
+
+//Update product main price (variation default selling price) from a POS / sell row
+function update_main_product_price(tr, btn, on_success) {
+    var sub_unit_id = tr.find('select.sub_unit').length
+        ? tr.find('select.sub_unit').val()
+        : tr.find('input[name$="[sub_unit_id]"]').val();
+
+    var price_group_id = '';
+    if ($('#price_group').length > 0) {
+        price_group_id = $('#price_group').val();
+    }
+    if ($('#types_of_service_price_group').length > 0 && $('#types_of_service_price_group').val()) {
+        price_group_id = $('#types_of_service_price_group').val();
+    }
+
+    if (btn) {
+        btn.prop('disabled', true);
+    }
+
+    $.ajax({
+        method: 'POST',
+        url: '/sells/pos/update-main-product-price',
+        dataType: 'json',
+        data: {
+            product_id: tr.find('input.product_id').val(),
+            variation_id: tr.find('input.row_variation_id').val(),
+            //Formatted value, unformatted on server with num_uf
+            unit_price: tr.find('input.pos_unit_price').val(),
+            sub_unit_id: sub_unit_id,
+            price_group_id: price_group_id,
+        },
+        success: function(result) {
+            if (result.success) {
+                toastr.success(result.msg);
+                if (typeof result.base_unit_sell_price !== 'undefined') {
+                    tr.find('input.hidden_base_unit_sell_price').val(result.base_unit_sell_price);
+                }
+                if (on_success) {
+                    on_success(result);
+                }
+            } else {
+                toastr.error(result.msg);
+            }
+        },
+        error: function(xhr) {
+            var msg = LANG.something_went_wrong;
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                msg = Object.values(xhr.responseJSON.errors)[0][0];
+            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                msg = xhr.responseJSON.message;
+            }
+            toastr.error(msg);
+        },
+        complete: function() {
+            if (btn) {
+                btn.prop('disabled', false);
+            }
+        },
+    });
 }
 
 function pos_total_row() {

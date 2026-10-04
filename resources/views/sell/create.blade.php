@@ -396,6 +396,9 @@
 								<th class="text-center dst-col-price-inc-tax {{$hide_tax}}">
 									@lang('sale.price_inc_tax')
 								</th>
+								<th class="text-center dst-col-update-price @if(!auth()->user()->can('edit_product_price_from_sale_screen')) hide @endif">
+									@lang('lang_v1.update_unit_price')
+								</th>
 								@if(!empty($common_settings['enable_product_warranty']))
 									<th class="dst-col-warranty">@lang('lang_v1.warranty')</th>
 								@endif
