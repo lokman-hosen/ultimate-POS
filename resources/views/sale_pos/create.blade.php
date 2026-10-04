@@ -22,7 +22,7 @@
         ]) !!}
         <div class="row" style="margin:0;">
             <div class="col-md-12" style="padding:0;">
-                <div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch" style="gap: 6px; margin: 0; padding: 0;">
+                <div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch pos-layout-grid" style="gap: 6px; margin: 0; padding: 0;">
                 @php
                     $is_restaurant = in_array('tables', $enabled_modules) || in_array('types_of_service', $enabled_modules);
                 @endphp
@@ -215,6 +215,8 @@
             @endif
         @endforeach
     @endif
+	<!-- Responsive POS layout (presentation only) -->
+	<link rel="stylesheet" href="{{ asset('css/pos-responsive.css?v=' . $asset_v) }}">
 @stop
 @section('javascript')
     <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
@@ -238,4 +240,6 @@
         @endforeach
     @endif
     @include('sale_pos.partials.pos_layout_script', ['form_id' => 'add_pos_sell_form'])
+	<script>window.POS_RESPONSIVE_LANG = {products: @json(__('lang_v1.view_products')), close: @json(__('messages.close'))};</script>
+	<script src="{{ asset('js/pos-responsive.js?v=' . $asset_v) }}"></script>
 @endsection

@@ -1,0 +1,627 @@
+/*
+ * POS responsive layout (presentation only).
+ *
+ * Loaded only by sale_pos/create.blade.php and sale_pos/edit.blade.php, after app.css.
+ * Every rule is scoped to body.lockscreen (the POS layout body class) and wrapped in
+ * @media screen so receipts / print views are not affected.
+ *
+ * Most existing POS layout rules (inline <style> blocks in create/edit/pos_form and the
+ * body.lockscreen block in app.css) are declared with !important, so overriding them
+ * needs !important too. Each such override is marked "(overrides !important)".
+ *
+ * Breakpoints (same as the existing ones):
+ *   >= 1600      unchanged
+ *   1200 - 1599  3 columns, cart wider
+ *   992 - 1199   2-column grid: tables + products left, cart right
+ *   768 - 991    single column, cart first, products in a slide-in drawer
+ *   < 768        phone: page scrolls, cart table scrolls inside its wrapper
+ *
+ * Layout hooks: .pos-layout-grid (added to the main row in create/edit) and the
+ * body classes set by public/js/pos-responsive.js (pos-rsp-js, pos-rsp-has-modal,
+ * pos-products-open).
+ */
+
+@media screen {
+    /* Bottom nav: keep clear of the phone home indicator when the browser reports a safe area */
+    body.lockscreen .pos-bottom-nav-container {
+        height: calc(52px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Customer / search / service staff rows: selects (incl. Select2) shrink to fit and the
+       add buttons stay attached. Select2 stores a pixel width computed at page load, which
+       overflows the cart after a resize or rotation. */
+    body.lockscreen .pos-cart-top-fields .input-group {
+        display: flex;
+        width: 100%;
+    }
+    body.lockscreen .pos-cart-top-fields .input-group > .form-control,
+    body.lockscreen .pos-cart-top-fields .input-group > select,
+    body.lockscreen .pos-cart-top-fields .input-group > .select2-container {
+        flex: 1 1 auto;
+        width: 1% !important; /* (overrides Select2 inline width) */
+        min-width: 0;
+    }
+    body.lockscreen .pos-cart-top-fields .input-group > .input-group-addon,
+    body.lockscreen .pos-cart-top-fields .input-group > .input-group-btn {
+        width: auto;
+        display: flex;
+        align-items: stretch;
+    }
+
+    /* Inline unit price edit cell never forces the row wider */
+    body.lockscreen #pos_table .pos-update-price-wrap {
+        min-width: 0;
+    }
+
+    /* Prices and totals never break in the middle of a number */
+    body.lockscreen #pos_table .pos_line_total_text,
+    body.lockscreen .pos_totals_value,
+    body.lockscreen .pos_totals_right_value {
+        white-space: nowrap;
+    }
+
+    /* Product grid columns follow the width of the product panel, not the viewport:
+       ~6 -> 4 -> 3 -> 2 per row. */
+    body.lockscreen #pos_sidebar_wrap .pos-sidebar-root > .row {
+        container-type: inline-size;
+        container-name: pos-products;
+    }
+}
+
+/* Below 1600px only: wide desktops keep their current product grid */
+@media screen and (max-width: 1599.98px) {
+    @container pos-products (min-width: 900px) {
+        /* (overrides !important: restaurant mode forces 3 columns in create.blade.php) */
+        body.lockscreen #product_list_body [class*="col-"]:has(> .product_box) {
+            width: 16.6667% !important;
+            flex: 0 0 16.6667%;
+        }
+    }
+    @container pos-products (min-width: 600px) and (max-width: 899.98px) {
+        body.lockscreen #product_list_body [class*="col-"]:has(> .product_box) {
+            width: 25% !important;
+            flex: 0 0 25%;
+        }
+    }
+    @container pos-products (min-width: 380px) and (max-width: 599.98px) {
+        body.lockscreen #product_list_body [class*="col-"]:has(> .product_box) {
+            width: 33.3333% !important;
+            flex: 0 0 33.3333%;
+        }
+    }
+    @container pos-products (max-width: 379.98px) {
+        body.lockscreen #product_list_body [class*="col-"]:has(> .product_box) {
+            width: 50% !important;
+            flex: 0 0 50%;
+        }
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Header: location name never overflows, icons wrap instead of clipping */
+/* ------------------------------------------------------------------ */
+@media screen {
+    body.lockscreen .pos-header .pos-location-highlight {
+        min-width: 0;
+    }
+    /* (overrides inline style="min-width: 140px") */
+    body.lockscreen .pos-header .pos-location-highlight > div {
+        min-width: 0 !important;
+        flex: 1 1 auto;
+    }
+    body.lockscreen .pos-header .pos-location-name-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    body.lockscreen .pos-header > div {
+        gap: 8px;
+    }
+    /* (overrides Tailwind md:tw-w-1/3 and md:tw-w-2/3) */
+    body.lockscreen .pos-header > div > div:first-child {
+        width: auto !important;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    body.lockscreen #pos_header_more_options {
+        width: auto !important;
+        flex: 0 1 auto;
+        flex-wrap: wrap;
+        row-gap: 4px;
+    }
+}
+
+@media screen and (max-width: 767.98px) {
+    /* Location label text hidden on phones, icon kept, so the location name has room */
+    body.lockscreen .pos-header .pos-location-highlight strong {
+        font-size: 0;
+        gap: 0;
+    }
+    body.lockscreen .pos-header .pos-location-highlight {
+        padding: 4px 8px;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* 1200 - 1599: three columns, cart gets enough room for all its columns */
+/* ------------------------------------------------------------------ */
+@media screen and (min-width: 1200px) and (max-width: 1599.98px) {
+    /* (overrides !important widths in create/edit.blade.php) */
+    body.lockscreen .pos-layout-grid > .pos-restaurant-section {
+        width: 18% !important;
+        flex: 0 0 18% !important;
+        max-width: 18% !important;
+    }
+    body.lockscreen .pos-layout-grid > .pos-restaurant-section ~ .pos-left-product-section {
+        width: 40% !important;
+        flex: 0 0 40% !important;
+        max-width: 40% !important;
+    }
+    body.lockscreen .pos-layout-grid > .pos-left-product-section {
+        width: 58% !important;
+        flex: 0 0 58% !important;
+        max-width: 58% !important;
+    }
+    body.lockscreen .pos-layout-grid > .pos-right-cart-section:not(.pos-cart-full-width) {
+        width: auto !important;
+        flex: 1 1 0 !important;
+        max-width: none !important;
+    }
+    body.lockscreen #custom_tables_grid {
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)) !important; /* (overrides inline style) */
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* 992 - 1199 (tablet landscape): 2-column grid                        */
+/* ------------------------------------------------------------------ */
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+    /* (overrides Tailwind tw-flex) */
+    body.lockscreen .pos-layout-grid {
+        display: grid !important;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        height: calc(100vh - 118px);
+    }
+    /* Sections are placed by the grid (overrides !important widths/heights in create/edit) */
+    body.lockscreen .pos-layout-grid > div {
+        width: auto !important;
+        max-width: none !important;
+        flex: none !important;
+        min-height: 0;
+    }
+    body.lockscreen .pos-layout-grid > .pos-restaurant-section {
+        grid-column: 1;
+        grid-row: 1;
+        height: auto !important;
+        max-height: 36vh;
+        overflow-y: auto;
+    }
+    body.lockscreen .pos-layout-grid > .pos-left-product-section {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        height: auto !important;
+    }
+    body.lockscreen .pos-layout-grid > .pos-restaurant-section ~ .pos-left-product-section {
+        grid-row: 2;
+    }
+    body.lockscreen .pos-layout-grid > .pos-right-cart-section {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        height: auto !important;
+    }
+    body.lockscreen .pos-layout-grid > .pos-right-cart-section.pos-cart-full-width {
+        grid-column: 1 / -1;
+    }
+    /* Product suggestions hidden by setting: tables left, cart right */
+    body.lockscreen .pos-layout-grid > .pos-restaurant-section + .pos-right-cart-section {
+        grid-row: 1 / span 2;
+    }
+    body.lockscreen .pos-layout-grid > .pos-restaurant-section:has(+ .pos-right-cart-section) {
+        grid-row: 1 / span 2;
+        max-height: none;
+    }
+}
+
+/* Compact restaurant tables wherever the tables panel is not a tall side column */
+@media screen and (max-width: 1199.98px) {
+    body.lockscreen .pos-restaurant-section > div {
+        height: auto;
+        gap: 8px;
+    }
+    body.lockscreen .pos-restaurant-section .tw-min-h-\[250px\],
+    body.lockscreen .pos-restaurant-section .tw-min-h-\[200px\] {
+        min-height: 0;
+    }
+    body.lockscreen #custom_tables_grid {
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)) !important; /* (overrides inline style) */
+    }
+    body.lockscreen #custom_tables_grid .custom-table-btn {
+        aspect-ratio: auto;
+        min-height: 64px;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* < 992: single column, cart first                                    */
+/* ------------------------------------------------------------------ */
+@media screen and (max-width: 991.98px) {
+    body.lockscreen .pos-layout-grid > .pos-right-cart-section {
+        order: 1;
+    }
+    body.lockscreen .pos-layout-grid > .pos-restaurant-section {
+        order: 2;
+    }
+    body.lockscreen .pos-layout-grid > .pos-left-product-section {
+        order: 3;
+    }
+    body.lockscreen .pos-restaurant-section #custom_tables_grid {
+        max-height: 260px;
+    }
+
+    /* Stacked fallback (script not loaded): give the product panel a height so
+       #product_list_body keeps scrolling on its own (infinite scroll listens to it) */
+    body.lockscreen .pos-layout-grid > .pos-left-product-section {
+        height: 70vh;
+        min-height: 360px;
+    }
+
+    /* The content area scrolls below the header (as on desktop). On phones app.css sets
+       it to overflow:hidden, which cut off the totals and pay buttons whenever the tables
+       panel or a long cart made the page taller than the screen. Its height still comes
+       from the existing flex layout. (overrides !important overflow in app.css) */
+    body.lockscreen > .thetop {
+        height: 100vh;
+        height: 100dvh; /* excludes the mobile browser address bar */
+    }
+    body.lockscreen > .thetop > main {
+        height: 100%;
+        min-height: 0;
+    }
+    body.lockscreen #scrollable-container {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Cart list height follows the viewport so totals and pay buttons stay on screen
+       (overrides max-height !important in create.blade.php / pos_form.blade.php) */
+    body.lockscreen .pos_product_div {
+        max-height: max(200px, calc(100vh - 500px)) !important;
+    }
+
+    /* Sticky pay buttons above the bottom nav.
+       overflow: clip keeps the rounded corners without creating a scroll container,
+       so position: sticky works (overrides inline style="overflow:hidden") */
+    body.lockscreen .pos-right-cart-section > div {
+        overflow: clip !important;
+    }
+    body.lockscreen .pos_cart_action_buttons {
+        position: sticky;
+        bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+    }
+    body.lockscreen section.content {
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important; /* (overrides !important 58px) */
+    }
+
+    /* Product panel as a slide-in drawer (needs pos-responsive.js for the toggle) */
+    body.lockscreen.pos-rsp-js .pos-layout-grid > #pos_sidebar_wrap {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+        z-index: 1045; /* above bottom nav (1040), below Bootstrap modals (1050) */
+        width: min(92vw, 560px) !important;
+        max-width: none !important;
+        height: auto !important;
+        min-height: 0;
+        padding: 8px !important;
+        background: #f1f5f9;
+        box-shadow: -8px 0 24px rgba(15, 23, 42, 0.18);
+        transform: translateX(105%);
+        visibility: hidden;
+        transition: transform 0.22s ease, visibility 0s linear 0.22s;
+    }
+    /* transform: none when open so fixed children (category / brand drawers) still use the viewport */
+    body.lockscreen.pos-rsp-js.pos-products-open .pos-layout-grid > #pos_sidebar_wrap {
+        transform: none;
+        visibility: visible;
+        transition: transform 0.22s ease;
+    }
+    body.lockscreen .pos-rsp-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1044;
+        background: rgba(15, 23, 42, 0.35);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+    body.lockscreen.pos-products-open .pos-rsp-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    body.lockscreen .pos-rsp-products-toggle {
+        position: fixed;
+        right: 12px;
+        bottom: calc(52px + 12px + env(safe-area-inset-bottom, 0px));
+        z-index: 1046;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 999px;
+        background: #0f766e;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28);
+        cursor: pointer;
+    }
+    body.lockscreen .pos-rsp-products-toggle:focus-visible {
+        outline: 3px solid #99f6e4;
+        outline-offset: 2px;
+    }
+    body.lockscreen.pos-products-open .pos-rsp-products-toggle {
+        background: #0f172a;
+    }
+    /* Not over an open Bootstrap modal (its backdrop is z-index 1040) */
+    body.lockscreen.modal-open .pos-rsp-products-toggle {
+        display: none;
+    }
+    /* Pay buttons stay visible above the floating button */
+    body.lockscreen.pos-rsp-js .pos_cart_action_buttons {
+        padding-right: 140px !important; /* (overrides Tailwind tw-p-2) */
+    }
+}
+
+@media screen and (min-width: 992px) {
+    body.lockscreen .pos-rsp-products-toggle,
+    body.lockscreen .pos-rsp-backdrop {
+        display: none;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* < 768: phone                                                        */
+/* ------------------------------------------------------------------ */
+@media screen and (max-width: 767.98px) {
+    body.lockscreen #add_pos_sell_form .box-body.pb-0,
+    body.lockscreen #edit_pos_sell_form .box-body.pb-0 {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+    }
+    body.lockscreen .pos_product_div {
+        max-height: max(180px, calc(100vh - 540px)) !important;
+        overflow-y: auto !important;
+    }
+
+    /* Products drawer on phones only when the mobile products modal is not rendered
+       (it is rendered for mobile user agents; the header bag button opens it).
+       (overrides #pos_sidebar_wrap display:none !important in app.css) */
+    body.lockscreen.pos-rsp-js:not(.pos-rsp-has-modal) #pos_sidebar_wrap {
+        display: block !important;
+    }
+    body.lockscreen.pos-rsp-has-modal .pos-rsp-products-toggle {
+        display: none;
+    }
+    body.lockscreen.pos-rsp-has-modal .pos_cart_action_buttons {
+        padding-right: 8px !important;
+    }
+    /* Without the mobile modal the header bag button has nothing to open; the drawer
+       toggle replaces it */
+    body.lockscreen.pos-rsp-js:not(.pos-rsp-has-modal) .pos-header [data-target="#mobile_product_suggestion_modal"] {
+        display: none !important; /* (overrides Tailwind tw-block) */
+    }
+    /* Round icon-only toggle on phones, and room for it at the end of both action rows */
+    body.lockscreen .pos-rsp-products-toggle {
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        justify-content: center;
+    }
+    body.lockscreen .pos-rsp-products-toggle svg {
+        width: 22px;
+        height: 22px;
+    }
+    body.lockscreen .pos-rsp-products-toggle span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+    body.lockscreen.pos-rsp-js:not(.pos-rsp-has-modal) .pos_cart_action_buttons {
+        padding-right: 72px !important;
+    }
+    body.lockscreen.pos-rsp-js:not(.pos-rsp-has-modal) .pos_secondary_actions {
+        padding-right: 72px;
+    }
+
+    /* 16px inputs so iOS does not zoom on focus */
+    body.lockscreen #pos_table input.form-control,
+    body.lockscreen .pos-cart-top-fields input,
+    body.lockscreen .pos-cart-top-fields select,
+    body.lockscreen .pos-cart-top-fields .select2-selection__rendered,
+    body.lockscreen #search_product,
+    body.lockscreen .modal input.form-control,
+    body.lockscreen .modal select.form-control,
+    body.lockscreen .modal textarea.form-control {
+        font-size: 16px !important; /* (overrides 12px !important in app.css) */
+    }
+    body.lockscreen #search_product {
+        height: 44px;
+    }
+
+    /* Cart table scrolls horizontally inside .pos_product_div; fixed column widths
+       so the product name stays readable (overrides table-layout:auto / width:auto
+       !important in app.css) */
+    body.lockscreen .pos_product_div {
+        overflow-x: auto !important;
+    }
+    body.lockscreen #pos_table {
+        table-layout: fixed !important;
+        min-width: 620px !important;
+    }
+    /* Columns hidden by settings/permissions stay hidden (app.css forces every cell to
+       display:table-cell !important on phones, which showed e.g. "Price inc. tax") */
+    body.lockscreen #pos_table > thead > tr > th.hide,
+    body.lockscreen #pos_table > tbody > tr > td.hide,
+    body.lockscreen #pos_table > colgroup > col.hide {
+        display: none !important;
+    }
+    body.lockscreen #pos_table > tbody > tr > td,
+    body.lockscreen #pos_table > thead > tr > th {
+        white-space: normal;
+    }
+    body.lockscreen #pos_table th.pos-th-product { width: 30% !important; }
+    body.lockscreen #pos_table th.pos-th-qty { width: 24% !important; }
+    body.lockscreen #pos_table th.pos-th-price { width: 14% !important; }
+    body.lockscreen #pos_table th.pos-th-update-price { width: 24% !important; }
+    body.lockscreen #pos_table th.pos-th-subtotal { width: 14% !important; }
+    body.lockscreen #pos_table th.pos-th-action { width: 48px !important; }
+    body.lockscreen #pos_table th.pos-th-product,
+    body.lockscreen #pos_table th.pos-th-qty,
+    body.lockscreen #pos_table th.pos-th-price,
+    body.lockscreen #pos_table th.pos-th-update-price,
+    body.lockscreen #pos_table th.pos-th-subtotal {
+        min-width: 0 !important;
+    }
+    body.lockscreen #pos_table td.pos-td-product,
+    body.lockscreen #pos_table td.pos-td-qty,
+    body.lockscreen #pos_table td.pos-td-price,
+    body.lockscreen #pos_table td.pos-td-update-price,
+    body.lockscreen #pos_table td.pos-td-subtotal,
+    body.lockscreen #pos_table td.pos-td-action {
+        width: auto !important;
+        max-width: none !important;
+    }
+
+    /* Totals: clean 2-column grid of label/value cells, total payable full width */
+    body.lockscreen .pos_form_totals {
+        flex-wrap: wrap;
+    }
+    body.lockscreen .pos_form_totals .pos_totals_left {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        flex: 1 1 100%;
+    }
+    body.lockscreen .pos_form_totals .pos_totals_cell.hide {
+        display: none !important;
+    }
+    body.lockscreen .pos_form_totals .pos_totals_right {
+        flex: 1 1 100%;
+    }
+
+    /* Secondary actions: a horizontally scrollable strip, every button reachable */
+    body.lockscreen .pos_secondary_btn {
+        min-width: 72px;
+        min-height: 48px;
+        flex: 0 0 auto;
+    }
+
+    /* Modals: full width, body scrolls, header/footer stay visible */
+    body.lockscreen .modal:not(#mobile_product_suggestion_modal) .modal-dialog {
+        width: auto !important;
+        margin: 8px !important;
+    }
+    body.lockscreen .modal:not(#mobile_product_suggestion_modal) .modal-content {
+        max-height: calc(100vh - 16px);
+        display: flex;
+        flex-direction: column;
+    }
+    body.lockscreen .modal:not(#mobile_product_suggestion_modal) .modal-content > .modal-body,
+    body.lockscreen .modal:not(#mobile_product_suggestion_modal) .modal-content > form > .modal-body {
+        overflow-y: auto;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+    body.lockscreen .modal:not(#mobile_product_suggestion_modal) .modal-content > form {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    body.lockscreen .modal .modal-footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+    body.lockscreen .modal .modal-footer > .btn,
+    body.lockscreen .modal .modal-footer > button {
+        margin: 0 !important; /* (overrides Bootstrap .modal-footer .btn + .btn margin) */
+        min-height: 44px;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Touch: tap targets of at least 40px                                 */
+/* ------------------------------------------------------------------ */
+@media screen and (max-width: 767.98px), screen and (pointer: coarse) and (max-width: 1199.98px) {
+    /* (overrides 20px !important in pos_form.blade.php) */
+    body.lockscreen #pos_table .pos-qty-btn {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        border-radius: 8px !important;
+    }
+    body.lockscreen #pos_table .pos-qty-stepper {
+        max-width: none !important;
+    }
+    body.lockscreen #pos_table .pos-qty-input {
+        height: 40px !important;
+        width: 44px !important;
+        min-width: 0 !important;
+    }
+    body.lockscreen #pos_table .pos-price-input,
+    body.lockscreen #pos_table .update_unit_price_input {
+        height: 40px !important;
+    }
+    body.lockscreen #pos_table .save_unit_price_btn {
+        min-height: 40px;
+        padding: 0 10px;
+    }
+    body.lockscreen #pos_table .pos_remove_row {
+        width: 40px !important; /* (overrides Tailwind tw-w-6 / tw-h-6) */
+        height: 40px !important;
+    }
+    body.lockscreen .pos_totals_edit {
+        padding: 8px;
+        margin: -8px;
+    }
+}
+
+/* Touch tablets (992 - 1199): bigger controls need a slightly wider cart table */
+@media screen and (pointer: coarse) and (min-width: 768px) and (max-width: 1199.98px) {
+    body.lockscreen .pos_product_div {
+        overflow-x: auto !important; /* (overrides overflow-x:hidden !important) */
+    }
+    body.lockscreen #pos_table {
+        min-width: 600px;
+    }
+    body.lockscreen #pos_table th.pos-th-product { width: 30% !important; }
+    body.lockscreen #pos_table th.pos-th-qty { width: 22% !important; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Short screens (<= 700px tall): reclaim vertical space               */
+/* ------------------------------------------------------------------ */
+@media screen and (max-height: 700px) and (min-width: 992px) {
+    body.lockscreen .pos_secondary_actions {
+        padding: 4px 8px;
+    }
+    body.lockscreen .pos_secondary_btn {
+        padding: 4px 2px;
+    }
+}
