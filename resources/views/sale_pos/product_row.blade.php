@@ -412,7 +412,7 @@
 			@endphp
 			<div class="pos-update-price-wrap">
 				<input type="text" class="form-control input-sm input_number update_unit_price_input" value="{{@num_format($update_unit_price)}}" title="@lang('sale.unit_price')">
-				<button type="button" class="btn btn-xs btn-primary save_unit_price_btn" data-can_update_main_price="{{ auth()->user()->can('product.update') ? 1 : 0 }}">@lang('messages.save')</button>
+				<button type="button" class="btn btn-xs btn-primary save_unit_price_btn hide" data-can_update_main_price="{{ auth()->user()->can('product.update') ? 1 : 0 }}">@lang('messages.save')</button>
 			</div>
 		@endif
 	</td>

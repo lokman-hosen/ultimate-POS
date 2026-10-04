@@ -1073,6 +1073,7 @@ $(document).ready(function() {
 
         __write_number(price_input, new_price);
         price_input.change();
+        btn.addClass('hide');
 
         if (btn.data('can_update_main_price') != 1) {
             return;
@@ -1087,6 +1088,11 @@ $(document).ready(function() {
                 update_main_product_price(tr, btn);
             }
         });
+    });
+
+    //Save button stays hidden until the price is edited
+    $(document).on('input', '#pos_table input.update_unit_price_input', function() {
+        $(this).closest('tr.product_row').find('.save_unit_price_btn').removeClass('hide');
     });
 
     $(document).on('keydown', '#pos_table input.update_unit_price_input', function(e) {
