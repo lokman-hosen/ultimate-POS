@@ -46,6 +46,11 @@ $(document).ready(function() {
         var purchase_inc_tax = __add_percent(purchase_exc_tax, tax_rate);
         __write_number($('input#single_dpp_inc_tax'), purchase_inc_tax);
 
+        //Purchase price is optional, keep the entered selling price if not set
+        if (purchase_exc_tax == 0) {
+            return;
+        }
+
         var profit_percent = __read_number($('#profit_percent'));
         var selling_price = __add_percent(purchase_exc_tax, profit_percent);
         __write_number($('input#single_dsp'), selling_price);
@@ -88,6 +93,11 @@ $(document).ready(function() {
         __write_number($('input#single_dpp'), purchase_exc_tax);
         $('input#single_dpp').change();
 
+        //Purchase price is optional, keep the entered selling price if not set
+        if (purchase_exc_tax == 0) {
+            return;
+        }
+
         var profit_percent = __read_number($('#profit_percent'));
         profit_percent = profit_percent == undefined ? 0 : profit_percent;
         var selling_price = __add_percent(purchase_exc_tax, profit_percent);
@@ -108,6 +118,11 @@ $(document).ready(function() {
 
         var purchase_exc_tax = __read_number($('input#single_dpp'));
         purchase_exc_tax = purchase_exc_tax == undefined ? 0 : purchase_exc_tax;
+
+        //Purchase price is optional, keep the entered selling price if not set
+        if (purchase_exc_tax == 0) {
+            return;
+        }
 
         var profit_percent = __read_number($('input#profit_percent'));
         var selling_price = __add_percent(purchase_exc_tax, profit_percent);
