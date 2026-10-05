@@ -318,6 +318,13 @@
             margin-top: 0 !important;
             width: 100% !important;
         }
+
+        .pos_cart_action_buttons {
+            width: 100% !important;
+            display: flex !important;
+            visibility: visible !important;
+        }
+    }
     </style>
     <!-- include module css -->
     @if (!empty($pos_module_data))
@@ -329,22 +336,6 @@
     @endif
 	<!-- Responsive POS layout (presentation only) -->
 	<link rel="stylesheet" href="{{ asset('css/pos-responsive.css?v=' . $asset_v) }}">
-
-        .pos_cart_action_buttons {
-            width: 100% !important;
-            display: flex !important;
-            visibility: visible !important;
-        }
-    }
-</style>
-<!-- include module css -->
-@if (!empty($pos_module_data))
-    @foreach ($pos_module_data as $key => $value)
-        @if (!empty($value['module_css_path']))
-            @includeIf($value['module_css_path'])
-        @endif
-    @endforeach
-@endif
 @stop
 @section('javascript')
     <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
