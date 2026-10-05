@@ -49,58 +49,56 @@
                         </div>
 
                         @if (auth()->user()->can('dashboard.data'))
-                            @if ($is_admin)
+                            @if ($is_admin && !empty($all_locations) && count($all_locations) > 1)
                                 <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/2 ">
-                                    @if (count($all_locations) > 1)
-                                            {!! Form::select('dashboard_location', $all_locations, null, [
-                                            'class' => 'form-control select2',
-                                            'placeholder' => __('lang_v1.select_location'),
-                                            'id' => 'dashboard_location',
-                                        ]) !!}
-                                    @endif
-                                </div>
-
-                                <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/2 tw-flex tw-justify-end tw-items-center tw-gap-3">
-                                    <a href="{{route('dashboard.preference-section')}}" class="btn btn-info">
-                                        <i id="toggle-icon" class="fas fa-exchange-alt"></i>
-                                        <span id="toggle-text">
-                                            {{ __('lang_v1.switch_to') }}
-                                            "{{ session('preferred_section', 'dashboard') === 'dashboard' ? __('lang_v1.quick_menu') : __('lang_v1.dashboard') }}"
-                                        </span>
-                                    </a>
-
-                                    @if ($is_admin)
-                                        <button type="button" id="dashboard_date_filter"
-                                            class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
-                                            <svg aria-hidden="true" class="tw-size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                                                <path d="M16 3v4" />
-                                                <path d="M8 3v4" />
-                                                <path d="M4 11h16" />
-                                                <path d="M7 14h.013" />
-                                                <path d="M10.01 14h.005" />
-                                                <path d="M13.01 14h.005" />
-                                                <path d="M16.015 14h.005" />
-                                                <path d="M13.015 17h.005" />
-                                                <path d="M7.01 17h.005" />
-                                                <path d="M10.01 17h.005" />
-                                            </svg>
-                                            <span>
-                                                {{ __('messages.filter_by_date') }}
-                                            </span>
-                                            <svg aria-hidden="true" class="tw-size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M6 9l6 6l6 -6" />
-                                            </svg>
-                                        </button>
-                                    @endif
+                                    {!! Form::select('dashboard_location', $all_locations, null, [
+                                        'class' => 'form-control select2',
+                                        'placeholder' => __('lang_v1.select_location'),
+                                        'id' => 'dashboard_location',
+                                    ]) !!}
                                 </div>
                             @endif
+
+                            <div class="tw-mt-2 sm:tw-w-1/3 md:tw-w-1/2 tw-flex tw-justify-end tw-items-center tw-gap-3">
+                                <a href="{{route('dashboard.preference-section')}}" class="btn btn-info">
+                                    <i id="toggle-icon" class="fas fa-exchange-alt"></i>
+                                    <span id="toggle-text">
+                                        {{ __('lang_v1.switch_to') }}
+                                        "{{ session('preferred_section', 'dashboard') === 'dashboard' ? __('lang_v1.quick_menu') : __('lang_v1.dashboard') }}"
+                                    </span>
+                                </a>
+
+                                @if ($is_admin)
+                                    <button type="button" id="dashboard_date_filter"
+                                        class="tw-inline-flex tw-items-center tw-justify-center tw-w-full tw-gap-1 tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-900 tw-transition-all tw-duration-200 tw-bg-white tw-rounded-lg sm:tw-w-auto hover:tw-bg-primary-50">
+                                        <svg aria-hidden="true" class="tw-size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+                                            <path d="M16 3v4" />
+                                            <path d="M8 3v4" />
+                                            <path d="M4 11h16" />
+                                            <path d="M7 14h.013" />
+                                            <path d="M10.01 14h.005" />
+                                            <path d="M13.01 14h.005" />
+                                            <path d="M16.015 14h.005" />
+                                            <path d="M13.015 17h.005" />
+                                            <path d="M7.01 17h.005" />
+                                            <path d="M10.01 17h.005" />
+                                        </svg>
+                                        <span>
+                                            {{ __('messages.filter_by_date') }}
+                                        </span>
+                                        <svg aria-hidden="true" class="tw-size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M6 9l6 6l6 -6" />
+                                        </svg>
+                                    </button>
+                                @endif
+                            </div>
                         @endif
                     </div>
                     @if (auth()->user()->can('dashboard.data'))

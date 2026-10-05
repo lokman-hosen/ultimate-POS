@@ -2395,6 +2395,8 @@ $(document).ready(function() {
         tabContent.append(catCard);
     });
 
+    var isManualScroll = false;
+
     // Tab button click -> Smooth scroll to category card
     $(document).on('click', '.perm-tab-btn', function(e) {
         e.preventDefault();
@@ -2403,10 +2405,43 @@ $(document).ready(function() {
         
         var targetId = $(this).data('target');
         var targetElem = $(targetId);
-        if (targetElem.length) {
-            var container = $('#permissions-content');
-            var scrollTop = targetElem.position().top + container.scrollTop() - 10;
-            container.animate({ scrollTop: scrollTop }, 250);
+        var container = $('#permissions-content');
+        
+        if (targetElem.length && container.length) {
+            isManualScroll = true;
+            var currentScroll = container.scrollTop();
+            var targetOffset = targetElem.offset().top;
+            var containerOffset = container.offset().top;
+            var targetScrollTop = currentScroll + (targetOffset - containerOffset) - 10;
+            if (targetScrollTop < 0) targetScrollTop = 0;
+            
+            container.stop().animate({ scrollTop: targetScrollTop }, 250, function() {
+                setTimeout(function() {
+                    isManualScroll = false;
+                }, 50);
+            });
+        }
+    });
+
+    // ScrollSpy: highlight active sidebar tab as content is scrolled
+    $('#permissions-content').on('scroll', function() {
+        if (isManualScroll) return;
+        
+        var container = $(this);
+        var containerOffsetTop = container.offset().top;
+        var activeTargetId = null;
+        
+        $('.perm-cat-card').each(function() {
+            var $card = $(this);
+            var cardRelativeTop = $card.offset().top - containerOffsetTop;
+            if (cardRelativeTop <= 50) {
+                activeTargetId = '#' + $card.attr('id');
+            }
+        });
+        
+        if (activeTargetId) {
+            $('.perm-tab-btn').removeClass('active');
+            $('.perm-tab-btn[data-target="' + activeTargetId + '"]').addClass('active');
         }
     });
 

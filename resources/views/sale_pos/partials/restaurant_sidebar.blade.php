@@ -1,8 +1,8 @@
-<div class="tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100 tw-p-3 tw-flex tw-flex-col tw-h-full tw-gap-4">
+<div class="restaurant-sidebar-card tw-shadow-[rgba(17,_17,_26,_0.08)_0px_0px_16px] tw-rounded-2xl tw-bg-white tw-border tw-border-slate-100 tw-p-3 tw-flex tw-flex-col tw-h-full tw-gap-4">
     
     @if(in_array('tables', $enabled_modules))
-    <div class="tw-flex-1 tw-flex tw-flex-col tw-min-h-[250px]">
-        <h4 class="tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Tables</h4>
+    <div class="restaurant-tables-container tw-flex-1 tw-flex tw-flex-col">
+        <h4 class="restaurant-section-title tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Tables</h4>
         
         <!-- Types of Service / Filter pills in header (horizontal scrollable) -->
         @if(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
@@ -18,17 +18,17 @@
         </div>
         @endif
 
-        <div id="custom_tables_grid" class="tw-gap-3 tw-overflow-y-auto tw-p-1 custom-scroll tw-content-start" style="display: grid; grid-template-columns: repeat(3, 1fr);">
+        <div id="custom_tables_grid" class="tw-gap-3 tw-overflow-y-auto tw-p-1 custom-scroll tw-content-start">
             <!-- Tables will be injected here by JS -->
-            <div class="tw-text-slate-400 tw-text-sm" style="grid-column: span 3;">Loading tables...</div>
+            <div class="tw-text-slate-400 tw-text-sm" style="grid-column: 1 / -1;">Loading tables...</div>
         </div>
     </div>
     @elseif(in_array('types_of_service', $enabled_modules) && !empty($types_of_service))
     @php
         $selected_service_id = $transaction->types_of_service_id ?? request()->get('types_of_service_id');
     @endphp
-    <div class="tw-flex-1 tw-flex tw-flex-col tw-min-h-[200px]">
-        <h4 class="tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Type of Service</h4>
+    <div class="restaurant-tables-container tw-flex-1 tw-flex tw-flex-col">
+        <h4 class="restaurant-section-title tw-font-bold tw-text-lg tw-mb-3 tw-text-slate-800">Type of Service</h4>
         <div id="custom_service_list" class="tw-flex tw-gap-2 tw-mb-3 tw-overflow-x-auto tw-pb-1">
             @foreach($types_of_service as $key => $value)
                 <button type="button" class="custom-service-btn @if(!empty($selected_service_id) && $selected_service_id == $key) active-service @endif tw-px-4 tw-py-1.5 tw-rounded-full tw-border tw-border-slate-200 tw-bg-white tw-text-slate-700 tw-text-sm tw-font-semibold tw-whitespace-nowrap tw-shrink-0 tw-cursor-pointer tw-transition-all hover:tw-bg-slate-50 hover:tw-border-slate-300 hover:tw-text-slate-900 active:tw-scale-95" data-val="{{$key}}">
@@ -74,6 +74,17 @@
         display: none;
         width: 0;
         height: 0;
+    }
+
+    /* Default / Desktop Grid Styling (>= 1050px) */
+    @media (min-width: 1050px) {
+        .restaurant-tables-container {
+            min-height: 250px;
+        }
+        #custom_tables_grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
     /* Table Grid Button Styling */
@@ -127,6 +138,49 @@
         color: white !important;
         border-color: #0f172a !important;
         box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2) !important;
+    }
+
+    /* Medium & Mobile Devices (< 1050px) */
+    @media (max-width: 1049px) {
+        .restaurant-sidebar-card {
+            padding: 10px !important;
+            gap: 8px !important;
+        }
+        .restaurant-tables-container {
+            min-height: auto !important;
+        }
+        .restaurant-section-title {
+            font-size: 15px !important;
+            margin-bottom: 6px !important;
+        }
+        #custom_service_list {
+            margin-bottom: 6px !important;
+        }
+        .custom-service-btn {
+            padding: 4px 12px !important;
+            font-size: 12px !important;
+        }
+        #custom_tables_grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)) !important;
+            gap: 8px !important;
+            max-height: 150px !important;
+            overflow-y: auto !important;
+        }
+        .custom-table-btn {
+            aspect-ratio: auto !important;
+            min-height: 52px !important;
+            padding: 5px 6px !important;
+            border-radius: 10px !important;
+        }
+        .custom-table-btn .table-name {
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            margin-bottom: 2px !important;
+        }
+        .custom-table-btn .table-status {
+            font-size: 10px !important;
+        }
     }
 </style>
 
@@ -307,7 +361,7 @@
             });
 
             if (!hasTables) {
-                grid.innerHTML = '<div class="tw-text-slate-400 tw-text-sm tw-col-span-3">No tables available</div>';
+                grid.innerHTML = '<div class="tw-text-slate-400 tw-text-sm" style="grid-column: 1 / -1;">No tables available</div>';
             }
 
             // Sync table grid when native select changes externally
