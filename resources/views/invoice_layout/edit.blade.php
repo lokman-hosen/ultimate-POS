@@ -939,6 +939,16 @@
           </div>
         </div>
 
+        <div class="col-sm-3">
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('common_settings[show_vat_breakdown]', 1, !empty($invoice_layout->common_settings['show_vat_breakdown']), ['class' => 'input-icheck']); !!} @lang('lang_v1.show_vat_breakdown')</label>
+                @show_tooltip(__('lang_v1.show_vat_breakdown_help'))
+              </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

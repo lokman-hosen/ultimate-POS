@@ -271,6 +271,9 @@
 	@includeIf('sale_pos.receipts.partial.common_repair_invoice')
 </div>
 
+@if(!empty($receipt_details->vat_breakdown))
+@include('sale_pos.receipts.partial.vat_breakdown_lines')
+@else
 <div class="row" style="color: #000000 !important;">
 	<div class="col-xs-12">
 		<br/>
@@ -397,6 +400,7 @@
 		</table>
 	</div>
 </div>
+@endif
 
 <div class="row" style="color: #000000 !important;">
 	<div class="col-md-12"><hr/></div>
@@ -485,6 +489,9 @@
 							</td>
 						</tr>
 					@endif
+@if(!empty($receipt_details->vat_breakdown))
+@include('sale_pos.receipts.partial.vat_breakdown_totals')
+@else
 					<tr>
 						<th style="width:70%">
 							{!! $receipt_details->subtotal_label !!}
@@ -613,12 +620,16 @@
 							@endif
 						</td>
 					</tr>
+@endif
 				</tbody>
         	</table>
         </div>
     </div>
 
     <div class="border-bottom col-md-12">
+@if(!empty($receipt_details->vat_breakdown))
+@include('sale_pos.receipts.partial.vat_breakdown_summary')
+@else
 	    @if(empty($receipt_details->hide_price) && !empty($receipt_details->tax_summary_label) )
 	        <!-- tax -->
 	        @if(!empty($receipt_details->taxes))
@@ -635,6 +646,7 @@
 	        	</table>
 	        @endif
 	    @endif
+@endif
 	</div>
 
 	@if(!empty($receipt_details->additional_notes))

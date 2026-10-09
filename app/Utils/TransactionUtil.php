@@ -1362,6 +1362,31 @@ class TransactionUtil extends Util
 
             $output['subtotal_exc_tax'] = $this->num_f($subtotal_exc_tax, true, $business_details);
             $output['total_line_discount'] = ! empty($total_line_discount) ? $this->num_f($total_line_discount, true, $business_details) : 0;
+
+            //Per-line VAT and VAT summary by rate, only if enabled in the invoice layout
+            if (! empty($il->common_settings['show_vat_breakdown'])) {
+                $vat_breakdown = $this->calculateVatBreakdown($output['lines'], $transaction->total_before_tax, $business_details, $show_currency);
+
+                //Total of the lines before order discount
+                $vat_breakdown['lines_total_uf'] = $vat_breakdown['gross_total_uf'];
+                $vat_breakdown['lines_total'] = $vat_breakdown['gross_total'];
+
+                //Lines without tax and an order tax: the order tax is the VAT of the sale
+                $vat_breakdown['is_order_tax'] = false;
+                if ($transaction->tax_amount != 0 && $vat_breakdown['vat_total_uf'] == 0) {
+                    $vat_breakdown = $this->_vatBreakdownFromOrderTax($vat_breakdown, $transaction, $business_details, $show_currency);
+                } elseif ($transaction->discount_amount != 0) {
+                    //Order discount on lines with VAT reduces the tax base and VAT of each rate
+                    $order_discount = $transaction->discount_type == 'percentage' ?
+                        ($transaction->discount_amount / 100) * $transaction->total_before_tax : $transaction->discount_amount;
+                    $vat_breakdown = $this->_vatBreakdownApplyOrderDiscount($vat_breakdown, $order_discount, $business_details, $show_currency);
+                }
+
+                $output['lines'] = $vat_breakdown['lines'];
+                unset($vat_breakdown['lines']);
+
+                $output['vat_breakdown'] = $vat_breakdown;
+            }
         } elseif ($transaction_type == 'sell_return') {
             $parent_sell = Transaction::find($transaction->return_parent_id);
             $lines = $parent_sell->sell_lines;
@@ -2200,6 +2225,14 @@ class TransactionUtil extends Util
                         'unit_price_exc_tax' => $this->num_f($modifier_line->unit_price, false, $business_details),
                         'price_exc_tax' => $modifier_line->quantity * $modifier_line->unit_price,
 
+                        //Unformatted values used by the vat-breakdown design
+                        'quantity_uf' => $modifier_line->quantity,
+                        'unit_price_uf' => $modifier_line->unit_price,
+                        'tax_id' => $modifier_line->tax_id,
+                        'tax_unformatted' => $modifier_line->item_tax,
+                        'tax_percent' => ! empty($modifier_line->tax_id) ? optional(TaxRate::find($modifier_line->tax_id))->amount : null,
+                        'line_total_uf' => $modifier_line->unit_price_inc_tax * $modifier_line->quantity,
+
                         //Fields for 4th column
                         'line_total' => $this->num_f($modifier_line->unit_price_inc_tax * $line->quantity, false, $business_details),
                     ];
@@ -2222,6 +2255,330 @@ class TransactionUtil extends Util
         }
 
         return ['lines' => $output_lines];
+    }
+
+    /**
+     * Adds per-line VAT figures to receipt lines and builds a VAT summary
+     * grouped by rate (base, rate, amount). Display only: it uses the stored
+     * sell line values (unit_price, item_tax, unit_price_inc_tax), so the
+     * summary reconciles with transactions.total_before_tax.
+     *
+     * Rounding: per rate, VAT = round(sum of line VAT) and
+     * gross = round(sum of line totals), base = gross - VAT. Any cent left
+     * between the sum of rate totals and total_before_tax (only possible
+     * with decimal quantities) is added to the base of the largest rate.
+     *
+     * @param  array  $lines  lines from _receiptDetailsSellLines()
+     * @param  float  $total_before_tax
+     * @param  object  $business_details
+     * @param  bool  $show_currency
+     * @return array
+     */
+    public function calculateVatBreakdown($lines, $total_before_tax, $business_details, $show_currency = true)
+    {
+        $precision = isset($business_details->currency_precision) ? (int) $business_details->currency_precision : 2;
+        $rates = [];
+
+        foreach ($lines as $key => $line) {
+            $lines[$key] = $this->_vatBreakdownLine($line, $rates, $business_details);
+
+            if (! empty($line['modifiers'])) {
+                foreach ($line['modifiers'] as $modifier_key => $modifier) {
+                    $lines[$key]['modifiers'][$modifier_key] = $this->_vatBreakdownLine($modifier, $rates, $business_details);
+                }
+            }
+        }
+
+        //Lines without tax last, others by rate ascending
+        uasort($rates, function ($a, $b) {
+            if (is_null($a['percent']) || is_null($b['percent'])) {
+                return is_null($a['percent']) <=> is_null($b['percent']);
+            }
+
+            return $a['percent'] <=> $b['percent'];
+        });
+
+        $gross_sum = 0;
+        foreach ($rates as $key => $rate) {
+            $rates[$key]['vat_uf'] = round($rate['vat_uf'], $precision);
+            $rates[$key]['gross_uf'] = round($rate['gross_uf'], $precision);
+            $rates[$key]['base_uf'] = round($rates[$key]['gross_uf'] - $rates[$key]['vat_uf'], $precision);
+            $gross_sum += $rates[$key]['gross_uf'];
+        }
+
+        $rounding_adjustment = round(round($total_before_tax, $precision) - $gross_sum, $precision);
+        if ($rounding_adjustment != 0 && ! empty($rates)) {
+            $largest_key = array_key_first($rates);
+            foreach ($rates as $key => $rate) {
+                if (abs($rate['gross_uf']) > abs($rates[$largest_key]['gross_uf'])) {
+                    $largest_key = $key;
+                }
+            }
+            $rates[$largest_key]['base_uf'] = round($rates[$largest_key]['base_uf'] + $rounding_adjustment, $precision);
+            $rates[$largest_key]['gross_uf'] = round($rates[$largest_key]['gross_uf'] + $rounding_adjustment, $precision);
+        }
+
+        $base_total = 0;
+        $vat_total = 0;
+        foreach ($rates as $key => $rate) {
+            $base_total += $rate['base_uf'];
+            $vat_total += $rate['vat_uf'];
+
+            $rates[$key]['base'] = $this->num_f($rate['base_uf'], $show_currency, $business_details);
+            $rates[$key]['vat'] = $this->num_f($rate['vat_uf'], $show_currency, $business_details);
+            $rates[$key]['gross'] = $this->num_f($rate['gross_uf'], $show_currency, $business_details);
+        }
+        $base_total = round($base_total, $precision);
+        $vat_total = round($vat_total, $precision);
+
+        return [
+            'lines' => $lines,
+            'rates' => array_values($rates),
+            'base_total_uf' => $base_total,
+            'base_total' => $this->num_f($base_total, $show_currency, $business_details),
+            'vat_total_uf' => $vat_total,
+            'vat_total' => $this->num_f($vat_total, $show_currency, $business_details),
+            'gross_total_uf' => round($base_total + $vat_total, $precision),
+            'gross_total' => $this->num_f($base_total + $vat_total, $show_currency, $business_details),
+            'rounding_adjustment_uf' => $rounding_adjustment,
+        ];
+    }
+
+    /**
+     * Adds VAT figures to one receipt line and accumulates them into $rates.
+     *
+     * @return array
+     */
+    protected function _vatBreakdownLine($line, &$rates, $business_details)
+    {
+        $quantity = (float) ($line['quantity_uf'] ?? 0);
+        $base = $quantity * (float) ($line['unit_price_uf'] ?? 0);
+        $vat = $quantity * (float) ($line['tax_unformatted'] ?? 0);
+        $gross = isset($line['line_total_uf']) ? (float) $line['line_total_uf'] : $base + $vat;
+
+        if (empty($line['tax_id'])) {
+            $rate_key = 'none';
+            $percent = null;
+            $label = __('lang_v1.no_vat');
+            $percent_label = '—';
+        } elseif (! empty($line['group_tax_details'])) {
+            $rate_key = 'group_'.$line['tax_id'];
+            $percent = (float) $line['tax_percent'];
+            $label = implode(' + ', array_column($line['group_tax_details'], 'name'));
+            $percent_label = $this->_vatPercentFormat($percent, $business_details).'%';
+        } else {
+            $percent = (float) $line['tax_percent'];
+            $rate_key = 'rate_'.$percent;
+            $percent_label = $this->_vatPercentFormat($percent, $business_details).'%';
+            $label = __('lang_v1.vat_rate_label', ['rate' => $percent_label]);
+        }
+
+        if (! isset($rates[$rate_key])) {
+            $rates[$rate_key] = [
+                'label' => $label,
+                'percent' => $percent,
+                'percent_label' => $percent_label,
+                'base_uf' => 0,
+                'vat_uf' => 0,
+                'gross_uf' => 0,
+            ];
+        }
+        $rates[$rate_key]['base_uf'] += $base;
+        $rates[$rate_key]['vat_uf'] += $vat;
+        $rates[$rate_key]['gross_uf'] += $gross;
+
+        $line['vat_has_line_discount'] = (float) ($line['line_discount_uf'] ?? 0) > 0;
+        $line['vat_percent_label'] = $percent_label;
+        $line['vat_line_base_uf'] = $base;
+        $line['vat_line_base'] = $this->num_f($base, false, $business_details);
+        $line['vat_line_amount_uf'] = $vat;
+        $line['vat_line_amount'] = $this->num_f($vat, false, $business_details);
+        $line['vat_line_total_uf'] = $gross;
+        $line['vat_line_total'] = $this->num_f($gross, false, $business_details);
+
+        return $line;
+    }
+
+    /**
+     * Applies an order discount to a VAT breakdown built from line taxes.
+     * The discount is taken off the amount incl. VAT of the sale, so it is
+     * split over the rates by their amount and reduces both the tax base and
+     * the VAT of each rate. Display only: line figures are left as charged.
+     * Any cent left goes to the base of the largest rate, so the rate totals
+     * add up to lines total - discount.
+     *
+     * @param  array  $vat_breakdown  output of calculateVatBreakdown()
+     * @param  float  $discount
+     * @param  object  $business_details
+     * @param  bool  $show_currency
+     * @return array
+     */
+    protected function _vatBreakdownApplyOrderDiscount($vat_breakdown, $discount, $business_details, $show_currency)
+    {
+        $precision = isset($business_details->currency_precision) ? (int) $business_details->currency_precision : 2;
+
+        $lines_total = $vat_breakdown['gross_total_uf'];
+        if ($lines_total == 0 || empty($vat_breakdown['rates'])) {
+            return $vat_breakdown;
+        }
+
+        $net_total = round($lines_total - $discount, $precision);
+        $ratio = $net_total / $lines_total;
+
+        $rates = $vat_breakdown['rates'];
+        $gross_sum = 0;
+        $largest_key = 0;
+        foreach ($rates as $key => $rate) {
+            if (abs($rate['gross_uf']) > abs($rates[$largest_key]['gross_uf'])) {
+                $largest_key = $key;
+            }
+            $rates[$key]['gross_uf'] = round($rate['gross_uf'] * $ratio, $precision);
+            $rates[$key]['vat_uf'] = round($rate['vat_uf'] * $ratio, $precision);
+            $rates[$key]['base_uf'] = round($rates[$key]['gross_uf'] - $rates[$key]['vat_uf'], $precision);
+            $gross_sum += $rates[$key]['gross_uf'];
+        }
+
+        $rounding_adjustment = round($net_total - $gross_sum, $precision);
+        if ($rounding_adjustment != 0) {
+            $rates[$largest_key]['base_uf'] = round($rates[$largest_key]['base_uf'] + $rounding_adjustment, $precision);
+            $rates[$largest_key]['gross_uf'] = round($rates[$largest_key]['gross_uf'] + $rounding_adjustment, $precision);
+        }
+
+        $base_total = 0;
+        $vat_total = 0;
+        foreach ($rates as $key => $rate) {
+            $base_total += $rate['base_uf'];
+            $vat_total += $rate['vat_uf'];
+
+            $rates[$key]['base'] = $this->num_f($rate['base_uf'], $show_currency, $business_details);
+            $rates[$key]['vat'] = $this->num_f($rate['vat_uf'], $show_currency, $business_details);
+            $rates[$key]['gross'] = $this->num_f($rate['gross_uf'], $show_currency, $business_details);
+        }
+        $base_total = round($base_total, $precision);
+        $vat_total = round($vat_total, $precision);
+
+        $vat_breakdown['rates'] = $rates;
+        $vat_breakdown['base_total_uf'] = $base_total;
+        $vat_breakdown['base_total'] = $this->num_f($base_total, $show_currency, $business_details);
+        $vat_breakdown['vat_total_uf'] = $vat_total;
+        $vat_breakdown['vat_total'] = $this->num_f($vat_total, $show_currency, $business_details);
+        $vat_breakdown['gross_total_uf'] = round($base_total + $vat_total, $precision);
+        $vat_breakdown['gross_total'] = $this->num_f($base_total + $vat_total, $show_currency, $business_details);
+
+        return $vat_breakdown;
+    }
+
+    /**
+     * Rebuilds a VAT breakdown for a sale whose lines have no tax and which
+     * has an order tax (transactions.tax_id). The order tax is calculated on
+     * total_before_tax - order discount, so that is the base; the stored
+     * tax_amount is the VAT. The VAT is spread over the lines in proportion
+     * to their amount, the last cent going to the largest line.
+     *
+     * @param  array  $vat_breakdown  output of calculateVatBreakdown()
+     * @param  \App\Transaction  $transaction
+     * @param  object  $business_details
+     * @param  bool  $show_currency
+     * @return array
+     */
+    protected function _vatBreakdownFromOrderTax($vat_breakdown, $transaction, $business_details, $show_currency)
+    {
+        $precision = isset($business_details->currency_precision) ? (int) $business_details->currency_precision : 2;
+
+        $lines_total = $vat_breakdown['gross_total_uf'];
+        $discount = $transaction->discount_type == 'percentage' ?
+            ($transaction->discount_amount / 100) * $transaction->total_before_tax : $transaction->discount_amount;
+        $base = round($lines_total - $discount, $precision);
+        $vat = round($transaction->tax_amount, $precision);
+        $net_ratio = $lines_total != 0 ? $base / $lines_total : 0;
+
+        //Rate label from the order tax, or the effective rate if the tax was deleted
+        $tax = TaxRate::withTrashed()->find($transaction->tax_id);
+        $percent = ! empty($tax) ? (float) $tax->amount : ($base != 0 ? round($vat / $base * 100, 2) : 0);
+        $percent_label = $this->_vatPercentFormat($percent, $business_details).'%';
+        if (! empty($tax) && $tax->is_tax_group && $tax->sub_taxes->isNotEmpty()) {
+            $label = implode(' + ', $tax->sub_taxes->pluck('name')->toArray());
+        } else {
+            $label = __('lang_v1.vat_rate_label', ['rate' => $percent_label]);
+        }
+
+        //Spread the VAT over lines and modifiers by their amount
+        $refs = [];
+        foreach ($vat_breakdown['lines'] as $key => $line) {
+            $refs[] = [$key, null];
+            if (! empty($line['modifiers'])) {
+                foreach (array_keys($line['modifiers']) as $modifier_key) {
+                    $refs[] = [$key, $modifier_key];
+                }
+            }
+        }
+
+        $allocated = 0;
+        $largest = null;
+        foreach ($refs as $i => [$key, $modifier_key]) {
+            $line = is_null($modifier_key) ? $vat_breakdown['lines'][$key] : $vat_breakdown['lines'][$key]['modifiers'][$modifier_key];
+            $line_vat = $lines_total != 0 ? round($vat * $line['vat_line_total_uf'] / $lines_total, $precision) : 0;
+            $allocated += $line_vat;
+            $refs[$i][2] = $line_vat;
+            if (is_null($largest) || abs($line['vat_line_total_uf']) > abs($refs[$largest][3])) {
+                $largest = $i;
+            }
+            $refs[$i][3] = $line['vat_line_total_uf'];
+        }
+        if (! is_null($largest)) {
+            $refs[$largest][2] = round($refs[$largest][2] + $vat - $allocated, $precision);
+        }
+
+        foreach ($refs as [$key, $modifier_key, $line_vat, $line_amount]) {
+            $values = [
+                'vat_percent_label' => $percent_label,
+                'vat_line_amount_uf' => $line_vat,
+                'vat_line_amount' => $this->num_f($line_vat, false, $business_details),
+                'vat_line_total_uf' => $line_amount * $net_ratio + $line_vat,
+                'vat_line_total' => $this->num_f($line_amount * $net_ratio + $line_vat, false, $business_details),
+            ];
+            if (is_null($modifier_key)) {
+                $vat_breakdown['lines'][$key] = array_merge($vat_breakdown['lines'][$key], $values);
+            } else {
+                $vat_breakdown['lines'][$key]['modifiers'][$modifier_key] = array_merge($vat_breakdown['lines'][$key]['modifiers'][$modifier_key], $values);
+            }
+        }
+
+        $vat_breakdown['is_order_tax'] = true;
+        $vat_breakdown['lines_total_uf'] = $lines_total;
+        $vat_breakdown['lines_total'] = $this->num_f($lines_total, $show_currency, $business_details);
+        $vat_breakdown['rates'] = [[
+            'label' => $label,
+            'percent' => $percent,
+            'percent_label' => $percent_label,
+            'base_uf' => $base,
+            'vat_uf' => $vat,
+            'gross_uf' => round($base + $vat, $precision),
+            'base' => $this->num_f($base, $show_currency, $business_details),
+            'vat' => $this->num_f($vat, $show_currency, $business_details),
+            'gross' => $this->num_f($base + $vat, $show_currency, $business_details),
+        ]];
+        $vat_breakdown['base_total_uf'] = $base;
+        $vat_breakdown['base_total'] = $this->num_f($base, $show_currency, $business_details);
+        $vat_breakdown['vat_total_uf'] = $vat;
+        $vat_breakdown['vat_total'] = $this->num_f($vat, $show_currency, $business_details);
+        $vat_breakdown['gross_total_uf'] = round($base + $vat, $precision);
+        $vat_breakdown['gross_total'] = $this->num_f($base + $vat, $show_currency, $business_details);
+
+        return $vat_breakdown;
+    }
+
+    /**
+     * Formats a tax percentage without trailing zeros, e.g. 10 => "10", 5.2 => "5,2"
+     *
+     * @return string
+     */
+    protected function _vatPercentFormat($percent, $business_details)
+    {
+        $decimal_separator = ! empty($business_details->decimal_separator) ? $business_details->decimal_separator : '.';
+        $formatted = number_format($percent, 2, $decimal_separator, '');
+
+        return rtrim(rtrim($formatted, '0'), $decimal_separator);
     }
 
     /**
