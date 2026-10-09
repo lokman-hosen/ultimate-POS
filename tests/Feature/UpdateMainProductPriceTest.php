@@ -112,6 +112,76 @@ class UpdateMainProductPriceTest extends TestCase
         }
     }
 
+    public function test_price_inc_tax_is_saved_and_price_exc_tax_is_derived()
+    {
+        $admin = $this->admin();
+        $variation = $this->makeVariation($admin->business_id, $admin->id);
+
+        $this->actingAs($admin)
+            ->postJson($this->url, ['variation_id' => $variation->id, 'product_id' => $variation->product_id, 'unit_price_inc_tax' => '132'])
+            ->assertOk()
+            ->assertJson(['success' => true, 'base_unit_sell_price' => 120, 'base_unit_sell_price_inc_tax' => 132]);
+
+        $this->assertPrice($variation, 120, 132, 50);
+    }
+
+    public function test_four_decimal_price_inc_tax_keeps_price_exc_tax_exact()
+    {
+        $admin = $this->admin();
+        $variation = $this->makeVariation($admin->business_id, $admin->id);
+
+        //Price inc. tax with 4 decimals (120.37 exc. tax + 10%) keeps the price exc. tax exact
+        $decimal_separator = Business::find($admin->business_id)->currency->decimal_separator ?? '.';
+        $this->actingAs($admin)
+            ->postJson($this->url, ['variation_id' => $variation->id, 'unit_price_inc_tax' => '132' . $decimal_separator . '4070'])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertPrice($variation, 120.37, 132.407, 50.4625);
+    }
+
+    public function test_price_inc_tax_without_product_tax_sets_both_prices_equal()
+    {
+        $admin = $this->admin();
+        $variation = $this->makeVariation($admin->business_id, $admin->id);
+        Product::where('id', $variation->product_id)->update(['tax' => null]);
+
+        $this->actingAs($admin)
+            ->postJson($this->url, ['variation_id' => $variation->id, 'unit_price_inc_tax' => '50'])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertPrice($variation, 50, 50, -37.5);
+    }
+
+    public function test_sub_unit_price_inc_tax_is_stored_per_base_unit()
+    {
+        $admin = $this->admin();
+        $variation = $this->makeVariation($admin->business_id, $admin->id);
+
+        $this->actingAs($admin)
+            ->postJson($this->url, ['variation_id' => $variation->id, 'unit_price_inc_tax' => '1584', 'sub_unit_id' => $variation->box_unit_id])
+            ->assertOk()
+            ->assertJson(['success' => true, 'base_unit_sell_price' => 120, 'base_unit_sell_price_inc_tax' => 132]);
+
+        $this->assertPrice($variation, 120, 132, 50);
+    }
+
+    public function test_rejects_invalid_price_inc_tax()
+    {
+        $admin = $this->admin();
+        $variation = $this->makeVariation($admin->business_id, $admin->id);
+
+        foreach (['0', '-5', 'abc'] as $price) {
+            $this->actingAs($admin)
+                ->postJson($this->url, ['variation_id' => $variation->id, 'unit_price_inc_tax' => $price])
+                ->assertStatus(422)
+                ->assertJsonValidationErrors('unit_price_inc_tax');
+        }
+
+        $this->assertPrice($variation, 100, 110, 25);
+    }
+
     public function test_sub_unit_price_is_stored_per_base_unit()
     {
         $admin = $this->admin();

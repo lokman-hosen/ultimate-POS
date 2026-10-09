@@ -9,9 +9,15 @@
 				<div class="form-group col-xs-12 @if(!auth()->user()->can('edit_product_price_from_sale_screen')) hide @endif">
 					@php
 						$pos_unit_price = !empty($product->unit_price_before_discount) ? $product->unit_price_before_discount : $product->default_sell_price;
+						$product_tax_rate = !empty($product->tax_id) && !empty($tax_dropdown['attributes'][$product->tax_id]['data-rate']) ? $tax_dropdown['attributes'][$product->tax_id]['data-rate'] : 0;
+
+						//Unit price inc. product tax; existing lines only have the price exc. tax, add product tax to it
+						$modal_unit_price_inc_tax = !empty($product->unit_price_before_discount) ? $product->unit_price_before_discount + ($product->unit_price_before_discount * $product_tax_rate / 100) : $product->sell_price_inc_tax;
 					@endphp
 					<label>@lang('sale.unit_price')</label>
-						<input type="text" name="products[{{$row_count}}][unit_price]" class="form-control pos_unit_price input_number mousetrap" value="{{@num_format($pos_unit_price)}}" @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$pos_unit_price}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($pos_unit_price)])}}" @endif>
+						{{-- Row unit price exc. tax (submitted), edited through the unit price inc. product tax below --}}
+						<input type="hidden" name="products[{{$row_count}}][unit_price]" class="pos_unit_price" value="{{@num_format($pos_unit_price)}}" @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$pos_unit_price}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($pos_unit_price)])}}" @endif>
+						<input type="text" class="form-control modal_unit_price_inc_tax input_number mousetrap" value="{{@num_format($modal_unit_price_inc_tax)}}" data-tax_rate="{{$product_tax_rate}}" @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$modal_unit_price_inc_tax}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($modal_unit_price_inc_tax)])}}" @endif>
 					@if(auth()->user()->can('edit_product_price_from_sale_screen') && auth()->user()->can('product.update'))
 						<div class="checkbox">
 							<label>
@@ -22,7 +28,7 @@
 				</div>
 				@if(!auth()->user()->can('edit_product_price_from_sale_screen'))
 					<div class="form-group col-xs-12">
-						<strong>@lang('sale.unit_price'):</strong> {{@num_format(!empty($product->unit_price_before_discount) ? $product->unit_price_before_discount : $product->default_sell_price)}}
+						<strong>@lang('sale.unit_price'):</strong> {{@num_format($modal_unit_price_inc_tax)}}
 					</div>
 				@endif
 				<div class="form-group col-xs-12 col-sm-6 @if(!$edit_discount) hide @endif">

@@ -401,17 +401,20 @@
 	<td class="{{$hide_tax}} text-right pos-td-price" style="width: 13% !important;">
 		<input type="text" name="products[{{$row_count}}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number pos-price-input" value="{{@num_format($unit_price_inc_tax)}}" @if(!$edit_price) readonly @endif @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$unit_price_inc_tax}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($unit_price_inc_tax)])}}" @endif>
 	</td>
-	{{-- Inline unit price (exc. tax, before line discount) edit; input has no name so it is never submitted --}}
+	{{-- Inline unit price (inc. product tax, before line discount) edit; input has no name so it is never submitted --}}
 	<td class="v-center pos-td-update-price @if(!$edit_price) hide @endif" style="width: 18% !important;">
 		@if($edit_price && $product->product_type != 'combo')
 			@php
-				$update_unit_price = !empty($product->unit_price_before_discount) ? $product->unit_price_before_discount : $product->default_sell_price;
+				$product_tax_rate = !empty($product->tax_id) && !empty($tax_dropdown['attributes'][$product->tax_id]['data-rate']) ? $tax_dropdown['attributes'][$product->tax_id]['data-rate'] : 0;
+
+				//Existing lines only have the price exc. tax, add product tax to it
+				$update_unit_price = !empty($product->unit_price_before_discount) ? $product->unit_price_before_discount + ($product->unit_price_before_discount * $product_tax_rate / 100) : $product->sell_price_inc_tax;
 				if(!empty($so_line) && $action !== 'edit') {
-					$update_unit_price = $so_line->unit_price_before_discount;
+					$update_unit_price = $so_line->unit_price_before_discount + ($so_line->unit_price_before_discount * $product_tax_rate / 100);
 				}
 			@endphp
 			<div class="pos-update-price-wrap">
-				<input type="text" class="form-control input-sm input_number update_unit_price_input" value="{{@num_format($update_unit_price)}}" title="@lang('sale.unit_price')">
+				<input type="text" class="form-control input-sm input_number update_unit_price_input" value="{{@num_format($update_unit_price)}}" data-tax_rate="{{$product_tax_rate}}" title="@lang('sale.unit_price')">
 				<button type="button" class="btn btn-xs btn-primary save_unit_price_btn hide" data-can_update_main_price="{{ auth()->user()->can('product.update') ? 1 : 0 }}">@lang('messages.save')</button>
 			</div>
 		@endif

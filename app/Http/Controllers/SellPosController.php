@@ -1890,7 +1890,7 @@ class SellPosController extends Controller
                 'variations.id',
                 'variations.name as variation',
                 'VLD.qty_available',
-                'variations.default_sell_price as selling_price',
+                'variations.sell_price_inc_tax as selling_price',
                 'variations.sub_sku',
                 'u.short_name as unit'
             )
@@ -2476,8 +2476,10 @@ class SellPosController extends Controller
      * Updates the master selling price (variations.default_sell_price, sell_price_inc_tax
      * and profit_percent) of the variation whose price was edited on the POS / sell screen.
      *
-     * unit_price is the row's unit price exc. tax and before line discount, for the unit
-     * selected on the row (sub_unit_id); it is stored per base unit.
+     * unit_price_inc_tax (inline "Update unit price" field) is the price inc. tax; it is saved
+     * as sell_price_inc_tax and default_sell_price is derived from it using the product tax.
+     * unit_price (price modal) is the row's unit price exc. tax and before line discount.
+     * Both are for the unit selected on the row (sub_unit_id) and are stored per base unit.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -2488,19 +2490,23 @@ class SellPosController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        //Inline unit price field sends the price inc. tax, price modal sends it exc. tax
+        $is_price_inc_tax = $request->filled('unit_price_inc_tax');
+        $price_field = $is_price_inc_tax ? 'unit_price_inc_tax' : 'unit_price';
+
         //Price modal used to send the value as "price"
-        if (! $request->filled('unit_price') && $request->filled('price')) {
+        if (! $is_price_inc_tax && ! $request->filled('unit_price') && $request->filled('price')) {
             $request->merge(['unit_price' => $request->input('price')]);
         }
-        $request->merge(['unit_price' => $this->productUtil->num_uf($request->input('unit_price'))]);
+        $request->merge([$price_field => $this->productUtil->num_uf($request->input($price_field))]);
 
         $request->validate([
             'variation_id' => 'required|integer',
             'product_id' => 'nullable|integer',
             'sub_unit_id' => 'nullable|integer',
-            'unit_price' => 'required|numeric|gt:0',
+            $price_field => 'required|numeric|gt:0',
         ], [
-            'unit_price.*' => __('lang_v1.invalid_unit_price'),
+            $price_field . '.*' => __('lang_v1.invalid_unit_price'),
         ]);
 
         //Only the default selling price can be updated from here
@@ -2544,12 +2550,18 @@ class SellPosController extends Controller
         try {
             $tax_rate = ! empty($product->product_tax) ? $product->product_tax->amount : 0;
 
-            $default_sell_price = $request->input('unit_price') / $multiplier;
+            if ($is_price_inc_tax) {
+                $sell_price_inc_tax = $request->input('unit_price_inc_tax') / $multiplier;
+                $default_sell_price = $this->productUtil->calc_percentage_base($sell_price_inc_tax, $tax_rate);
+            } else {
+                $default_sell_price = $request->input('unit_price') / $multiplier;
+                $sell_price_inc_tax = $this->productUtil->calc_percentage($default_sell_price, $tax_rate, $default_sell_price);
+            }
 
             DB::beginTransaction();
 
             $variation->default_sell_price = $default_sell_price;
-            $variation->sell_price_inc_tax = $this->productUtil->calc_percentage($default_sell_price, $tax_rate, $default_sell_price);
+            $variation->sell_price_inc_tax = $sell_price_inc_tax;
             $variation->profit_percent = $this->productUtil->get_percent($variation->default_purchase_price, $default_sell_price);
             $variation->save();
 
@@ -2558,6 +2570,7 @@ class SellPosController extends Controller
             $output = ['success' => true,
                 'msg' => __('lang_v1.product_price_updated'),
                 'base_unit_sell_price' => $default_sell_price,
+                'base_unit_sell_price_inc_tax' => $sell_price_inc_tax,
             ];
         } catch (\Exception $e) {
             DB::rollBack();

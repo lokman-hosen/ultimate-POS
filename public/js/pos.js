@@ -1045,9 +1045,25 @@ $(document).ready(function() {
             return;
         }
 
+        //Main price is updated from the unit price inc. product tax entered in the modal
+        //(formatted value, unformatted on server with num_uf)
         update_main_product_price(modal.closest('tr.product_row'), null, function() {
             checkbox.prop('checked', false);
-        });
+        }, modal.find('input.modal_unit_price_inc_tax').val());
+    });
+
+    //Price modal unit price is inc. product tax, row unit price is exc. tax
+    $('table#pos_table tbody').on('change', 'input.modal_unit_price_inc_tax', function() {
+        var tr = $(this).closest('tr.product_row');
+        //Keep the entered value as it is, row recalculation would re-derive it from the rounded price exc. tax
+        var entered_price = $(this).val();
+
+        __write_number(
+            tr.find('input.pos_unit_price'),
+            __get_principle(__read_number($(this)), $(this).data('tax_rate'))
+        );
+        tr.find('input.pos_unit_price').change();
+        $(this).val(entered_price);
     });
 
     //Inline unit price edit: replaces the row unit price (not a discount),
@@ -1055,12 +1071,18 @@ $(document).ready(function() {
     $(document).on('click', '#pos_table .save_unit_price_btn', function() {
         var btn = $(this);
         var tr = btn.closest('tr.product_row');
-        var new_price = __read_number(tr.find('input.update_unit_price_input'));
+        var update_price_input = tr.find('input.update_unit_price_input');
+        //Entered price is inc. product tax, row unit price is exc. tax
+        var new_price_inc_tax = __read_number(update_price_input);
 
-        if (isNaN(new_price) || !(new_price > 0)) {
+        if (isNaN(new_price_inc_tax) || !(new_price_inc_tax > 0)) {
             toastr.error(LANG.invalid_unit_price || LANG.something_went_wrong);
             return;
         }
+
+        var new_price = __get_principle(new_price_inc_tax, update_price_input.data('tax_rate'));
+        //Formatted value, unformatted on server with num_uf
+        var new_price_inc_tax_formatted = update_price_input.val();
 
         var price_input = tr.find('input.pos_unit_price');
 
@@ -1073,6 +1095,7 @@ $(document).ready(function() {
 
         __write_number(price_input, new_price);
         price_input.change();
+        update_price_input.val(new_price_inc_tax_formatted);
         btn.addClass('hide');
 
         if (btn.data('can_update_main_price') != 1) {
@@ -1085,7 +1108,7 @@ $(document).ready(function() {
             buttons: [LANG.cancel || 'Cancel', LANG.yes || 'Yes'],
         }).then(function(confirm) {
             if (confirm) {
-                update_main_product_price(tr, btn);
+                update_main_product_price(tr, btn, null, new_price_inc_tax_formatted);
             }
         });
     });
@@ -2298,15 +2321,20 @@ function pos_each_row(row_obj) {
 
     __write_number(row_obj.find('input.item_tax'), unit_price_inc_tax - discounted_unit_price);
 
-    //Keep inline unit price edit field in sync with the row unit price
-    var update_price_input = row_obj.find('input.update_unit_price_input');
-    if (update_price_input.length && !update_price_input.is(':focus')) {
-        __write_number(update_price_input, unit_price);
-    }
+    //Keep inline and price modal unit price (inc. product tax) fields in sync with the row unit price
+    row_obj.find('input.update_unit_price_input, input.modal_unit_price_inc_tax').each(function() {
+        if (!$(this).is(':focus')) {
+            __write_number(
+                $(this),
+                unit_price + __calculate_amount('percentage', $(this).data('tax_rate'), unit_price)
+            );
+        }
+    });
 }
 
-//Update product main price (variation default selling price) from a POS / sell row
-function update_main_product_price(tr, btn, on_success) {
+//Update product main price (variation default selling price) from a POS / sell row.
+//unit_price_inc_tax is sent when given (inline edit), otherwise the row unit price exc. tax
+function update_main_product_price(tr, btn, on_success, unit_price_inc_tax) {
     var sub_unit_id = tr.find('select.sub_unit').length
         ? tr.find('select.sub_unit').val()
         : tr.find('input[name$="[sub_unit_id]"]').val();
@@ -2319,6 +2347,20 @@ function update_main_product_price(tr, btn, on_success) {
         price_group_id = $('#types_of_service_price_group').val();
     }
 
+    var variation_id = tr.find('input.row_variation_id').val();
+    var data = {
+        product_id: tr.find('input.product_id').val(),
+        variation_id: variation_id,
+        sub_unit_id: sub_unit_id,
+        price_group_id: price_group_id,
+    };
+    if (typeof unit_price_inc_tax !== 'undefined') {
+        data.unit_price_inc_tax = unit_price_inc_tax;
+    } else {
+        //Formatted value, unformatted on server with num_uf
+        data.unit_price = tr.find('input.pos_unit_price').val();
+    }
+
     if (btn) {
         btn.prop('disabled', true);
     }
@@ -2327,19 +2369,18 @@ function update_main_product_price(tr, btn, on_success) {
         method: 'POST',
         url: '/sells/pos/update-main-product-price',
         dataType: 'json',
-        data: {
-            product_id: tr.find('input.product_id').val(),
-            variation_id: tr.find('input.row_variation_id').val(),
-            //Formatted value, unformatted on server with num_uf
-            unit_price: tr.find('input.pos_unit_price').val(),
-            sub_unit_id: sub_unit_id,
-            price_group_id: price_group_id,
-        },
+        data: data,
         success: function(result) {
             if (result.success) {
                 toastr.success(result.msg);
                 if (typeof result.base_unit_sell_price !== 'undefined') {
                     tr.find('input.hidden_base_unit_sell_price').val(result.base_unit_sell_price);
+                }
+                //Refresh price on product list / featured product cards
+                if (typeof result.base_unit_sell_price_inc_tax !== 'undefined') {
+                    $('.product_box[data-variation_id="' + variation_id + '"] .product_price').text(
+                        __currency_trans_from_en(result.base_unit_sell_price_inc_tax, true)
+                    );
                 }
                 if (on_success) {
                     on_success(result);
