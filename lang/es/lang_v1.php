@@ -1584,4 +1584,7 @@ return [
     'subtotal_excl_vat' => 'Subtotal (sin IVA)',
     'show_vat_breakdown' => 'Mostrar desglose de IVA',
     'show_vat_breakdown_help' => 'Muestra el precio sin IVA, el % de IVA y la cuota de IVA de cada línea, la base imponible y el total de IVA, y un desglose de IVA por tipo. Solo para el diseño Clásico.',
+    'cart' => 'Carrito',
+    'more' => 'Más',
+    'details' => 'Detalles',
 ];

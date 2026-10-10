@@ -1810,4 +1810,6 @@ return [
     'subtotal_excl_vat' => 'Subtotal (excl. VAT)',
     'show_vat_breakdown' => 'Show VAT breakdown',
     'show_vat_breakdown_help' => 'Shows price excl. VAT, VAT % and VAT amount for each line, the tax base and total VAT, and a VAT summary by rate. Only for the Classic design.',
+    'cart' => 'Cart',
+    'more' => 'More',
 ];
