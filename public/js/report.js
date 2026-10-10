@@ -1316,7 +1316,11 @@ $(document).ready(function() {
             ],
             fnDrawCallback: function(oSettings) {
                 var total_amount = sum_table_col($('#sell_payment_report_table'), 'paid-amount');
-                $('#footer_total_amount').text(total_amount);
+                // scrollX moves the visible footer out of the table and leaves a hidden sizing copy
+                // (same id) inside it, so target the footer through the DataTables API.
+                $(this.api().table().footer())
+                    .find('#footer_total_amount')
+                    .text(__currency_trans_from_en(total_amount, true));
                 __currency_convert_recursively($('#sell_payment_report_table'));
             },
             createdRow: function(row, data, dataIndex) {

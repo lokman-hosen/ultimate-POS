@@ -17,7 +17,7 @@
 	@if(!empty($is_serial_no))
 		<td class="serial_no" ></td>
 	@endif
-	<td class="pos-td-product" style="width: 34% !important;">
+	<td class="pos-td-product">
 		@if(!empty($so_line))
 			<input type="hidden"
 			name="products[{{$row_count}}][so_line_id]"
@@ -199,7 +199,7 @@
 	@endif
 	</td>
 
-	<td class="v-center pos-td-qty" style="width: 16% !important; position: relative !important; overflow: visible !important;">
+	<td class="v-center pos-td-qty" data-label="@lang('sale.qty')">
 		{{-- If edit then transaction sell lines will be present --}}
 		@if(!empty($product->transaction_sell_lines_id))
 			<input type="hidden" name="products[{{$row_count}}][transaction_sell_lines_id]" class="form-control" value="{{$product->transaction_sell_lines_id}}">
@@ -398,11 +398,11 @@
 			</td>
 		@endif
 	@endif
-	<td class="{{$hide_tax}} text-right pos-td-price" style="width: 13% !important;">
+	<td class="{{$hide_tax}} text-right pos-td-price" data-label="@lang('sale.price_inc_tax')">
 		<input type="text" name="products[{{$row_count}}][unit_price_inc_tax]" class="form-control pos_unit_price_inc_tax input_number pos-price-input" value="{{@num_format($unit_price_inc_tax)}}" @if(!$edit_price) readonly @endif @if(!empty($pos_settings['enable_msp'])) data-rule-min-value="{{$unit_price_inc_tax}}" data-msg-min-value="{{__('lang_v1.minimum_selling_price_error_msg', ['price' => @num_format($unit_price_inc_tax)])}}" @endif>
 	</td>
 	{{-- Inline unit price (inc. product tax, before line discount) edit; input has no name so it is never submitted --}}
-	<td class="v-center pos-td-update-price @if(!$edit_price) hide @endif" style="width: 18% !important;">
+	<td class="v-center pos-td-update-price @if(!$edit_price) hide @endif" data-label="@lang('lang_v1.update_unit_price')">
 		@if($edit_price && $product->product_type != 'combo')
 			@php
 				$product_tax_rate = !empty($product->tax_id) && !empty($tax_dropdown['attributes'][$product->tax_id]['data-rate']) ? $tax_dropdown['attributes'][$product->tax_id]['data-rate'] : 0;
@@ -424,14 +424,14 @@
 			{!! Form::select("products[$row_count][warranty_id]", $warranties, $warranty_id, ['placeholder' => __('messages.please_select'), 'class' => 'form-control input-sm']); !!}
 		</td>
 	@endif
-	<td class="text-right pos-td-subtotal" style="width: 15% !important;">
+	<td class="text-right pos-td-subtotal" data-label="@lang('sale.subtotal')">
 		@php
 			$subtotal_type = !empty($pos_settings['is_pos_subtotal_editable']) ? 'text' : 'hidden';
 		@endphp
 		<input type="{{$subtotal_type}}" class="form-control pos_line_total pos-price-input @if(!empty($pos_settings['is_pos_subtotal_editable'])) input_number @endif" value="{{@num_format($product->quantity_ordered*$unit_price_inc_tax )}}">
 		<span class="display_currency pos_line_total_text tw-font-bold tw-text-slate-900 tw-text-[13.5px] tw-tabular-nums @if(!empty($pos_settings['is_pos_subtotal_editable'])) hide @endif" data-currency_symbol="true">{{$product->quantity_ordered*$unit_price_inc_tax}}</span>
 	</td>
-	<td class="text-center v-center pos-td-action" style="padding: 0 8px 0 2px !important; width: 34px !important;">
+	<td class="text-center v-center pos-td-action">
 		<button type="button" class="pos_remove_row tw-w-6 tw-h-6 tw-rounded-md tw-bg-transparent hover:tw-bg-rose-50 tw-text-slate-400 hover:tw-text-rose-600 active:tw-scale-90 tw-transition-all tw-inline-flex tw-items-center tw-justify-center tw-border-0 tw-cursor-pointer tw-p-0" aria-label="Remove item" title="@lang('messages.delete')">
 			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>
 		</button>

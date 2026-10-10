@@ -34,7 +34,7 @@
 
     {{-- 2. POS --}}
     <a href="{{ action([\App\Http\Controllers\SellPosController::class, 'create']) }}" 
-       class="pos-footer-nav-item @if($is_pos_active) active @endif" title="@lang('sale.pos_sale')">
+       class="pos-footer-nav-item pos-footer-nav-item--pos @if($is_pos_active) active @endif" title="@lang('sale.pos_sale')">
         <div class="pos-footer-nav-inner">
             <svg xmlns="http://www.w3.org/2000/svg" class="pos-footer-nav-icon" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -50,7 +50,7 @@
     {{-- 3. Tables (Restaurant business validated) --}}
     @if(in_array('tables', $enabled_modules) && (auth()->user()->can('access_tables') || auth()->user()->can('superadmin') || auth()->user()->can('admin')))
     <a href="{{ action([\App\Http\Controllers\Restaurant\TableController::class, 'index']) }}" 
-       class="pos-footer-nav-item @if($is_tables_active) active @endif" title="@lang('restaurant.tables')">
+       class="pos-footer-nav-item pos-footer-nav-item--tables @if($is_tables_active) active @endif" title="@lang('restaurant.tables')">
         <div class="pos-footer-nav-inner">
             <svg xmlns="http://www.w3.org/2000/svg" class="pos-footer-nav-icon" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>

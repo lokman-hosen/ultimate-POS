@@ -199,7 +199,7 @@
         <div class="tw-w-full md:tw-w-auto !tw-p-0 tw-flex tw-items-center md:tw-justify-end tw-gap-2 md:tw-gap-1 tw-flex-col md:tw-flex-row tw-hidden md:tw-flex"
             id="pos_header_more_options">
             {{-- ===== Navigation ===== --}}
-            <a href="{{ $go_back_url }}" title="{{ __('lang_v1.go_back') }}"
+            <a href="{{ $go_back_url }}" title="{{ __('lang_v1.go_back') }}" data-yp-priority="2"
                 class="pos-header-action-btn tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-cursor-pointer tw-border tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-10 tw-w-auto tw-h-10 tw-text-gray-600 active:tw-scale-95 tw-transition-transform">
                 <strong class="!tw-m-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left tw-text-[#009EE4] tw-inline-block" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 6l-9 6l9 6"/></svg>
@@ -220,7 +220,7 @@
                 </strong>
             </button>
 
-            <button type="button" id="view_suspended_sales" title="{{ __('lang_v1.view_suspended_sales') }}"
+            <button type="button" id="view_suspended_sales" data-yp-priority="2" title="{{ __('lang_v1.view_suspended_sales') }}"
                 class="pos-header-action-btn tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-cursor-pointer tw-border tw-flex tw-items-center tw-justify-center tw-rounded-md md:tw-w-10 tw-w-auto tw-h-10 tw-text-gray-600 active:tw-scale-95 tw-transition-transform btn-modal"
                 data-container=".view_modal" data-href="{{ $view_suspended_sell_url }}">
                 <strong class="!tw-m-3">
@@ -357,7 +357,7 @@
                 @endcan
             @endif
             @can('expense.add')
-                <button type="button" title="{{ __('expense.add_expense') }}" data-placement="bottom"
+                <button type="button" title="{{ __('expense.add_expense') }}" aria-label="{{ __('expense.add_expense') }}" data-placement="bottom" data-yp-priority="1"
                     class="pos-header-action-btn tw-shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] tw-cursor-pointer tw-border tw-w-auto tw-h-auto tw-py-1 tw-px-4 active:tw-scale-95 tw-transition-transform tw-rounded-md btn-modal"
                     id="add_expense">
                     <strong class="tw-inline-flex tw-items-center tw-gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circle-minus" width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M9 12l6 0"/></svg><span class="pos-btn-text">@lang('expense.add_expense')</span></strong>

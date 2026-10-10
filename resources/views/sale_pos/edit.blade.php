@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', __('sale.pos_sale'))
+@section('body_class', 'yaigo-pos')
 
 @section('content')
 <section class="content no-print">
@@ -17,7 +18,7 @@
 	@endphp
 	{!! Form::open(['url' => action([\App\Http\Controllers\SellPosController::class, 'update'], [$transaction->id]), 'method' => 'post', 'id' => 'edit_pos_sell_form' ]) !!}
 	{{ method_field('PUT') }}
-	<div class="row" style="margin:0;">
+	<div class="row pos-layout-shell" style="margin:0;">
 		<div class="col-md-12" style="padding:0;">
 			<div class="row tw-flex lg:tw-flex-row md:tw-flex-col sm:tw-flex-col tw-flex-col tw-items-stretch pos-layout-grid" style="gap: 6px; margin: 0; padding: 0;">
 				@php
@@ -123,112 +124,13 @@
 	@endif
 
 	@include('sale_pos.partials.pos_layout_script', ['form_id' => 'edit_pos_sell_form'])
-	<script>window.POS_RESPONSIVE_LANG = {products: @json(__('lang_v1.view_products')), close: @json(__('messages.close'))};</script>
+	<script>window.POS_RESPONSIVE_LANG = {products: @json(__('sale.products')), cart: @json(__('lang_v1.cart')), tables: @json(__('restaurant.tables')), more: @json(__('lang_v1.more')), details: @json(__('lang_v1.details')), total_payable: @json(__('sale.total_payable')), close: @json(__('messages.close'))};</script>
 	<script src="{{ asset('js/pos-responsive.js?v=' . $asset_v) }}"></script>
 
 @endsection
 
 @section('css')
 	<style type="text/css">
-		@media (min-width: 992px) {
-			@if(!empty($is_restaurant))
-			.pos-restaurant-section {
-				width: 22% !important;
-				flex: 0 0 22% !important;
-				max-width: 22% !important;
-				min-width: 0 !important;
-				height: calc(100vh - 118px) !important;
-			}
-			.pos-left-product-section {
-				width: 48% !important;
-				flex: 0 0 48% !important;
-				max-width: 48% !important;
-				min-width: 0 !important;
-				height: calc(100vh - 118px) !important;
-			}
-			/* Force 3 columns for products in restaurant mode */
-			.pos-left-product-section .pos-card-col-5,
-			.pos-left-product-section .col-md-3 {
-				width: 33.333333% !important;
-			}
-			@else
-			.pos-left-product-section {
-				width: 70% !important;
-				flex: 0 0 70% !important;
-				max-width: 70% !important;
-				min-width: 0 !important;
-				height: calc(100vh - 118px) !important;
-			}
-			@endif
-			.pos-right-cart-section {
-				width: 30% !important;
-				flex: 0 0 30% !important;
-				max-width: 30% !important;
-				min-width: 0 !important;
-				height: calc(100vh - 118px) !important;
-			}
-			.pos-right-cart-section.pos-cart-full-width {
-				width: 100% !important;
-				flex: 0 0 100% !important;
-				max-width: 100% !important;
-			}
-			.pos-right-cart-section > div {
-				height: 100% !important;
-				display: flex !important;
-				flex-direction: column !important;
-			}
-			.pos-right-cart-section .box-body {
-				height: 100% !important;
-				display: flex !important;
-				flex-direction: column !important;
-				padding: 0 !important;
-				flex: 1 1 auto !important;
-				min-height: 0 !important;
-				overflow: hidden !important;
-			}
-			.pos-cart-top-fields {
-				flex-shrink: 0 !important;
-				padding: 6px 6px 0 6px !important;
-			}
-			.pos-cart-table-row {
-				flex: 1 1 0 !important;
-				min-height: 0 !important;
-				overflow: hidden !important;
-				margin: 0 !important;
-				display: flex !important;
-				flex-direction: column !important;
-			}
-			.pos_product_div {
-				flex: 1 1 0 !important;
-				height: 100% !important;
-				max-height: 100% !important;
-				min-height: 80px !important;
-				overflow-y: auto !important;
-				overflow-x: hidden !important;
-				padding: 0 4px !important;
-			}
-			.pos_form_totals {
-				flex-shrink: 0 !important;
-				margin-top: auto !important;
-				width: 100% !important;
-			}
-		}
-		@media (max-width: 991px) {
-			section.content {
-				padding-bottom: 58px !important;
-			}
-			.pos-left-product-section,
-			.pos-right-cart-section {
-				width: 100% !important;
-				flex: 0 0 100% !important;
-				max-width: 100% !important;
-				min-width: 0 !important;
-			}
-			.pos_product_div {
-				max-height: 320px !important;
-				overflow-y: auto !important;
-			}
-		}
 		/*CSS to print receipts*/
 		.print_section{
 		    display: none;
